@@ -8,9 +8,9 @@
 		Search,
 		Trophy
 	} from 'lucide-svelte';
-	import { app } from '$lib/state.svelte';
-	import { parseGame } from '$lib/chess';
-	import Knight from '$lib/components/Knight.svelte';
+	import { app } from '#lib/state.svelte.js';
+	import { parseGame } from '#lib/chess.js';
+	import Knight from '#lib/components/Knight.svelte';
 	let query = $state('');
 	let filter = $state('all');
 	let games = $derived(

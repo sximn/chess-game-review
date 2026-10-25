@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Move } from 'chess.js';
-	import { demoAnalysis, moveLabel } from '$lib/chess';
+	import { demoAnalysis, moveLabel } from '#lib/chess.js';
 	let {
 		values,
 		moves,

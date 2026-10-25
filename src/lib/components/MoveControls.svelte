@@ -11,7 +11,7 @@
 		SkipBack,
 		SkipForward
 	} from 'lucide-svelte';
-	import { moveLabel } from '$lib/chess';
+	import { moveLabel } from '#lib/chess.js';
 	let {
 		moves,
 		ply,

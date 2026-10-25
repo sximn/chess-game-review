@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ArrowUpRight, BookOpen, Flag, Lightbulb, Plus, Sprout, TrendingUp } from 'lucide-svelte';
-	import { app } from '$lib/state.svelte';
-	import { parseGame } from '$lib/chess';
+	import { app } from '#lib/state.svelte.js';
+	import { parseGame } from '#lib/chess.js';
 	let imported = $derived(app.games.filter((g) => g.id !== 'opera'));
 	let totalMoves = $derived(
 		imported.reduce((sum, game) => sum + Math.ceil(parseGame(game.pgn).moves.length / 2), 0)

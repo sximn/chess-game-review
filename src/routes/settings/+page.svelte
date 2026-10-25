@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Switch } from 'bits-ui';
 	import { ArrowLeft, Check, Moon, Sun, Monitor, Smartphone, ShieldCheck } from 'lucide-svelte';
-	import { app } from '$lib/state.svelte';
+	import { app } from '#lib/state.svelte.js';
 </script>
 
 <svelte:head><title>Preferences · Paper & Ink</title></svelte:head>

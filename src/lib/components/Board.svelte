@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Chess } from 'chess.js';
 	import type { Move } from 'chess.js';
-	import { app } from '$lib/state.svelte';
+	import { app } from '#lib/state.svelte.js';
 	let {
 		fen,
 		flipped = false,

@@ -17,8 +17,8 @@
 	import type { Snippet } from 'svelte';
 	import Knight from './Knight.svelte';
 	import ImportDialog from './ImportDialog.svelte';
-	import { app, hydrate, persistSettings } from '$lib/state.svelte';
-	import { initializeNative, setNativeTheme } from '$lib/native';
+	import { app, hydrate, persistSettings } from '#lib/state.svelte.js';
+	import { initializeNative, setNativeTheme } from '#lib/native.js';
 	let { children }: { children: Snippet } = $props();
 	const links = [
 		{ href: '/', label: 'Game review', icon: LayoutGrid },

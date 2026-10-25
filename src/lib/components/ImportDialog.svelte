@@ -2,7 +2,7 @@
 	import { Dialog, Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, X, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import { app, addGame } from '$lib/state.svelte';
+	import { app, addGame } from '#lib/state.svelte.js';
 	let pgn = $state('');
 	let error = $state('');
 	let filename = $state('');

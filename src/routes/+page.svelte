@@ -4,13 +4,13 @@
 	import { Dialog, DropdownMenu } from 'bits-ui';
 	import { Download, Ellipsis, Lightbulb, RotateCcw, Settings2, X } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import Board from '$lib/components/Board.svelte';
-	import Knight from '$lib/components/Knight.svelte';
-	import AnalysisPanel from '$lib/components/AnalysisPanel.svelte';
-	import MoveControls from '$lib/components/MoveControls.svelte';
-	import { app, notify } from '$lib/state.svelte';
-	import { demoAnalysis, demoEvaluations, parseGame } from '$lib/chess';
-	import '$lib/review.css';
+	import Board from '#lib/components/Board.svelte';
+	import Knight from '#lib/components/Knight.svelte';
+	import AnalysisPanel from '#lib/components/AnalysisPanel.svelte';
+	import MoveControls from '#lib/components/MoveControls.svelte';
+	import { app, notify } from '#lib/state.svelte.js';
+	import { demoAnalysis, demoEvaluations, parseGame } from '#lib/chess.js';
+	import '#lib/review.css';
 
 	let game = $derived(
 		app.games.find((g) => g.id === (page.url.searchParams.get('game') || app.currentId)) ??

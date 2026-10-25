@@ -2,7 +2,7 @@
 	import { Tabs } from 'bits-ui';
 	import type { Move } from 'chess.js';
 	import { ArrowRight, BookOpen, ChartNoAxesCombined, Lightbulb, Sparkles } from 'lucide-svelte';
-	import { demoAnalysis, demoEvaluations, moveLabel, type Timeline } from '$lib/chess';
+	import { demoAnalysis, demoEvaluations, moveLabel, type Timeline } from '#lib/chess.js';
 	import EvaluationTimeline from './EvaluationTimeline.svelte';
 	import AnimatedAccuracy from './AnimatedAccuracy.svelte';
 	let {
