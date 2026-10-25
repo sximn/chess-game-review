@@ -1,0 +1,14 @@
+node_modules
+.svelte-kit
+build
+.DS_Store
+.env
+.env.*
+!.env.example
+android/.gradle
+android/local.properties
+android/app/build
+android/build
+ios/App/Pods
+ios/App/build
+.idea

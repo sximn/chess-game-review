@@ -1,0 +1,184 @@
+[
+  {
+    "boardFits": true,
+    "boardSize": 519,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": true,
+    "noPageScroll": true,
+    "viewport": [
+      1306,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 648,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": true,
+    "noPageScroll": true,
+    "viewport": [
+      1440,
+      900
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 519,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": true,
+    "noPageScroll": true,
+    "viewport": [
+      1200,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 519,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      1199,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 519,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      985,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 465,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      730,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 385,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      438,
+      771
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 337,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      390,
+      844
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 262,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      320,
+      568
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 174,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      320,
+      480
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 284,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      844,
+      390
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 269,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      667,
+      375
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 214,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      568,
+      320
+    ]
+  },
+  {
+    "boardFits": true,
+    "boardSize": 394,
+    "controlOverflow": false,
+    "controlsFit": true,
+    "imports": 1,
+    "inlineAnalysis": false,
+    "noPageScroll": true,
+    "viewport": [
+      760,
+      500
+    ]
+  }
+]

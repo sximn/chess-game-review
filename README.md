@@ -1,0 +1,81 @@
+# Paper & Ink
+
+A warm, tactile chess review UI for web, Android, and iOS. Built from the supplied **Paper & Ink** design system: cream surfaces, sage chessboards, buttery yellow actions, violet feedback, subtle depth, and reduced-motion support.
+
+## Run locally
+
+Requires Node.js 22.12+ and Bun 1.4+.
+
+```sh
+bun install
+bun run dev
+```
+
+Open [localhost:5173](http://localhost:5173).
+
+```sh
+bun run check   # Svelte and TypeScript diagnostics
+bun run test    # PGN validation and legal replay tests
+bun run build  # Static SPA in build/
+```
+
+## Stack and architecture
+
+- **Svelte 5 + SvelteKit 2**, TypeScript, Vite. The root layout sets `ssr = false`. `adapter-static` emits `build/index.html` as the SPA fallback. Static web hosts should rewrite unknown application paths to `/index.html`.
+- **Bits UI** for accessible tabs, modal dialogs, dropdown menus, and switches. Styling lives in our components and CSS; this keeps the supplied design language independent of a mobile framework's router.
+- **Capacitor 8**, including checked-in Android and iOS projects. Both platforms use the same static build and SvelteKit routes.
+- **chess.js** for PGN parsing and legal game positions. Every half-move maps to a FEN, including custom FEN starting positions.
+- Local Fontsource fonts, Lucide icons, and locally bundled chess SVGs. No runtime asset CDN is required.
+
+## What works
+
+- Opera Game demo with a responsive chessboard, illustrative accuracy recap, move classifications, coach cards, and evaluation graph.
+- First/previous/next/last move, autoplay, board flip, timeline scrubbing, and move selection. Keyboard: left/right arrows, Home/End, Space to play while the page body has focus.
+- PGN paste or file import with validation, an on-device game library, search, filters, and shareable local review URLs (`/?game=<local-id>`).
+- Light/dark themes and coordinate/evaluation preferences, saved on this device.
+- Mobile bottom navigation, import bottom sheet, safe-area layout, and reduced-motion handling.
+
+The review workspace fits the board and controls inside the viewport without page scrolling. A primary Next button and Previous button flank a scrollable move carousel; first/last and autoplay are grouped separately. On phones the controls stay near the bottom navigation. Analysis appears beside the board only at widths of 1200px or more and heights of 620px or more; otherwise an Analysis button opens an accessible sheet. Choosing a move from the sheet returns to the board. Desktop analysis scrolls independently. Landscape phones use a compact navigation rail.
+
+Overview, Moves, and Evaluation use a sliding tab indicator. The accuracy count, ring, and raised player progress bars animate together on mount, with immediate final values when reduced motion is enabled. Routine actions are silent; toasts only report storage or export failures. Import has one entry point in the sidebar or mobile navigation.
+
+**Analysis is illustrative demo data.** Imported games support legal replay; no chess engine, backend, account, cloud synchronization, or live accuracy calculation is connected. Insights show actual counts of local imports. Historical ratings are not used by the interface.
+
+## Android and iOS
+
+Native projects have already been added. After a UI change:
+
+```sh
+bun run cap:sync
+bun run cap:android  # Open in Android Studio
+bun run cap:ios      # Open in Xcode
+```
+
+Android builds require Android Studio, the configured Android SDK, and a compatible JDK. iOS builds require Xcode with its iOS SDK and a signing team for physical devices. The iOS project uses Swift Package Manager.
+
+The provisional app ID is `com.paperandink.chess`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
+
+### Shared mobile shell
+
+`src/lib/native.ts` owns native integration. Android Back closes an open menu or dialog first, then follows WebView history, then minimizes at the root. Plugin listeners are removed on teardown. The keyboard uses native viewport resizing; CSS hides bottom navigation when the keyboard appears. System bar style follows the selected theme. Autoplay pauses when the document becomes hidden.
+
+Insets are handled once: Capacitor SystemBars uses `insetsHandling: 'native'` with Android edge-to-edge enabled; CSS consumes `env(safe-area-inset-*)`. On older WebViews Capacitor applies native padding and reports zero CSS insets. The viewport uses `viewport-fit=cover`.
+
+iOS finger-following swipe-back is not implemented. Device validation remains necessary for keyboards, cutouts, landscape rotation, system back, and native export/download behavior.
+
+## Project map
+
+```text
+src/lib/components/  App shell, board, accessible import sheet
+src/lib/chess.ts     PGN timeline and illustrative demo review data
+src/lib/state.svelte.ts  Shared reactive state and local persistence
+src/lib/native.ts    Capacitor lifecycle, back policy, system bars
+src/lib/styles.css   Design tokens, shared controls, responsive layouts
+src/lib/review.css   Viewport-sized review workspace and analysis sheet
+src/routes/          Review, game library, insights, preferences
+tests/               Game parser and replay verification
+android/             Native Android project
+ios/                 Native iOS project
+```
+
+Asset attribution is in `THIRD_PARTY_NOTICES.md`.
