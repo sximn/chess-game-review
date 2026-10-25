@@ -89,10 +89,7 @@
 			disabled={ply === moves.length}
 			onclick={() => onNavigate(ply + 1)}
 		>
-			<span>
-				Next
-				<!-- <span class="next-long-label">move</span> -->
-			</span>
+			<span> Next </span>
 			<ChevronRight size={22} />
 		</button>
 	</div>
