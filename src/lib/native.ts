@@ -11,20 +11,27 @@ export async function initializeNative() {
 				app.menuOpen = false;
 				return;
 			}
+
 			if (app.helpOpen) {
 				app.helpOpen = false;
 				return;
 			}
+
 			if (app.importOpen) {
 				app.importOpen = false;
 				return;
 			}
+
 			if (app.analysisOpen) {
 				app.analysisOpen = false;
 				return;
 			}
-			if (canGoBack) window.history.back();
-			else void App.minimizeApp();
+
+			if (canGoBack) {
+				window.history.back();
+			} else {
+				void App.minimizeApp();
+			}
 		}),
 		Keyboard.addListener('keyboardWillShow', () =>
 			document.documentElement.classList.add('keyboard-open')
