@@ -2,12 +2,8 @@ import { createContext } from 'svelte';
 import { MediaQuery } from 'svelte/reactivity';
 
 function createBreakpoints() {
-	const mobile = new MediaQuery('(max-width: 760px)', true);
-
 	return {
-		get mobile() {
-			return mobile.current;
-		}
+		mobile: new MediaQuery('(max-width: 760px)', true),
 	};
 }
 
