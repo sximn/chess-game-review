@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/state';
-	import { Dialog, DropdownMenu } from 'bits-ui';
-	import { Download, Ellipsis, Lightbulb, RotateCcw, Settings2, X } from 'lucide-svelte';
+	import { DropdownMenu } from 'bits-ui';
+	import { Download, Ellipsis, Lightbulb, RotateCcw, Settings2 } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import Board from '#lib/components/Board.svelte';
-	import Knight from '#lib/components/Knight.svelte';
+	import GameReplay from '#lib/components/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/AnalysisPanel.svelte';
-	import MoveControls from '#lib/components/MoveControls.svelte';
+	import AnalysisSheet from '#lib/components/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
 	import { demoAnalysis, demoEvaluations, parseGame } from '#lib/chess.js';
-	import '#lib/review.css';
+	import PageHeading from '#lib/components/PageHeading.svelte';
 
 	let game = $derived(
 		app.games.find((g) => g.id === (page.url.searchParams.get('game') || app.currentId)) ??
@@ -24,14 +23,12 @@
 	let compact = $state(true);
 	let activeTab = $state('overview');
 	let previousId = '';
-	let currentMove = $derived(timeline.moves[ply - 1]);
 	let classification = $derived(
 		demo ? demoAnalysis.find((item) => item.plies.includes(ply)) : undefined
 	);
 	let evaluation = $derived(demo ? demoEvaluations[ply] : null);
 	let white = $derived(timeline.headers.White || 'White');
 	let black = $derived(timeline.headers.Black || 'Black');
-	let result = $derived(timeline.headers.Result || '*');
 
 	onMount(() => {
 		const wide = matchMedia('(min-width: 1200px) and (min-height: 620px)');
@@ -132,94 +129,175 @@
 	}}
 />
 
-<div class="page-heading review-heading">
-	<h1>Game review<span class="heading-dot">.</span></h1>
-	<DropdownMenu.Root bind:open={app.menuOpen}>
-		<DropdownMenu.Trigger class="icon-button game-actions" aria-label="Game actions"
-			><Ellipsis size={22} /></DropdownMenu.Trigger
-		>
-		<DropdownMenu.Portal
-			><DropdownMenu.Content class="dropdown-menu">
-				<DropdownMenu.Item onclick={download}><Download size={15} /> Export PGN</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={() => go(0)}
-					><RotateCcw size={15} /> Start from the beginning</DropdownMenu.Item
-				>
-				<DropdownMenu.Item onclick={() => goto('/settings')}
-					><Settings2 size={15} /> Preferences</DropdownMenu.Item
-				>
-				<DropdownMenu.Item onclick={() => (app.helpOpen = true)}
-					><Lightbulb size={15} /> How this review works</DropdownMenu.Item
-				>
-			</DropdownMenu.Content></DropdownMenu.Portal
-		>
-	</DropdownMenu.Root>
-</div>
+<PageHeading title="Game review" review>
+	{#snippet actions()}
+		<DropdownMenu.Root bind:open={app.menuOpen}>
+			<DropdownMenu.Trigger aria-label="Game actions"
+				>{#snippet child({ props })}<button {...props} class="icon-button game-actions"
+						><Ellipsis size={22} /></button
+					>{/snippet}</DropdownMenu.Trigger
+			>
+			<DropdownMenu.Portal
+				><DropdownMenu.Content
+					>{#snippet child({ props, wrapperProps })}<div {...wrapperProps}>
+							<div {...props} class="dropdown-menu">
+								<DropdownMenu.Item onclick={download}
+									>{#snippet child({ props })}<div {...props}>
+											<Download size={15} /> Export PGN
+										</div>{/snippet}</DropdownMenu.Item
+								>
+								<DropdownMenu.Item onclick={() => go(0)}
+									>{#snippet child({ props })}<div {...props}>
+											<RotateCcw size={15} /> Start from the beginning
+										</div>{/snippet}</DropdownMenu.Item
+								>
+								<DropdownMenu.Item onclick={() => goto('/settings')}
+									>{#snippet child({ props })}<div {...props}>
+											<Settings2 size={15} /> Preferences
+										</div>{/snippet}</DropdownMenu.Item
+								>
+								<DropdownMenu.Item onclick={() => (app.helpOpen = true)}
+									>{#snippet child({ props })}<div {...props}>
+											<Lightbulb size={15} /> How this review works
+										</div>{/snippet}</DropdownMenu.Item
+								>
+							</div>
+						</div>{/snippet}</DropdownMenu.Content
+				></DropdownMenu.Portal
+			>
+		</DropdownMenu.Root>
+	{/snippet}
+</PageHeading>
 
 <div class="review-layout" class:compact-review={compact}>
-	<section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
-		<div class="position-area">
-			<div class="position-frame">
-				<div class="player-row opponent">
-					<div class="player-avatar dark-player"><Knight size={25} /></div>
-					<div class="player-details"><strong>{flipped ? white : black}</strong></div>
-					<span class="piece-color" class:white-piece={flipped}></span>
-				</div>
-				<Board
-					fen={timeline.fens[ply] ?? timeline.fens[0]}
-					{flipped}
-					lastMove={currentMove}
-					{evaluation}
-					marker={classification && ['Great', 'Brilliant'].includes(classification.name)
-						? classification.symbol
-						: ''}
-				/>
-				<div class="player-row self">
-					<div class="player-avatar light-player"><Knight size={25} /></div>
-					<div class="player-details">
-						<strong
-							>{flipped ? black : white}{#if result === (flipped ? '0-1' : '1-0')}<span
-									class="player-winner">WINNER</span
-								>{/if}</strong
-						>
-					</div>
-					<span class="piece-color" class:white-piece={!flipped}></span>
-				</div>
-			</div>
-		</div>
-		<MoveControls
-			moves={timeline.moves}
-			{ply}
-			{playing}
-			{compact}
-			onNavigate={go}
-			onPlay={togglePlayback}
-			onFlip={() => (flipped = !flipped)}
-			onAnalysis={openAnalysis}
-		/>
-	</section>
+	<GameReplay
+		{timeline}
+		{ply}
+		{flipped}
+		{playing}
+		{compact}
+		{evaluation}
+		marker={classification && ['Great', 'Brilliant'].includes(classification.name)
+			? classification.symbol
+			: ''}
+		onNavigate={go}
+		onPlay={togglePlayback}
+		onFlip={() => (flipped = !flipped)}
+		onAnalysis={openAnalysis}
+	/>
+
 	{#if !compact}<aside class="review-details" aria-label="Game analysis">
-			<AnalysisPanel {timeline} {demo} {ply} bind:activeTab onNavigate={goFromAnalysis} />
+			<AnalysisPanel
+				presentation="sidebar"
+				{timeline}
+				{demo}
+				{ply}
+				bind:activeTab
+				onNavigate={goFromAnalysis}
+			/>
 		</aside>{/if}
 </div>
 
 {#if compact}
-	<Dialog.Root bind:open={app.analysisOpen}>
-		<Dialog.Portal
-			><Dialog.Overlay class="dialog-overlay" /><Dialog.Content class="analysis-sheet">
-				<div class="dialog-handle"></div>
-				<div class="analysis-sheet-heading">
-					<Dialog.Title>Game analysis</Dialog.Title><Dialog.Close
-						class="icon-button"
-						aria-label="Close analysis"><X size={21} /></Dialog.Close
-					>
-				</div>
-				<Dialog.Description class="visually-hidden"
-					>Review {white} versus {black}. Choose a move to return to the board.</Dialog.Description
-				>
-				<div class="analysis-sheet-scroll">
-					<AnalysisPanel {timeline} {demo} {ply} bind:activeTab onNavigate={goFromAnalysis} />
-				</div>
-			</Dialog.Content></Dialog.Portal
-		>
-	</Dialog.Root>
+	<AnalysisSheet
+		bind:open={app.analysisOpen}
+		description={`Review ${white} versus ${black}. Choose a move to return to the board.`}
+	>
+		<AnalysisPanel
+			presentation="sheet"
+			{timeline}
+			{demo}
+			{ply}
+			bind:activeTab
+			onNavigate={goFromAnalysis}
+		/>
+	</AnalysisSheet>
 {/if}
+
+<style>
+	.review-layout {
+		display: grid;
+		flex: 1;
+		min-height: 0;
+		grid-template-columns: minmax(0, 1fr) 370px;
+		gap: 24px;
+		align-items: stretch;
+	}
+	.review-layout.compact-review {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	@media (max-width: 760px) {
+		.review-layout {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
+	}
+	/* Hide the column before the media listener remounts the sheet on resize. */
+	@media (max-width: 1199px), (max-height: 619px) {
+		.review-layout {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	.review-details {
+		min-width: 0;
+	}
+	.review-details {
+		min-height: 0;
+		max-height: none;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: thin;
+		scrollbar-color: #c2c9b4 transparent;
+		scrollbar-gutter: stable;
+		padding: 0 2px 2px;
+	}
+	@media (max-width: 1199px), (max-height: 619px) {
+		.review-details {
+			display: none;
+		}
+	}
+	.icon-button {
+		width: 36px;
+		height: 36px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border-radius: 9px;
+		color: var(--muted);
+	}
+	@media (hover: hover) {
+		.icon-button:hover {
+			background: var(--paper-deep);
+			color: #7c8b65;
+		}
+	}
+	.dropdown-menu {
+		min-width: 230px;
+		z-index: 60;
+		padding: 5px;
+		background: var(--paper);
+		border: 1px solid var(--line);
+		border-radius: 11px;
+		box-shadow: 0 8px 32px #2b331626;
+	}
+	.dropdown-menu [role='menuitem'] {
+		display: flex;
+		align-items: center;
+		gap: 9px;
+		padding: 12px;
+		font-size: 11px;
+		color: var(--muted);
+		border-radius: 7px;
+		cursor: pointer;
+		outline: 0;
+	}
+	.dropdown-menu [data-highlighted] {
+		background: var(--paper-deep);
+		color: var(--ink);
+	}
+	.game-actions {
+		flex-shrink: 0;
+	}
+</style>

@@ -115,30 +115,3 @@ button:active:not(:disabled) {
 	clip: rect(0, 0, 0, 0);
 	white-space: nowrap;
 }
-.skip-link {
-	position: fixed;
-	top: 8px;
-	left: 260px;
-	background: var(--yellow);
-	color: #2c302b;
-	padding: 12px 20px;
-	border-radius: 10px;
-	z-index: 100;
-	transform: translateY(-150%);
-}
-.skip-link:focus {
-	transform: none;
-}
-:root {
-	--sidebar-width: 226px;
-}
-@media (max-width: 1200px) {
-	:root {
-		--sidebar-width: 202px;
-	}
-}
-@media (max-width: 1000px) and (min-width: 761px) {
-	:root {
-		--sidebar-width: 176px;
-	}
-}

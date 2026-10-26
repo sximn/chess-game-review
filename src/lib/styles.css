@@ -1,11 +1,3 @@
-/* Shared styles. Keep the foundation first and motion last. */
+/* App-wide design tokens, resets, accessibility and reduced-motion defaults only. */
 @import './styles/foundation.css';
-@import './styles/controls.css';
-@import './styles/shell.css';
-@import './styles/board.css';
-@import './styles/analysis.css';
-@import './styles/dialogs.css';
-@import './styles/games.css';
-@import './styles/settings.css';
-@import './styles/insights.css';
 @import './styles/motion.css';

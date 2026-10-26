@@ -1,3 +1,0 @@
-/* Review-only additions load after shared styles; preserve this order. */
-@import './styles/review-analysis.css';
-@import './styles/review-workspace.css';
