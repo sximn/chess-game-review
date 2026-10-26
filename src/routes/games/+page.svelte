@@ -31,11 +31,20 @@
 </script>
 
 <svelte:head><title>My games · Up a Pawn</title></svelte:head>
-<PageHeading title="My games" description="Old favorites. Fresh perspectives. All in one place.">
-	{#snippet actions()}<Button size={mobile ? "icon" : "lg"} class="heading-action" onclick={() => (app.importOpen = true)}
-			><Plus size={18} /> Import game</Button
-		>{/snippet}
+
+<PageHeading title="My games">
+	{#snippet actions()}
+		<Button
+			size={mobile ? "icon" : "lg"}
+			class="heading-action"
+			onclick={() => (app.importOpen = true)}
+		>
+			<Plus size={18} />
+			Import game
+		</Button>
+	{/snippet}
 </PageHeading>
+
 <Card as="section" class="library-welcome" shadow clip style="--card-radius:18px"
 	><div class="welcome-content">
 		<div>

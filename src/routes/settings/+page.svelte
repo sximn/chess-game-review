@@ -9,10 +9,9 @@
 </script>
 
 <svelte:head><title>Preferences · Up a Pawn</title></svelte:head>
-<PageHeading
-	title="Just your style"
-	description="A few small adjustments. A space that feels like you."
-/>
+
+<PageHeading title="Just your style" />
+
 <div class="settings-layout">
 	<Card as="section" class="settings-card" style="--card-radius:16px"
 		><div class="settings-content">

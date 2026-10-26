@@ -35,7 +35,9 @@
 </script>
 
 <svelte:head><title>My insights · Up a Pawn</title></svelte:head>
-<PageHeading title="A little wiser" description="Your journey is yours. Give it time to grow." />
+
+<PageHeading title="A little wiser" />
+
 <div class="insight-stats">
 	{#each statistics as stat}
 		<Card class="stat-card" shadow
