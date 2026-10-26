@@ -4,8 +4,7 @@
 	import LibraryGameCard from '#lib/components/LibraryGameCard.svelte';
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import Button from '#lib/components/Button.svelte';
-	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
-	import { ArrowUpRight, ChevronRight, Plus, Search } from 'lucide-svelte';
+	import { ChevronRight, Plus, Search } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
 	import AppLogo from '#lib/components/AppLogo.svelte';
@@ -31,25 +30,37 @@
 </script>
 
 <svelte:head><title>My games · Up a Pawn</title></svelte:head>
-<PageHeading title="My games" description="Old favorites. Fresh perspectives. All in one place.">
-	{#snippet actions()}<Button size={mobile ? "icon" : "lg"} class="heading-action" onclick={() => (app.importOpen = true)}
-			><Plus size={18} /> Import game</Button
-		>{/snippet}
+
+<PageHeading title="My games">
+	{#snippet actions()}
+		<Button
+			size={mobile.current ? 'icon' : 'lg'}
+			class="heading-action"
+			onclick={() => (app.importOpen = true)}
+		>
+			<Plus size={18} />
+			Import game
+		</Button>
+	{/snippet}
 </PageHeading>
-<Card as="section" class="library-welcome" shadow clip style="--card-radius:18px"
-	><div class="welcome-content">
+
+<Card as="section" class="library-welcome" shadow clip style="--card-radius:18px">
+	<div class="welcome-content">
 		<div>
-			<MiniEyebrow>YOUR NEXT CHAPTER</MiniEyebrow>
-			<h2>Good games.<br /><em>Better lessons.</em></h2>
-			<p>That game you can’t stop thinking about?<br />Bring it here. Let’s take another look.</p>
-			<Button variant="secondary" class="welcome-action" onclick={() => (app.importOpen = true)}
-				>Bring a game along <ArrowUpRight size={16} /></Button
-			>
+			<h2>
+				Bring your games
+				<br />
+				<em>Take another look</em>
+			</h2>
 		</div>
 		<div class="library-art" aria-hidden="true">
-			<span class="art-check a"></span><span class="art-check b"></span><span class="art-check c"
-			></span><span class="art-check d"></span><AppLogo size={164} /><span class="art-star">✧</span
-			><span class="art-star small">✦</span>
+			<span class="art-check a"></span>
+			<span class="art-check b"></span>
+			<span class="art-check c"></span>
+			<span class="art-check d"></span>
+			<AppLogo size={164} />
+			<span class="art-star">✧</span>
+			<span class="art-star small">✦</span>
 		</div>
 	</div></Card
 >
@@ -74,13 +85,17 @@
 	</Input>
 </div>
 <div class="game-library">
-	{#each games as game}<LibraryGameCard {game} />{/each}<button
+	{#each games as game}
+		<LibraryGameCard {game} />
+	{/each}
+	<button
 		class="import-game-card"
 		onclick={() => (app.importOpen = true)}
-		><span><Plus size={28} /></span><strong>A little room for your game.</strong>
-		<p>Import a PGN and start a new review.</p>
-		<span class="text-link">Add a game {@render ArrowRightIcon()}</span></button
 	>
+		<span><Plus size={28} /></span>
+		<strong>Import a game and start a new review.</strong>
+		<span class="text-link">Add a game {@render ArrowRightIcon()}</span>
+	</button>
 </div>
 {#if games.length === 0}<div class="empty-search">
 		<Search size={24} />
@@ -114,12 +129,6 @@
 	.welcome-content h2 em {
 		color: #91a37c;
 		font-weight: 400;
-	}
-	.welcome-content p {
-		font-size: 11px;
-		line-height: 1.9;
-		color: var(--muted);
-		margin: 17px 0 21px;
 	}
 	.library-art {
 		position: relative;
@@ -242,12 +251,6 @@
 		font-weight: 550;
 		color: #8d987c;
 	}
-	.import-game-card > p {
-		font-size: 9px;
-		line-height: 1.8;
-		color: #a4ad96;
-		margin-top: 8px;
-	}
 	.text-link {
 		display: flex;
 		align-items: center;
@@ -305,9 +308,6 @@
 		.welcome-content h2 {
 			font-size: 34px;
 		}
-		.welcome-content p {
-			font-size: 10px;
-		}
 		.library-art {
 			width: 175px;
 			margin-right: -30px;
@@ -336,9 +336,6 @@
 		}
 		.import-game-card > strong {
 			font-size: 12px;
-		}
-		.import-game-card > p {
-			font-size: 10px;
 		}
 		.text-link {
 			font-size: 11px;

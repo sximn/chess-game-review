@@ -44,24 +44,36 @@
 
 <div {...contentProps} class="moves-content" data-presentation={presentation}>
 	<div class="move-list-heading">
-		<span>THE STORY, MOVE BY MOVE</span><span>{timeline.moves.length} half-moves</span>
+		<span>{timeline.moves.length} half-moves</span>
 	</div>
+
 	<div class="moves-list">
 		<div class="move-column-head"><span>#</span><span>{white}</span><span>{black}</span></div>
-		{#each movePairs as pair}<div class="move-pair">
-				<span>{pair.number}.</span
-				>{#each [pair.white, pair.black] as move, colorIndex}{@const movePly =
-						colorIndex === 0 ? pair.whitePly : pair.blackPly}{@const quality = demo
-						? demoAnalysis.find((q) => q.plies.includes(movePly))
-						: null}{#if move}<button
+		{#each movePairs as pair}
+			<div class="move-pair">
+				<span>{pair.number}.</span>
+				{#each [pair.white, pair.black] as move, colorIndex}
+					{@const movePly = colorIndex === 0 ? pair.whitePly : pair.blackPly}
+					{@const quality = demo ? demoAnalysis.find((q) => q.plies.includes(movePly)) : null}
+
+					{#if move}
+						<button
 							class:current={ply === movePly}
 							aria-label={`Go to ${moveLabel(movePly, timeline.moves)}`}
 							aria-current={ply === movePly ? 'step' : undefined}
 							onclick={() => onNavigate(movePly)}
-							>{move.san}{#if quality}<span style={`color:${quality.color}`}>{quality.symbol}</span
-								>{/if}</button
-						>{:else}<span></span>{/if}{/each}
-			</div>{/each}
+						>
+							{move.san}
+							{#if quality}
+								<span style={`color:${quality.color}`}>{quality.symbol}</span>
+							{/if}
+						</button>
+					{:else}
+						<span></span>
+					{/if}
+				{/each}
+			</div>
+		{/each}
 	</div>
 </div>
 

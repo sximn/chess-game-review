@@ -45,26 +45,25 @@
 <DialogFrame
 	bind:open={app.importOpen}
 	kind="import"
-	title="Every game has a lesson."
-	description="Bring yours along. Import a PGN to replay every move, at your own pace."
+	title="Import Game"
 	closeLabel="Close import"
 >
 	{#snippet symbol()}<FileUp size={24} />{/snippet}
-	<Tabs.Root value="paste"
-		>{#snippet child({ props })}<div {...props} class="import-form">
+	<Tabs.Root value="paste">
+		{#snippet child({ props })}
+			<div {...props} class="import-form">
 				<TabList
 					items={importTabs}
 					variant="segmented"
 					aria-label="Import method"
 					class="segmented"
 				/>
-				<Tabs.Content value="paste"
-					>{#snippet child({ props })}
+				<Tabs.Content value="paste">
+					{#snippet child({ props })}
 						<Field
 							{...props}
 							controlId="pgn"
 							label="Game notation"
-							description="Export a game from Chess.com, Lichess, or your favorite chess app."
 						>
 							<Textarea
 								monospace
@@ -76,8 +75,8 @@
 								spellcheck="false"
 							/>
 						</Field>
-					{/snippet}</Tabs.Content
-				>
+					{/snippet}
+				</Tabs.Content>
 				<Tabs.Content value="file">
 					<input
 						bind:this={fileInput}
@@ -90,19 +89,22 @@
 						><FileUp size={32} /><strong>{filename || 'Choose a PGN file'}</strong><span
 							>{filename
 								? 'Click to choose another file'
-								: '.pgn · Up to 500 KB · One game at a time'}</span
+								: '.pgn - Up to 500 KB'}</span
 						></button
 					>
 				</Tabs.Content>
-				{#if error}<FieldMessage id="import-error" class="form-error" variant="error"
-						>{error}</FieldMessage
-					>{/if}
-				<Button fullWidth class="import-submit" onclick={submit}
-					>Open game <ArrowUpRight size={18} /></Button
-				>
-				<div class="private-note"><Check size={14} /> Your games stay on this device.</div>
-			</div>{/snippet}</Tabs.Root
-	>
+
+				{#if error}
+					<FieldMessage id="import-error" class="form-error" variant="error">{error}</FieldMessage>
+				{/if}
+
+				<Button fullWidth class="import-submit" onclick={submit}>
+					Open game
+					<ArrowUpRight size={18} />
+				</Button>
+			</div>
+		{/snippet}
+	</Tabs.Root>
 </DialogFrame>
 
 <style>

@@ -14,7 +14,7 @@
 	}: {
 		open?: boolean;
 		title: string;
-		description: string;
+		description?: string;
 		closeLabel: string;
 		kind?: 'help' | 'import';
 		symbol: Snippet;

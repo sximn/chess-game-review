@@ -41,8 +41,6 @@
 				><strong
 					>{page.url.pathname === '/games'
 						? 'My games'
-						: page.url.pathname === '/insights'
-							? 'My insights'
 							: page.url.pathname === '/settings'
 								? 'Preferences'
 								: 'Game review'}</strong
@@ -64,9 +62,10 @@
 		</header>
 		<main id="main-content">{@render children()}</main>
 		<footer class="app-footer">
-			<span><Feather size={13} /> Made for the love of the game.</span><span
-				>A little reflection goes a long way.</span
-			>
+			<span>
+				<Feather size={13} />
+				Made for the love of the game
+			</span>
 		</footer>
 	</div>
 	<AppNavigation presentation="mobile" review={page.url.pathname === '/'} />
