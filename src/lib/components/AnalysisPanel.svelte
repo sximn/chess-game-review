@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Card from './Card.svelte';
 	import { Tabs } from 'bits-ui';
 	import { demoEvaluations, type Timeline } from '#lib/chess.js';
 	import AnalysisTabs from './AnalysisTabs.svelte';
@@ -26,7 +27,7 @@
 
 <Tabs.Root bind:value={activeTab}>
 	{#snippet child({ props })}
-		<div {...props} class="review-tabs">
+		<Card {...props} class="review-tabs" shadow clip>
 			<AnalysisTabs {presentation} />
 			<Tabs.Content value="overview">
 				{#snippet child({ props })}<AnalysisOverview
@@ -61,7 +62,7 @@
 					</div>
 				{/snippet}
 			</Tabs.Content>
-		</div>
+		</Card>
 	{/snippet}
 </Tabs.Root>
 {#if activeTab === 'overview'}<AnalysisCoach
@@ -73,13 +74,6 @@
 	/>{/if}
 
 <style>
-	.review-tabs {
-		background: var(--paper);
-		border: 1px solid var(--line);
-		border-radius: 14px;
-		box-shadow: var(--shadow);
-		overflow: hidden;
-	}
 	.evaluation-content {
 		padding: 0;
 	}

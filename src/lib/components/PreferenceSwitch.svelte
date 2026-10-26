@@ -1,9 +1,12 @@
 <script lang="ts">
 	import { Switch } from 'bits-ui';
-	let { id, checked = $bindable(false) }: { id: string; checked?: boolean } = $props();
+	import { getFieldContext, fieldControlAttributes } from './field.context';
+	let { id, checked = $bindable(false) }: { id?: string; checked?: boolean } = $props();
+	const field = getFieldContext();
+	let control = $derived(fieldControlAttributes(field, id));
 </script>
 
-<Switch.Root {id} bind:checked
+<Switch.Root {...control} bind:checked
 	>{#snippet child({ props })}<button {...props} class="switch">
 			<Switch.Thumb
 				>{#snippet child({ props })}<span {...props} class="switch-thumb"

@@ -1,16 +1,11 @@
 <script lang="ts">
+	import Card from '#lib/components/Card.svelte';
+	import Input from '#lib/components/Input.svelte';
+	import LibraryGameCard from '#lib/components/LibraryGameCard.svelte';
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import Button from '#lib/components/Button.svelte';
 	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
-	import {
-		ArrowUpRight,
-		BookOpen,
-		ChevronRight,
-		FileUp,
-		Plus,
-		Search,
-		Trophy
-	} from 'lucide-svelte';
+	import { ArrowUpRight, ChevronRight, FileUp, Plus, Search } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
 	import Knight from '#lib/components/Knight.svelte';
@@ -41,21 +36,23 @@
 			><Plus size={18} /> Import game</Button
 		>{/snippet}
 </PageHeading>
-<section class="library-welcome">
-	<div>
-		<MiniEyebrow>YOUR NEXT CHAPTER</MiniEyebrow>
-		<h2>Good games.<br /><em>Better lessons.</em></h2>
-		<p>That game you can’t stop thinking about?<br />Bring it here. Let’s take another look.</p>
-		<Button variant="secondary" class="welcome-action" onclick={() => (app.importOpen = true)}
-			>Bring a game along <ArrowUpRight size={16} /></Button
-		>
-	</div>
-	<div class="library-art" aria-hidden="true">
-		<span class="art-check a"></span><span class="art-check b"></span><span class="art-check c"
-		></span><span class="art-check d"></span><Knight size={164} /><span class="art-star">✧</span
-		><span class="art-star small">✦</span>
-	</div>
-</section>
+<Card as="section" class="library-welcome" shadow clip style="--card-radius:18px"
+	><div class="welcome-content">
+		<div>
+			<MiniEyebrow>YOUR NEXT CHAPTER</MiniEyebrow>
+			<h2>Good games.<br /><em>Better lessons.</em></h2>
+			<p>That game you can’t stop thinking about?<br />Bring it here. Let’s take another look.</p>
+			<Button variant="secondary" class="welcome-action" onclick={() => (app.importOpen = true)}
+				>Bring a game along <ArrowUpRight size={16} /></Button
+			>
+		</div>
+		<div class="library-art" aria-hidden="true">
+			<span class="art-check a"></span><span class="art-check b"></span><span class="art-check c"
+			></span><span class="art-check d"></span><Knight size={164} /><span class="art-star">✧</span
+			><span class="art-star small">✦</span>
+		</div>
+	</div></Card
+>
 <div class="library-toolbar">
 	<div class="filter-pills" aria-label="Filter games">
 		{#each [{ value: 'all', label: 'All games' }, { value: 'imported', label: 'Imported' }, { value: 'sample', label: 'Classics' }] as item}<button
@@ -65,40 +62,21 @@
 				>{item.label}{#if item.value === 'all'}<span>{app.games.length}</span>{/if}</button
 			>{/each}
 	</div>
-	<div class="search-field">
-		<Search size={17} /><input
-			aria-label="Search games"
-			bind:value={query}
-			placeholder="Find a player or game…"
-		/>
-	</div>
+	<Input
+		variant="surface"
+		size="sm"
+		class="search-field"
+		aria-label="Search games"
+		bind:value={query}
+		placeholder="Find a player or game…"
+	>
+		{#snippet leading()}<Search size={17} />{/snippet}
+	</Input>
 </div>
 <div class="game-library">
-	{#each games as game}<a href={`/?game=${encodeURIComponent(game.id)}`} class="library-game"
-			><div class="library-game-top">
-				<span class="library-game-icon"><Knight size={30} /></span><span class="chip"
-					>{game.id === 'opera' ? 'A CLASSIC' : 'IMPORTED'}</span
-				>
-			</div>
-			<h2>
-				{game.id === 'opera' ? 'A night at the opera' : game.headers.Event || 'A game to remember'}
-			</h2>
-			<p>{game.headers.White || 'White'} <span>vs.</span> {game.headers.Black || 'Black'}</p>
-			<div class="library-game-meta">
-				<span><BookOpen size={14} /> {Math.ceil(game.moves.length / 2)} moves</span><span
-					><Trophy size={14} />{game.headers.Result === '1-0'
-						? 'White won'
-						: game.headers.Result === '0-1'
-							? 'Black won'
-							: game.headers.Result === '1/2-1/2'
-								? 'Draw'
-								: 'Unfinished'}</span
-				>
-			</div>
-			<div class="library-game-bottom">
-				<span>Take another look</span><ArrowUpRight size={19} />
-			</div></a
-		>{/each}<button class="import-game-card" onclick={() => (app.importOpen = true)}
+	{#each games as game}<LibraryGameCard {game} />{/each}<button
+		class="import-game-card"
+		onclick={() => (app.importOpen = true)}
 		><span><Plus size={28} /></span><strong>A little room for your game.</strong>
 		<p>Import a PGN and start a new review.</p>
 		<span class="text-link">Add a game {@render ArrowRightIcon()}</span></button
@@ -119,18 +97,13 @@
 {#snippet ArrowRightIcon()}<ChevronRight size={16} />{/snippet}
 
 <style>
-	.library-welcome {
-		background: var(--paper);
-		border: 1px solid var(--line);
-		border-radius: 18px;
+	.welcome-content {
 		padding: 35px 40px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		box-shadow: var(--shadow);
-		overflow: hidden;
 	}
-	.library-welcome h2 {
+	.welcome-content h2 {
 		font-family: 'DM Serif Display', Georgia, serif;
 		font-weight: 400;
 		font-size: 43px;
@@ -138,11 +111,11 @@
 		margin-top: 14px;
 		letter-spacing: -1px;
 	}
-	.library-welcome h2 em {
+	.welcome-content h2 em {
 		color: #91a37c;
 		font-weight: 400;
 	}
-	.library-welcome p {
+	.welcome-content p {
 		font-size: 11px;
 		line-height: 1.9;
 		color: var(--muted);
@@ -238,108 +211,10 @@
 		border-radius: 4px;
 		color: var(--muted);
 	}
-	.search-field {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		background: var(--paper);
-		border: 1px solid var(--line);
-		border-radius: 9px;
-		padding: 0 11px;
-		color: #a1aa91;
-	}
-	.search-field > input {
-		font-size: 10px;
-		height: 36px;
-		border: 0;
-		background: none;
-		outline: none;
-		color: var(--ink);
-		width: 165px;
-	}
-	.search-field:focus-within {
-		box-shadow: var(--ring);
-	}
 	.game-library {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 18px;
-	}
-	.library-game {
-		padding: 22px 22px 0;
-		background: var(--paper);
-		border: 1px solid var(--line);
-		border-radius: 14px;
-		box-shadow: var(--shadow);
-		overflow: hidden;
-		transition:
-			transform 0.2s,
-			box-shadow 0.2s;
-	}
-	.library-game-top {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-		margin-bottom: 22px;
-	}
-	.library-game-icon {
-		width: 40px;
-		height: 43px;
-		background: var(--paper-deep);
-		display: grid;
-		place-items: center;
-		border-radius: 10px;
-		color: #7f9068;
-		border: 1px solid var(--line);
-	}
-	.chip {
-		font-size: 7px;
-		letter-spacing: 0.8px;
-		border: 1px solid var(--line);
-		padding: 5px 7px;
-		border-radius: 5px;
-		color: #9da78d;
-	}
-	.library-game h2 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-size: 22px;
-		font-weight: 400;
-		margin-bottom: 9px;
-	}
-	.library-game > p {
-		font-size: 10px;
-		color: var(--muted);
-		line-height: 1.7;
-	}
-	.library-game > p > span {
-		color: #b0b69f;
-		font-size: 8px;
-		margin: 0 3px;
-	}
-	.library-game-meta {
-		display: flex;
-		gap: 15px;
-		margin: 21px 0;
-		color: #a0aa8e;
-		font-size: 8px;
-	}
-	.library-game-meta > span {
-		display: flex;
-		align-items: center;
-		gap: 5px;
-	}
-	.library-game-bottom {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin: 0 -22px;
-		background: var(--surface-green);
-		border-top: 1px solid var(--line);
-		padding: 13px 22px;
-		color: #8a9b72;
-		font-size: 9px;
-		font-weight: 600;
 	}
 	.import-game-card {
 		display: flex;
@@ -398,10 +273,6 @@
 		margin-bottom: 15px;
 	}
 	@media (hover: hover) {
-		.library-game:hover {
-			transform: translateY(-3px);
-			box-shadow: 0 8px 20px #424d2410;
-		}
 		.filter-pills > button:hover {
 			background: var(--paper-deep);
 		}
@@ -415,7 +286,7 @@
 		}
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
-		.library-welcome {
+		.welcome-content {
 			padding: 28px;
 		}
 		.library-art {
@@ -423,18 +294,18 @@
 			transform: scale(0.8) rotate(-8deg);
 			width: 210px;
 		}
-		.library-welcome h2 {
+		.welcome-content h2 {
 			font-size: 37px;
 		}
 	}
 	@media (max-width: 760px) {
-		.library-welcome {
+		.welcome-content {
 			padding: 28px 24px;
 		}
-		.library-welcome h2 {
+		.welcome-content h2 {
 			font-size: 34px;
 		}
-		.library-welcome p {
+		.welcome-content p {
 			font-size: 10px;
 		}
 		.library-art {
@@ -443,7 +314,7 @@
 			transform: scale(0.65) rotate(-8deg);
 			transform-origin: center center;
 		}
-		.library-welcome > div:first-child {
+		.welcome-content > div:first-child {
 			flex-shrink: 0;
 			z-index: 1;
 		}
@@ -456,44 +327,9 @@
 			font-size: 10px;
 			padding: 8px 11px;
 		}
-		.search-field {
-			width: 100%;
-		}
-		.search-field > input {
-			width: 100%;
-			font-size: 12px;
-			height: 40px;
-		}
 		.game-library {
 			grid-template-columns: 1fr;
 			gap: 16px;
-		}
-		.library-game {
-			padding: 22px 24px 0;
-		}
-		.library-game h2 {
-			font-size: 26px;
-		}
-		.library-game > p {
-			font-size: 11px;
-		}
-		.library-game-meta {
-			font-size: 10px;
-		}
-		.library-game-top {
-			margin-bottom: 18px;
-		}
-		.library-game-bottom {
-			margin: 0 -24px;
-			padding: 15px 24px;
-			font-size: 11px;
-		}
-		.library-game-icon {
-			width: 45px;
-			height: 47px;
-		}
-		.chip {
-			font-size: 8px;
 		}
 		.import-game-card {
 			min-height: 225px;
@@ -514,34 +350,31 @@
 			margin-right: -70px;
 		}
 	}
-	:global(:root[data-theme='dark']) .library-game-bottom {
-		color: #b1c49a;
-	}
 	:global(:root[data-theme='dark']) .import-game-card {
 		border-color: #566346;
 	}
 	:global(:root[data-theme='dark']) .art-check {
 		opacity: 0.12;
 	}
-	@media (min-width: 1001px) {
-		.library-game > p {
-			font-size: 12px;
-		}
-		.library-game-meta {
-			font-size: 10px;
-		}
-	}
-	input::placeholder {
-		color: #a6ad98;
-	}
-
-	.library-welcome :global(.welcome-action) {
+	.welcome-content :global(.welcome-action) {
 		--button-font-size: 10px;
 		--button-min-height: 39px;
 	}
 	@media (max-width: 760px) {
-		.library-welcome :global(.welcome-action) {
+		.welcome-content :global(.welcome-action) {
 			--button-font-size: 9px;
+		}
+	}
+	.library-toolbar > :global(.search-field) {
+		--input-shell-width: auto;
+		--input-width: 165px;
+	}
+	@media (max-width: 760px) {
+		.library-toolbar > :global(.search-field) {
+			--input-shell-width: 100%;
+			--input-width: 100%;
+			--input-font-size: 12px;
+			--input-height: 40px;
 		}
 	}
 </style>

@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Field from './Field.svelte';
+	import Textarea from './Textarea.svelte';
+	import FieldMessage from './FieldMessage.svelte';
 	import { Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
@@ -55,18 +58,26 @@
 					aria-label="Import method"
 					class="segmented"
 				/>
-				<Tabs.Content value="paste">
-					<label class="field-label" for="pgn">Game notation</label>
-					<textarea
-						id="pgn"
-						bind:value={pgn}
-						oninput={() => (error = '')}
-						placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}
-						spellcheck="false"></textarea>
-					<p class="field-hint">
-						Export a game from Chess.com, Lichess, or your favorite chess app.
-					</p>
-				</Tabs.Content>
+				<Tabs.Content value="paste"
+					>{#snippet child({ props })}
+						<Field
+							{...props}
+							controlId="pgn"
+							label="Game notation"
+							description="Export a game from Chess.com, Lichess, or your favorite chess app."
+						>
+							<Textarea
+								monospace
+								bind:value={pgn}
+								oninput={() => (error = '')}
+								aria-invalid={error ? true : undefined}
+								aria-describedby={error ? 'import-error' : undefined}
+								placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}
+								spellcheck="false"
+							/>
+						</Field>
+					{/snippet}</Tabs.Content
+				>
 				<Tabs.Content value="file">
 					<input
 						bind:this={fileInput}
@@ -83,7 +94,9 @@
 						></button
 					>
 				</Tabs.Content>
-				{#if error}<p class="form-error" role="alert">{error}</p>{/if}
+				{#if error}<FieldMessage id="import-error" class="form-error" variant="error"
+						>{error}</FieldMessage
+					>{/if}
 				<Button fullWidth class="import-submit" onclick={submit}
 					>Open game <ArrowUpRight size={18} /></Button
 				>
@@ -93,25 +106,6 @@
 </DialogFrame>
 
 <style>
-	textarea {
-		font-family: ui-monospace, monospace;
-		width: 100%;
-		min-height: 180px;
-		resize: vertical;
-		padding: 14px;
-		background: var(--field);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		color: var(--ink);
-		font-size: 11px;
-		line-height: 1.8;
-	}
-	.field-hint {
-		font-size: 9px;
-		line-height: 1.8;
-		color: var(--muted);
-		margin-top: 9px;
-	}
 	.private-note {
 		display: flex;
 		justify-content: center;
@@ -121,32 +115,10 @@
 		color: #9ba58a;
 		margin-top: 16px;
 	}
-	textarea::placeholder {
-		color: #a6ad98;
-	}
 	@media (max-width: 760px) {
-		.field-hint {
-			font-size: 10px;
-		}
 		.private-note {
 			font-size: 10px;
 		}
-	}
-	.field-label {
-		display: block;
-		font-size: 11px;
-		font-weight: 600;
-		margin-bottom: 9px;
-	}
-	.form-error {
-		font-size: 11px;
-		line-height: 1.7;
-		padding: 12px;
-		border: 1px solid #e3bbb0;
-		background: #fff0e7;
-		color: #a1543f;
-		border-radius: 9px;
-		margin-top: 14px;
 	}
 	.file-drop {
 		display: flex;
@@ -170,16 +142,6 @@
 		font-size: 9px;
 		color: var(--muted);
 	}
-	@media (max-width: 760px) {
-		textarea {
-			min-height: 170px;
-			font-size: 12px;
-		}
-		.field-label {
-			font-size: 12px;
-		}
-	}
-
 	.import-form > :global(.segmented) {
 		margin-bottom: 22px;
 	}
@@ -190,6 +152,16 @@
 		.import-form > :global(.import-submit) {
 			--button-min-height: 47px;
 			--button-font-size: 13px;
+		}
+	}
+	.import-form {
+		--textarea-min-height: 180px;
+		--textarea-font-size: 11px;
+	}
+	@media (max-width: 760px) {
+		.import-form {
+			--textarea-min-height: 170px;
+			--textarea-font-size: 12px;
 		}
 	}
 </style>
