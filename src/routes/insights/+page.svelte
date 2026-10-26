@@ -34,7 +34,7 @@
 	]);
 </script>
 
-<svelte:head><title>My insights · Paper & Ink</title></svelte:head>
+<svelte:head><title>My insights · Up a Pawn</title></svelte:head>
 <PageHeading title="A little wiser" description="Your journey is yours. Give it time to grow." />
 <div class="insight-stats">
 	{#each statistics as stat}

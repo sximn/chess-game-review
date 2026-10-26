@@ -9,7 +9,7 @@
 		Settings2,
 		Sprout
 	} from 'lucide-svelte';
-	import Knight from './Knight.svelte';
+	import AppLogo from './AppLogo.svelte';
 	import Button from './Button.svelte';
 	import { app } from '#lib/state.svelte.js';
 	let { presentation, review = false }: { presentation: 'sidebar' | 'mobile'; review?: boolean } =
@@ -23,9 +23,9 @@
 
 {#if presentation === 'sidebar'}
 	<aside class="sidebar" class:review>
-		<a href="/" class="brand" aria-label="Paper and Ink home"
-			><span class="brand-mark"><Knight size={33} /></span><span
-				>paper<span class="brand-amp">&</span>ink<span class="brand-tagline"
+		<a href="/" class="brand" aria-label="Up a Pawn home"
+			><span class="brand-mark"><AppLogo size={33} /></span><span
+				>Up<span class="brand-amp">a</span>Pawn<span class="brand-tagline"
 					>A LITTLE WISER, EVERY GAME.</span
 				></span
 			></a

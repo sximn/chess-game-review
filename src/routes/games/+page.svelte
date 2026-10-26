@@ -8,7 +8,7 @@
 	import { ArrowUpRight, ChevronRight, Plus, Search } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
-	import Knight from '#lib/components/Knight.svelte';
+	import AppLogo from '#lib/components/AppLogo.svelte';
 
 	let query = $state('');
 	let filter = $state('all');
@@ -27,7 +27,7 @@
 	);
 </script>
 
-<svelte:head><title>My games · Paper & Ink</title></svelte:head>
+<svelte:head><title>My games · Up a Pawn</title></svelte:head>
 <PageHeading title="My games" description="Old favorites. Fresh perspectives. All in one place.">
 	{#snippet actions()}<Button class="heading-action" onclick={() => (app.importOpen = true)}
 			><Plus size={18} /> Import game</Button
@@ -45,7 +45,7 @@
 		</div>
 		<div class="library-art" aria-hidden="true">
 			<span class="art-check a"></span><span class="art-check b"></span><span class="art-check c"
-			></span><span class="art-check d"></span><Knight size={164} /><span class="art-star">✧</span
+			></span><span class="art-check d"></span><AppLogo size={164} /><span class="art-star">✧</span
 			><span class="art-star small">✦</span>
 		</div>
 	</div></Card

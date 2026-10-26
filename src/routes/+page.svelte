@@ -118,7 +118,7 @@
 	}
 </script>
 
-<svelte:head><title>Game review · Paper & Ink</title></svelte:head>
+<svelte:head><title>Game review · Up a Pawn</title></svelte:head>
 <svelte:window onkeydown={onKey} />
 <svelte:document
 	onvisibilitychange={() => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Knight from './Knight.svelte';
+	import AppLogo from './AppLogo.svelte';
 	let {
 		name,
 		position,
@@ -26,7 +26,7 @@
 		class:dark-player={position === 'opponent'}
 		class:light-player={position === 'self'}
 	>
-		<Knight size={20} />
+		<AppLogo size={20} />
 	</div>
 	<div class="player-details">
 		<strong

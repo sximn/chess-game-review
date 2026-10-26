@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "paper-and-ink",
+      "name": "up-a-pawn",
       "dependencies": {
         "@capacitor/android": "8.5.3",
         "@capacitor/app": "8.1.2",

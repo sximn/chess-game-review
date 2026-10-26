@@ -1,6 +1,6 @@
-# Paper & Ink
+# Up a Pawn
 
-A warm, tactile chess review UI for web, Android, and iOS. Built from the supplied **Paper & Ink** design system: cream surfaces, sage chessboards, buttery yellow actions, violet feedback, subtle depth, and reduced-motion support.
+A warm, tactile chess review UI for web, Android, and iOS. Built from the supplied **Up a Pawn** design system: cream surfaces, sage chessboards, buttery yellow actions, violet feedback, subtle depth, and reduced-motion support.
 
 ## Run locally
 
@@ -53,7 +53,7 @@ bun run cap:ios      # Open in Xcode
 
 Android builds require Android Studio, the configured Android SDK, and a compatible JDK. iOS builds require Xcode with its iOS SDK and a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-The provisional app ID is `com.paperandink.chess`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
+The provisional app ID is `com.simonukus.upapawn`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
 
 ### Shared mobile shell
 

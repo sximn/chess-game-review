@@ -26,7 +26,7 @@ export function notify(message: string) {
 
 export function hydrate() {
 	try {
-		const saved = JSON.parse(localStorage.getItem('paper-ink-games') ?? '[]');
+		const saved = JSON.parse(localStorage.getItem('upapawn-games') ?? '[]');
 		if (Array.isArray(saved)) {
 			const valid = saved.filter((item): item is SavedGame => {
 				try {
@@ -39,7 +39,7 @@ export function hydrate() {
 			});
 			app.games = [starter, ...valid.filter((item) => item.id !== 'opera')];
 		}
-		const settings = JSON.parse(localStorage.getItem('paper-ink-settings') ?? '{}');
+		const settings = JSON.parse(localStorage.getItem('upapawn-settings') ?? '{}');
 		app.coordinates = settings.coordinates !== false;
 		app.showEvaluation = settings.showEvaluation !== false;
 		app.theme = settings.theme === 'dark' ? 'dark' : 'light';
@@ -57,7 +57,7 @@ export function persistSettings() {
 	if (!app.hydrated) return;
 	try {
 		localStorage.setItem(
-			'paper-ink-settings',
+			'upapawn-settings',
 			JSON.stringify({
 				coordinates: app.coordinates,
 				showEvaluation: app.showEvaluation,
@@ -81,7 +81,7 @@ export function addGame(pgn: string) {
 	app.currentId = game.id;
 	try {
 		localStorage.setItem(
-			'paper-ink-games',
+			'upapawn-games',
 			JSON.stringify(app.games.filter((item) => item.id !== 'opera'))
 		);
 	} catch {

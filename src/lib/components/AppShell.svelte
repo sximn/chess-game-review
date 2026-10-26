@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { Feather } from 'lucide-svelte';
 	import type { Snippet } from 'svelte';
-	import Knight from './Knight.svelte';
+	import AppLogo from './AppLogo.svelte';
 	import AppNavigation from './AppNavigation.svelte';
 	import ImportDialog from './ImportDialog.svelte';
 	import HelpDialog from './HelpDialog.svelte';
@@ -48,9 +48,12 @@
 								: 'Game review'}</strong
 				>
 			</div>
-			<a href="/" class="mobile-brand"
-				><span class="brand-mark"><Knight size={26} /></span><strong>paper & ink</strong></a
-			>
+			<a href="/" class="mobile-brand">
+				<span class="brand-mark">
+					<AppLogo size={26} />
+				</span>
+				<strong>Up a Pawn</strong>
+			</a>
 			<div class="topbar-right">
 				<span class="local-status"><span></span> Your own little space</span><a
 					class="topbar-avatar"

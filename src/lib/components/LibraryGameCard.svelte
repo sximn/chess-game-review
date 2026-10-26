@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { ArrowUpRight, BookOpen, Trophy } from 'lucide-svelte';
 	import type { SavedGame, Timeline } from '#lib/chess.js';
-	import Knight from './Knight.svelte';
+	import AppLogo from './AppLogo.svelte';
 	import Card from './Card.svelte';
 	let { game }: { game: SavedGame & Timeline } = $props();
 </script>
@@ -16,7 +16,7 @@
 >
 	<div class="game-card-content">
 		<div class="library-game-top">
-			<span class="library-game-icon"><Knight size={30} /></span><span class="chip"
+			<span class="library-game-icon"><AppLogo size={30} /></span><span class="chip"
 				>{game.id === 'opera' ? 'A CLASSIC' : 'IMPORTED'}</span
 			>
 		</div>

@@ -8,7 +8,7 @@
 	import { app } from '#lib/state.svelte.js';
 </script>
 
-<svelte:head><title>Preferences · Paper & Ink</title></svelte:head>
+<svelte:head><title>Preferences · Up a Pawn</title></svelte:head>
 <PageHeading
 	title="Just your style"
 	description="A few small adjustments. A space that feels like you."
