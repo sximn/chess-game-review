@@ -2,22 +2,26 @@
 	import { page } from '$app/state';
 	import {
 		BookOpen,
-		ChartNoAxesCombined,
 		CircleQuestionMark,
 		LayoutGrid,
 		Plus,
 		Settings2,
-		Sprout
 	} from 'lucide-svelte';
 	import AppLogo from './AppLogo.svelte';
 	import Button from './Button.svelte';
 	import { app } from '#lib/state.svelte.js';
-	let { presentation, review = false }: { presentation: 'sidebar' | 'mobile'; review?: boolean } =
-		$props();
+
+	let { 
+		presentation,
+		review = false,
+	}: {
+		presentation: 'sidebar' | 'mobile';
+		review?: boolean;
+	} = $props();
+
 	const links = [
 		{ href: '/', label: 'Game review', icon: LayoutGrid },
 		{ href: '/games', label: 'My games', icon: BookOpen },
-		{ href: '/insights', label: 'My insights', icon: ChartNoAxesCombined }
 	];
 </script>
 

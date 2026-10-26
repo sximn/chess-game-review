@@ -41,8 +41,6 @@
 				><strong
 					>{page.url.pathname === '/games'
 						? 'My games'
-						: page.url.pathname === '/insights'
-							? 'My insights'
 							: page.url.pathname === '/settings'
 								? 'Preferences'
 								: 'Game review'}</strong
