@@ -23,14 +23,15 @@
 
 {#if presentation === 'sidebar'}
 	<aside class="sidebar" class:review>
-		<a href="/" class="brand" aria-label="Up a Pawn home"
-			><span class="brand-mark"><AppLogo size={33} /></span><span
-				>Up<span class="brand-amp">a</span>Pawn<span class="brand-tagline"
-					>A LITTLE WISER, EVERY GAME.</span
-				></span
-			></a
-		>
-		<div class="sidebar-label">YOUR CHESS CORNER</div>
+		<a href="/" class="brand" aria-label="Up a Pawn home">
+			<span class="brand-mark"><AppLogo size={33} /></span>
+			<span>
+				Up
+				<span class="brand-amp">a</span>
+				Pawn
+			</span>
+		</a>
+
 		<nav class="main-nav" aria-label="Main navigation">
 			{#each links as link}<a
 					href={link.href}
@@ -51,8 +52,9 @@
 			>
 			<div class="profile">
 				<span class="profile-avatar">S</span>
-				<div><strong>Your chess corner</strong><span>Just for the love of it</span></div>
-				<Sprout size={19} />
+				<div>
+					<strong>Your chess reviews</strong>
+				</div>
 			</div>
 		</div>
 	</aside>
@@ -112,25 +114,11 @@
 		margin: 0 2px;
 		color: #8b9279;
 	}
-	.brand-tagline {
-		font-size: 6.9px;
-		letter-spacing: 1.05px;
-		display: block;
-		color: var(--muted);
-		font-weight: 600;
-		margin-top: 8px;
-	}
-	.sidebar-label {
-		font-size: 8.5px;
-		letter-spacing: 1.6px;
-		color: #96998b;
-		font-weight: 700;
-		margin: 53px 13px 17px;
-	}
 	.main-nav {
 		display: flex;
 		flex-direction: column;
 		gap: 6px;
+		margin-top: 12px;
 	}
 	.main-nav a {
 		position: relative;
@@ -203,12 +191,6 @@
 		font-size: 10px;
 		font-weight: 650;
 	}
-	.profile div > span {
-		display: block;
-		font-size: 8.5px;
-		color: var(--muted);
-		margin-top: 4px;
-	}
 	.profile > :global(svg) {
 		color: #929b7c;
 		margin-left: auto;
@@ -232,10 +214,6 @@
 		.brand {
 			font-size: 21px;
 		}
-		.brand-tagline {
-			font-size: 6.2px;
-			letter-spacing: 1px;
-		}
 		.brand-mark {
 			width: 35px;
 			height: 39px;
@@ -257,22 +235,10 @@
 		.brand-mark > :global(svg) {
 			width: 28px;
 		}
-		.brand-tagline {
-			font-size: 5.3px;
-			letter-spacing: 0.7px;
-		}
-		.sidebar-label {
-			font-size: 7px;
-			letter-spacing: 1px;
-			margin-left: 10px;
-		}
 		.main-nav a {
 			font-size: 10px;
 			gap: 9px;
 			padding: 0 10px;
-		}
-		.profile div > span {
-			font-size: 7px;
 		}
 		.profile strong {
 			font-size: 8px;
@@ -357,10 +323,6 @@
 		.main-nav a {
 			font-size: 13px;
 		}
-		.sidebar-label {
-			font-size: 9px;
-			letter-spacing: 1.2px;
-		}
 		.sidebar-utility {
 			font-size: 12px;
 		}
@@ -381,7 +343,6 @@
 			justify-content: center;
 		}
 		.sidebar.review .brand > span:last-child,
-		.sidebar.review .sidebar-label,
 		.sidebar.review .profile {
 			display: none;
 		}
