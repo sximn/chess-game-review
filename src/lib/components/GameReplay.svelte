@@ -47,6 +47,7 @@
 				name={flipped ? white : black}
 				whitePiece={flipped}
 				showEvaluation={app.showEvaluation}
+				winner={result === (flipped ? '1-0' : '0-1')}
 			/>
 			<Board
 				fen={timeline.fens[ply] ?? timeline.fens[0]}
