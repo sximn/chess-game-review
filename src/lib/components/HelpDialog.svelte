@@ -6,8 +6,8 @@
 
 <DialogFrame
 	bind:open={app.helpOpen}
-	title="Make yourself at home."
-	description="A few small things to help you find your way."
+	title="Help"
+	description="A few things to help you find your way"
 	closeLabel="Close help"
 >
 	{#snippet symbol()}<CircleQuestionMark size={24} />{/snippet}
