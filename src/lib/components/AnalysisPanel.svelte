@@ -27,7 +27,7 @@
 <Tabs.Root bind:value={activeTab}>
 	{#snippet child({ props })}
 		<div {...props} class="review-tabs">
-			<AnalysisTabs {activeTab} {presentation} />
+			<AnalysisTabs {presentation} />
 			<Tabs.Content value="overview">
 				{#snippet child({ props })}<AnalysisOverview
 						contentProps={props}

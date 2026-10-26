@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from './Button.svelte';
 	import { Dialog } from 'bits-ui';
 	import { X } from 'lucide-svelte';
 	import type { Snippet } from 'svelte';
@@ -28,8 +29,11 @@
 								</div>{/snippet}</Dialog.Title
 						>
 						<Dialog.Close aria-label="Close analysis"
-							>{#snippet child({ props })}<button {...props} class="close-analysis"
-									><X size={21} /></button
+							>{#snippet child({ props })}<Button
+									{...props}
+									variant="ghost"
+									size="icon"
+									class="close-analysis"><X size={21} /></Button
 								>{/snippet}</Dialog.Close
 						>
 					</div>
@@ -112,22 +116,6 @@
 		.analysis-sheet-heading {
 			margin-bottom: 7px;
 			min-height: 30px;
-		}
-	}
-	.close-analysis {
-		width: 36px;
-		height: 36px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border-radius: 9px;
-		color: var(--muted);
-	}
-	@media (hover: hover) {
-		.close-analysis:hover {
-			background: var(--paper-deep);
-			color: #7c8b65;
 		}
 	}
 	.sheet-description {

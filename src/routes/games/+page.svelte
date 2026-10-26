@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PageHeading from '#lib/components/PageHeading.svelte';
-	import ActionButton from '#lib/components/ActionButton.svelte';
+	import Button from '#lib/components/Button.svelte';
 	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
 	import {
 		ArrowUpRight,
@@ -37,8 +37,8 @@
 	eyebrow="A COLLECTION OF LITTLE LESSONS"
 	description="Old favorites. Fresh perspectives. All in one place."
 >
-	{#snippet actions()}<ActionButton presentation="heading" onclick={() => (app.importOpen = true)}
-			><Plus size={18} /> Import game</ActionButton
+	{#snippet actions()}<Button class="heading-action" onclick={() => (app.importOpen = true)}
+			><Plus size={18} /> Import game</Button
 		>{/snippet}
 </PageHeading>
 <section class="library-welcome">
@@ -46,8 +46,8 @@
 		<MiniEyebrow>YOUR NEXT CHAPTER</MiniEyebrow>
 		<h2>Good games.<br /><em>Better lessons.</em></h2>
 		<p>That game you can’t stop thinking about?<br />Bring it here. Let’s take another look.</p>
-		<ActionButton variant="secondary" presentation="welcome" onclick={() => (app.importOpen = true)}
-			>Bring a game along <ArrowUpRight size={16} /></ActionButton
+		<Button variant="secondary" class="welcome-action" onclick={() => (app.importOpen = true)}
+			>Bring a game along <ArrowUpRight size={16} /></Button
 		>
 	</div>
 	<div class="library-art" aria-hidden="true">
@@ -108,12 +108,12 @@
 		<Search size={24} />
 		<h3>No games found.</h3>
 		<p>Try a different name or another filter.</p>
-		<ActionButton
+		<Button
 			variant="secondary"
 			onclick={() => {
 				query = '';
 				filter = 'all';
-			}}>Show all games</ActionButton
+			}}>Show all games</Button
 		>
 	</div>{/if}
 {#snippet ArrowRightIcon()}<ChevronRight size={16} />{/snippet}
@@ -533,5 +533,15 @@
 	}
 	input::placeholder {
 		color: #a6ad98;
+	}
+
+	.library-welcome :global(.welcome-action) {
+		--button-font-size: 10px;
+		--button-min-height: 39px;
+	}
+	@media (max-width: 760px) {
+		.library-welcome :global(.welcome-action) {
+			--button-font-size: 9px;
+		}
 	}
 </style>

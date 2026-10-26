@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from './Button.svelte';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { AnalysisPresentation } from './analysis.types';
 
@@ -67,8 +68,8 @@
 				Engine analysis is not connected yet. Accuracy and move classifications are only available
 				in the sample review.
 			</p>
-			<button class="explore-moves" onclick={onExploreMoves}
-				>Explore the moves <ArrowRight size={16} /></button
+			<Button variant="secondary" fullWidth class="explore-moves" onclick={onExploreMoves}
+				>Explore the moves <ArrowRight size={16} /></Button
 			>
 		</div>
 	{/if}
@@ -235,7 +236,7 @@
 		display: block;
 		margin-top: 4px;
 	}
-	.imported-recap .explore-moves {
+	.imported-recap > :global(.explore-moves) {
 		margin-top: 20px;
 	}
 	@media (hover: hover) {
@@ -391,25 +392,6 @@
 			display: none;
 		}
 	}
-	.explore-moves {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 9px;
-		min-height: 43px;
-		padding: 0 17px;
-		border-radius: 11px;
-		font-size: 12px;
-		font-weight: 700;
-		white-space: nowrap;
-		letter-spacing: -0.01em;
-		box-shadow:
-			inset 0 1px #ffffff85,
-			0 2px 3px #42370a0a;
-		border: 1px solid var(--line);
-		background: linear-gradient(var(--field), var(--paper-deep));
-		width: 100%;
-	}
 	.analysis-eyebrow {
 		display: block;
 		font-size: 7.5px;
@@ -426,15 +408,6 @@
 		color: var(--muted);
 		margin-top: 20px;
 	}
-	@media (hover: hover) {
-		.explore-moves:hover {
-			transform: translateY(-1px);
-			filter: brightness(1.015);
-			box-shadow:
-				0 3px 9px #42370a17,
-				inset 0 1px #fff8;
-		}
-	}
 	@media (max-width: 760px) {
 		.analysis-eyebrow {
 			font-size: 8px;
@@ -448,8 +421,5 @@
 			font-size: 9px;
 			letter-spacing: 1.2px;
 		}
-	}
-	.explore-moves:active:not(:disabled) {
-		transform: translateY(1px);
 	}
 </style>

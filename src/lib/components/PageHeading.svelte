@@ -148,4 +148,38 @@
 			font-size: 20px;
 		}
 	}
+
+	.page-heading > :global(.heading-action) {
+		margin-top: 10px;
+		--button-min-height: 40px;
+		--button-font-size: 10px;
+		--button-padding: 0 15px;
+	}
+	@media (max-width: 1000px) and (min-width: 761px) {
+		.page-heading > :global(.heading-action) {
+			--button-font-size: 9px;
+			--button-padding: 0 10px;
+		}
+		.page-heading > :global(.heading-action) > :global(svg:last-child) {
+			display: none;
+		}
+	}
+	@media (max-width: 760px) {
+		.page-heading > :global(.heading-action) {
+			--button-font-size: 0px;
+			--button-width: 44px;
+			--button-height: 44px;
+			--button-min-height: 44px;
+			--button-padding: 0;
+			--button-radius: 11px;
+			margin-top: 0;
+			flex-shrink: 0;
+		}
+		.page-heading > :global(.heading-action) > :global(svg:last-child) {
+			display: none;
+		}
+		.page-heading > :global(.heading-action) > :global(svg:first-child) {
+			width: 16px;
+		}
+	}
 </style>

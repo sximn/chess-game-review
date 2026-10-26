@@ -4,7 +4,13 @@
 	import { goto } from '$app/navigation';
 	import { app, addGame } from '#lib/state.svelte.js';
 	import DialogFrame from './DialogFrame.svelte';
-	import ActionButton from './ActionButton.svelte';
+	import Button from './Button.svelte';
+	import TabList from './TabList.svelte';
+	import type { TabItem } from './tabs.types';
+	const importTabs: TabItem[] = [
+		{ value: 'paste', label: 'Paste PGN', icon: FileText },
+		{ value: 'file', label: 'Upload file', icon: FolderOpen }
+	];
 	let pgn = $state('');
 	let error = $state('');
 	let filename = $state('');
@@ -41,51 +47,49 @@
 	closeLabel="Close import"
 >
 	{#snippet symbol()}<FileUp size={24} />{/snippet}
-	<Tabs.Root value="paste">
-		<Tabs.List
-			>{#snippet child({ props })}<div {...props} class="segmented">
-					<Tabs.Trigger value="paste"
-						>{#snippet child({ props })}<button {...props}><FileText size={16} /> Paste PGN</button
-							>{/snippet}</Tabs.Trigger
-					><Tabs.Trigger value="file"
-						>{#snippet child({ props })}<button {...props}
-								><FolderOpen size={16} /> Upload file</button
-							>{/snippet}</Tabs.Trigger
+	<Tabs.Root value="paste"
+		>{#snippet child({ props })}<div {...props} class="import-form">
+				<TabList
+					items={importTabs}
+					variant="segmented"
+					aria-label="Import method"
+					class="segmented"
+				/>
+				<Tabs.Content value="paste">
+					<label class="field-label" for="pgn">Game notation</label>
+					<textarea
+						id="pgn"
+						bind:value={pgn}
+						oninput={() => (error = '')}
+						placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}
+						spellcheck="false"></textarea>
+					<p class="field-hint">
+						Export a game from Chess.com, Lichess, or your favorite chess app.
+					</p>
+				</Tabs.Content>
+				<Tabs.Content value="file">
+					<input
+						bind:this={fileInput}
+						type="file"
+						accept=".pgn,text/plain,application/x-chess-pgn"
+						class="visually-hidden"
+						onchange={(event) => readFile(event.currentTarget.files?.[0])}
+					/>
+					<button class="file-drop" onclick={() => fileInput.click()}
+						><FileUp size={32} /><strong>{filename || 'Choose a PGN file'}</strong><span
+							>{filename
+								? 'Click to choose another file'
+								: '.pgn · Up to 500 KB · One game at a time'}</span
+						></button
 					>
-				</div>{/snippet}</Tabs.List
-		>
-		<Tabs.Content value="paste">
-			<label class="field-label" for="pgn">Game notation</label>
-			<textarea
-				id="pgn"
-				bind:value={pgn}
-				oninput={() => (error = '')}
-				placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}
-				spellcheck="false"></textarea>
-			<p class="field-hint">Export a game from Chess.com, Lichess, or your favorite chess app.</p>
-		</Tabs.Content>
-		<Tabs.Content value="file">
-			<input
-				bind:this={fileInput}
-				type="file"
-				accept=".pgn,text/plain,application/x-chess-pgn"
-				class="visually-hidden"
-				onchange={(event) => readFile(event.currentTarget.files?.[0])}
-			/>
-			<button class="file-drop" onclick={() => fileInput.click()}
-				><FileUp size={32} /><strong>{filename || 'Choose a PGN file'}</strong><span
-					>{filename
-						? 'Click to choose another file'
-						: '.pgn · Up to 500 KB · One game at a time'}</span
-				></button
-			>
-		</Tabs.Content>
-	</Tabs.Root>
-	{#if error}<p class="form-error" role="alert">{error}</p>{/if}
-	<ActionButton presentation="import" onclick={submit}
-		>Open game <ArrowUpRight size={18} /></ActionButton
+				</Tabs.Content>
+				{#if error}<p class="form-error" role="alert">{error}</p>{/if}
+				<Button fullWidth class="import-submit" onclick={submit}
+					>Open game <ArrowUpRight size={18} /></Button
+				>
+				<div class="private-note"><Check size={14} /> Your games stay on this device.</div>
+			</div>{/snippet}</Tabs.Root
 	>
-	<div class="private-note"><Check size={14} /> Your games stay on this device.</div>
 </DialogFrame>
 
 <style>
@@ -127,33 +131,6 @@
 		.private-note {
 			font-size: 10px;
 		}
-	}
-	.segmented {
-		display: flex;
-		gap: 4px;
-		background: var(--paper-deep);
-		padding: 4px;
-		border: 1px solid var(--line);
-		border-radius: 11px;
-		margin-bottom: 22px;
-	}
-	.segmented > button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 7px;
-		flex: 1;
-		min-height: 36px;
-		background: none;
-		font-size: 11px;
-		color: var(--muted);
-		border-radius: 7px;
-	}
-	.segmented > button[data-state='active'] {
-		background: var(--paper);
-		box-shadow: 0 1px 3px #42461d16;
-		color: var(--ink);
-		font-weight: 650;
 	}
 	.field-label {
 		display: block;
@@ -198,12 +175,21 @@
 			min-height: 170px;
 			font-size: 12px;
 		}
-		.segmented > button {
-			min-height: 40px;
-			font-size: 12px;
-		}
 		.field-label {
 			font-size: 12px;
+		}
+	}
+
+	.import-form > :global(.segmented) {
+		margin-bottom: 22px;
+	}
+	.import-form > :global(.import-submit) {
+		margin-top: 22px;
+	}
+	@media (max-width: 760px) {
+		.import-form > :global(.import-submit) {
+			--button-min-height: 47px;
+			--button-font-size: 13px;
 		}
 	}
 </style>

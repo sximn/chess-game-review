@@ -66,13 +66,13 @@ iOS finger-following swipe-back is not implemented. Device validation remains ne
 ## Project map
 
 ```text
-src/lib/components/  App shell, board, accessible import sheet
+src/lib/components/  Scoped UI components, shared actions/dialogs, shell and navigation
 src/lib/chess.ts     PGN timeline and illustrative demo review data
 src/lib/state.svelte.ts  Shared reactive state and local persistence
 src/lib/native.ts    Capacitor lifecycle, back policy, system bars
-src/lib/styles.css   Design tokens, shared controls, responsive layouts
-src/lib/review.css   Viewport-sized review workspace and analysis sheet
-src/routes/          Review, game library, insights, preferences
+src/lib/styles.css   Tokens/reset/accessibility and reduced-motion CSS entry point
+src/lib/styles/      Only foundation and reduced-motion defaults; UI styles are scoped
+src/routes/          Review, game library, insights, preferences and error fallback
 tests/               Game parser and replay verification
 android/             Native Android project
 ios/                 Native iOS project

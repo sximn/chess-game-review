@@ -10,7 +10,7 @@
 		Sprout
 	} from 'lucide-svelte';
 	import Knight from './Knight.svelte';
-	import ActionButton from './ActionButton.svelte';
+	import Button from './Button.svelte';
 	import { app } from '#lib/state.svelte.js';
 	let { presentation, review = false }: { presentation: 'sidebar' | 'mobile'; review?: boolean } =
 		$props();
@@ -41,11 +41,8 @@
 					>{#if link.href === '/' && page.url.pathname === '/'}<span class="nav-dot"></span>{/if}</a
 				>{/each}
 		</nav>
-		<ActionButton
-			presentation="sidebar"
-			{review}
-			aria-label="Import game"
-			onclick={() => (app.importOpen = true)}><Plus size={18} /> Import a game</ActionButton
+		<Button class="sidebar-import" aria-label="Import game" onclick={() => (app.importOpen = true)}
+			><Plus size={18} /> Import a game</Button
 		>
 		<div class="sidebar-bottom">
 			<a class="sidebar-utility" href="/settings"><Settings2 size={18} /> Preferences</a>
@@ -437,6 +434,30 @@
 	@media (max-width: 760px) {
 		:global(.keyboard-open) .mobile-nav {
 			display: none;
+		}
+	}
+
+	.sidebar > :global(.sidebar-import) {
+		margin: 24px 5px 0;
+		--button-min-height: 42px;
+		--button-gap: 8px;
+	}
+	@media (max-width: 1000px) and (min-width: 761px) {
+		.sidebar > :global(.sidebar-import) {
+			--button-padding: 0 10px;
+			--button-font-size: 10px;
+			margin-left: 0;
+			margin-right: 0;
+		}
+	}
+	@media (max-height: 520px) and (min-width: 761px) {
+		.sidebar.review > :global(.sidebar-import) {
+			--button-font-size: 0px;
+			--button-width: 40px;
+			--button-padding: 0;
+			--button-gap: 0px;
+			min-width: 0;
+			margin: 14px 0 0;
 		}
 	}
 </style>

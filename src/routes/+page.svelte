@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '#lib/components/Button.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/state';
 	import { DropdownMenu } from 'bits-ui';
@@ -133,8 +134,12 @@
 	{#snippet actions()}
 		<DropdownMenu.Root bind:open={app.menuOpen}>
 			<DropdownMenu.Trigger aria-label="Game actions"
-				>{#snippet child({ props })}<button {...props} class="icon-button game-actions"
-						><Ellipsis size={22} /></button
+				>{#snippet child({ props })}<Button
+						{...props}
+						variant="ghost"
+						size="icon"
+						class="icon-button game-actions"
+						style="flex-shrink:0"><Ellipsis size={22} /></Button
 					>{/snippet}</DropdownMenu.Trigger
 			>
 			<DropdownMenu.Portal
@@ -238,7 +243,6 @@
 			grid-template-columns: minmax(0, 1fr);
 		}
 	}
-
 	.review-details {
 		min-width: 0;
 	}
@@ -255,22 +259,6 @@
 	@media (max-width: 1199px), (max-height: 619px) {
 		.review-details {
 			display: none;
-		}
-	}
-	.icon-button {
-		width: 36px;
-		height: 36px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border-radius: 9px;
-		color: var(--muted);
-	}
-	@media (hover: hover) {
-		.icon-button:hover {
-			background: var(--paper-deep);
-			color: #7c8b65;
 		}
 	}
 	.dropdown-menu {
@@ -296,8 +284,5 @@
 	.dropdown-menu [data-highlighted] {
 		background: var(--paper-deep);
 		color: var(--ink);
-	}
-	.game-actions {
-		flex-shrink: 0;
 	}
 </style>

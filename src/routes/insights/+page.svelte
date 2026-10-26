@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PageHeading from '#lib/components/PageHeading.svelte';
-	import ActionButton from '#lib/components/ActionButton.svelte';
+	import Button from '#lib/components/Button.svelte';
 	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
 	import { ArrowUpRight, BookOpen, Flag, Lightbulb, Plus, Sprout, TrendingUp } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
@@ -39,8 +39,8 @@
 		Sometimes it’s spotting a tactic a little earlier.<br />Sometimes it’s taking a breath before a
 		move.<br />Start with one game, and see what you notice.
 	</p>
-	<ActionButton variant="primary" onclick={() => (app.importOpen = true)}
-		><Plus size={18} /> Add your next game</ActionButton
+	<Button variant="primary" onclick={() => (app.importOpen = true)}
+		><Plus size={18} /> Add your next game</Button
 	>
 	<p class="field-hint">Personal accuracy trends will arrive with engine analysis.</p>
 </section>

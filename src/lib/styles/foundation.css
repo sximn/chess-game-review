@@ -101,9 +101,6 @@ textarea:focus-visible {
 svg {
 	flex-shrink: 0;
 }
-button:active:not(:disabled) {
-	transform: translateY(1px);
-}
 .muted {
 	color: var(--muted) !important;
 }

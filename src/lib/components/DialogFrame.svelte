@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from './Button.svelte';
 	import { Dialog } from 'bits-ui';
 	import { X } from 'lucide-svelte';
 	import type { Snippet } from 'svelte';
@@ -39,8 +40,11 @@
 					<div class="dialog-top">
 						<span class="dialog-symbol">{@render symbol()}</span>
 						<Dialog.Close aria-label={closeLabel}
-							>{#snippet child({ props })}<button {...props} class="icon-button"
-									><X size={20} /></button
+							>{#snippet child({ props })}<Button
+									{...props}
+									variant="ghost"
+									size="icon"
+									class="icon-button"><X size={20} /></Button
 								>{/snippet}</Dialog.Close
 						>
 					</div>
@@ -149,22 +153,6 @@
 		}
 		:global(.keyboard-open) .dialog-content {
 			max-height: calc(100dvh - 15px);
-		}
-	}
-	.icon-button {
-		width: 36px;
-		height: 36px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border-radius: 9px;
-		color: var(--muted);
-	}
-	@media (hover: hover) {
-		.icon-button:hover {
-			background: var(--paper-deep);
-			color: #7c8b65;
 		}
 	}
 	@keyframes fade-in {
