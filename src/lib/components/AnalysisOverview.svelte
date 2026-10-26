@@ -28,38 +28,36 @@
 
 <div {...contentProps} class="overview-content" data-presentation={presentation}>
 	{#if demo}
-		<div class="recap-intro">
-			<span class="analysis-eyebrow">THE BIG PICTURE</span>
-			<h2>Beautifully played.</h2>
-			<p>Active pieces. A brave sacrifice.<br />A finish worth remembering.</p>
-		</div>
 		<AnimatedAccuracy whiteName={white} blackName={black} {presentation} />
 		<div class="quality-table">
 			<div class="quality-table-head">
-				<span>MOVE QUALITY</span><span
-					><span class="color-dot white-dot"></span><span class="color-dot black-dot"></span></span
-				>
+				<span>MOVE QUALITY</span>
+				<span>
+					<span class="color-dot white-dot"></span>
+					<span class="color-dot black-dot"></span>
+				</span>
 			</div>
-			{#each demoAnalysis as quality}<button
+			{#each demoAnalysis as quality}
+				<button
 					class="quality-row"
 					onclick={() => {
 						onNavigate(quality.plies[0]);
 					}}
-					><span class="quality-icon" style={`--quality-color:${quality.color}`}
+				>
+					<span class="quality-icon" style={`--quality-color:${quality.color}`}
 						>{quality.symbol}</span
-					><span>{quality.name}</span><b>{quality.white}</b><b>{quality.black}</b></button
-				>{/each}
+					>
+					<span>{quality.name}</span>
+					<b>{quality.white}</b>
+					<b>{quality.black}</b>
+				</button>
+			{/each}
 		</div>
 		<div class="sample-label"><span></span> Sample review · Illustrative analysis</div>
 	{:else}
 		<div class="imported-recap">
 			<div class="empty-symbol"><BookOpen size={30} /></div>
-			<span class="analysis-eyebrow">YOUR GAME, AT YOUR PACE</span>
-			<h2>A fresh perspective.</h2>
-			<p>
-				Your game is ready. Explore all {timeline.moves.length} half-moves, revisit a position, and keep
-				your thoughts close.
-			</p>
+
 			<div class="import-stats">
 				<div><strong>{Math.ceil(timeline.moves.length / 2)}</strong><span>Moves</span></div>
 				<div><strong>{result === '*' ? '—' : result}</strong><span>Result</span></div>
@@ -96,13 +94,6 @@
 	}
 	.recap-intro {
 		text-align: center;
-	}
-	.recap-intro h2 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-weight: 400;
-		letter-spacing: -0.5px;
-		font-size: 28px;
-		margin-top: 7px;
 	}
 	.recap-intro p {
 		font-size: 10px;
@@ -208,12 +199,6 @@
 		place-items: center;
 		margin: 5px auto 24px;
 	}
-	.imported-recap h2 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-size: 29px;
-		font-weight: 400;
-		margin: 10px 0;
-	}
 	.imported-recap > p:not(.import-notice) {
 		font-size: 11px;
 		line-height: 1.8;
@@ -248,9 +233,6 @@
 		.overview-content {
 			padding: 30px 30px 17px;
 		}
-		.recap-intro h2 {
-			font-size: 32px;
-		}
 		.recap-intro p {
 			font-size: 11px;
 		}
@@ -268,9 +250,6 @@
 		.overview-content {
 			padding: 21px 15px 12px;
 		}
-		.recap-intro h2 {
-			font-size: 25px;
-		}
 		.recap-intro p {
 			font-size: 9px;
 		}
@@ -287,9 +266,6 @@
 	@media (max-width: 760px) {
 		.overview-content {
 			padding: 25px 28px 17px;
-		}
-		.recap-intro h2 {
-			font-size: 32px;
 		}
 		.recap-intro p {
 			font-size: 11px;
@@ -319,9 +295,6 @@
 		.sample-label {
 			font-size: 8px;
 			margin-top: 19px;
-		}
-		.imported-recap h2 {
-			font-size: 31px;
 		}
 		.imported-recap > p:not(.import-notice) {
 			font-size: 12px;
@@ -385,11 +358,6 @@
 		.overview-content[data-presentation='sheet'] .quality-row {
 			min-height: 42px;
 			font-size: 11px;
-		}
-	}
-	@media (max-height: 520px) and (min-width: 480px) {
-		.overview-content[data-presentation='sheet'] .recap-intro p {
-			display: none;
 		}
 	}
 	.analysis-eyebrow {

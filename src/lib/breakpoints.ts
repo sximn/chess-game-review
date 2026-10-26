@@ -7,7 +7,7 @@ function createBreakpoints() {
 	return {
 		get mobile() {
 			return mobile.current;
-		},
+		}
 	};
 }
 

@@ -35,7 +35,7 @@
 <PageHeading title="My games">
 	{#snippet actions()}
 		<Button
-			size={mobile ? "icon" : "lg"}
+			size={mobile ? 'icon' : 'lg'}
 			class="heading-action"
 			onclick={() => (app.importOpen = true)}
 		>
