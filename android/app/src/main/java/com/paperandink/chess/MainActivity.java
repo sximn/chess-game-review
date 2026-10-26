@@ -1,4 +1,4 @@
-package com.paperandink.chess;
+package com.simonukus.upapawn;
 
 import com.getcapacitor.BridgeActivity;
 import android.os.Bundle;

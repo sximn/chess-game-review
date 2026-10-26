@@ -1,12 +1,15 @@
 <script lang="ts">
+	import type { AnalysisPresentation } from './analysis.types';
 	import type { Move } from 'chess.js';
 	import { demoAnalysis, moveLabel } from '#lib/chess.js';
 	let {
+		presentation,
 		values,
 		moves,
 		ply,
 		onNavigate
 	}: {
+		presentation: AnalysisPresentation;
 		values: number[] | null;
 		moves: Move[];
 		ply: number;
@@ -48,7 +51,11 @@
 	);
 </script>
 
-<section class="evaluation-card evaluation-timeline" aria-label="Evaluation timeline">
+<section
+	class="evaluation-card evaluation-timeline"
+	data-presentation={presentation}
+	aria-label="Evaluation timeline"
+>
 	<div class="evaluation-title">
 		<div>
 			<h3>{values ? 'Evaluation' : 'Game timeline'}</h3>
@@ -136,3 +143,285 @@
 				>{/each}
 		</div>{/if}
 </section>
+
+<style>
+	.evaluation-card {
+		border-radius: 13px;
+		background: var(--paper);
+		margin: 0;
+		padding: 16px 20px 14px;
+		border: 0;
+		box-shadow: none;
+	}
+	.evaluation-title {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.evaluation-title > div {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.evaluation-title h3 {
+		font-size: 10px;
+		font-weight: 650;
+		letter-spacing: -0.2px;
+	}
+	.evaluation-title > div > span {
+		color: #aab09b;
+		font-size: 8px;
+		margin-left: 4px;
+	}
+	.chart-axis {
+		display: flex;
+		justify-content: space-between;
+		padding-top: 7px;
+		color: #b4b9a5;
+		font-size: 7px;
+	}
+	.replay-progress {
+		height: 100%;
+		background: linear-gradient(180deg, #a9bb8c44, #a9bb8c11);
+		border-right: 2px solid #97ab7b;
+	}
+	@media (max-width: 760px) {
+		.evaluation-title h3 {
+			font-size: 11px;
+		}
+		.evaluation-title > div > span {
+			font-size: 7px;
+		}
+		.evaluation-title > div {
+			gap: 6px;
+		}
+		.chart-axis {
+			font-size: 8px;
+		}
+	}
+	@media (min-width: 1001px) {
+		.evaluation-title h3 {
+			font-size: 12px;
+		}
+		.evaluation-title > div > span {
+			font-size: 9px;
+		}
+		.chart-axis {
+			font-size: 9px;
+		}
+	}
+	.evaluation-sides {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+	}
+	.evaluation-sides > span {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		font-size: 10px;
+		color: var(--muted);
+	}
+	.evaluation-sides i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #fffbee;
+		border: 1px solid #abae9c;
+		flex-shrink: 0;
+	}
+	.critical-moves i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: #fffbee;
+		border: 1px solid #abae9c;
+		flex-shrink: 0;
+	}
+	.evaluation-sides .black-side {
+		background: #454c40;
+		border-color: #454c40;
+	}
+	.critical-moves .black-side {
+		background: #454c40;
+		border-color: #454c40;
+	}
+	.evaluation-plot {
+		height: 125px;
+		margin: 14px 12px 0;
+		position: relative;
+		isolation: isolate;
+	}
+	.evaluation-plot > svg {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		inset: 0;
+		z-index: 1;
+		pointer-events: none;
+	}
+	.advantage-zone {
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 50%;
+		pointer-events: none;
+	}
+	.white-zone {
+		top: 0;
+		background: #f7f3e82e;
+	}
+	.black-zone {
+		bottom: 0;
+		background: #454c4010;
+	}
+	.advantage-zone > span {
+		position: absolute;
+		left: 4px;
+		font-size: 8px;
+		color: #8c9680;
+	}
+	.white-zone > span {
+		top: 3px;
+	}
+	.black-zone > span {
+		bottom: 3px;
+		color: #737b69;
+	}
+	.evaluation-zero {
+		position: absolute;
+		top: 50%;
+		width: 100%;
+		border-top: 1px dashed #aeb69c;
+		pointer-events: none;
+	}
+	.evaluation-zero > span {
+		position: absolute;
+		right: calc(100% + 6px);
+		top: -5px;
+		font-size: 8px;
+		color: var(--muted);
+	}
+	.evaluation-plot > input {
+		position: absolute;
+		inset: 0;
+		margin: 0;
+		width: 100%;
+		height: 100%;
+		opacity: 0;
+		z-index: 2;
+		cursor: ew-resize;
+	}
+	.evaluation-plot:has(> input:focus-visible) {
+		outline: 2px solid var(--violet);
+		outline-offset: 4px;
+		border-radius: 4px;
+	}
+	.evaluation-cursor {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 1px;
+		background: #c7ac43;
+		pointer-events: none;
+		z-index: 1;
+		transition: left 0.15s;
+	}
+	.evaluation-cursor > span {
+		position: absolute;
+		top: -3px;
+		left: -2px;
+		width: 5px;
+		height: 5px;
+		background: var(--yellow);
+		border: 1px solid #bba33f;
+		border-radius: 50%;
+	}
+	.graph-moment {
+		position: absolute;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		display: grid;
+		place-items: center;
+		background: none;
+		transform: translate(-50%, -50%);
+		z-index: 3;
+		border-radius: 50%;
+	}
+	.graph-moment > span {
+		display: block;
+		width: 10px;
+		height: 10px;
+		background: #fffbee;
+		border: 2px solid var(--moment-color);
+		border-radius: 50%;
+		box-shadow: 0 1px 2px #0002;
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
+	}
+	.graph-moment.black-moment > span {
+		background: #454c40;
+	}
+	.graph-moment.selected > span {
+		transform: scale(1.35);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--moment-color) 20%, transparent);
+	}
+	.graph-moment:hover > span {
+		transform: scale(1.4);
+	}
+	.graph-moment:focus-visible > span {
+		transform: scale(1.4);
+	}
+	.graph-moment:active:not(:disabled) {
+		transform: translate(-50%, -50%);
+	}
+	.evaluation-timeline .chart-axis {
+		margin: 3px 12px 0;
+		font-size: 9px;
+	}
+	.critical-moves {
+		display: flex;
+		gap: 7px;
+		align-items: center;
+		flex-wrap: wrap;
+		margin-top: 14px;
+		padding-top: 12px;
+		border-top: 1px solid var(--line);
+	}
+	.critical-moves > span {
+		font-size: 9px;
+		color: var(--muted);
+		margin-right: 4px;
+		width: 100%;
+	}
+	.critical-moves > button {
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		font-size: 9px;
+		min-height: 30px;
+		border-radius: 7px;
+		padding: 0 8px;
+		background: var(--bg);
+		border: 1px solid var(--line);
+	}
+	.critical-moves > button.current {
+		border-color: #c5b8ec;
+		background: color-mix(in srgb, var(--violet) 9%, var(--paper));
+	}
+	.critical-moves b {
+		font-size: 9px;
+	}
+	:global(:root[data-theme='dark']) .black-zone {
+		background: #10140d36;
+	}
+	:global(:root[data-theme='dark']) .white-zone {
+		background: #e9efda0b;
+	}
+	.evaluation-card[data-presentation='sheet'] .evaluation-plot {
+		height: 170px;
+	}
+</style>

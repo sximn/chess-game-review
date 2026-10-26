@@ -1,6 +1,6 @@
-# Paper & Ink
+# Up a Pawn
 
-A warm, tactile chess review UI for web, Android, and iOS. Built from the supplied **Paper & Ink** design system: cream surfaces, sage chessboards, buttery yellow actions, violet feedback, subtle depth, and reduced-motion support.
+A warm, tactile chess review UI for web, Android, and iOS. Built from the supplied **Up a Pawn** design system: cream surfaces, sage chessboards, buttery yellow actions, violet feedback, subtle depth, and reduced-motion support.
 
 ## Run locally
 
@@ -53,7 +53,7 @@ bun run cap:ios      # Open in Xcode
 
 Android builds require Android Studio, the configured Android SDK, and a compatible JDK. iOS builds require Xcode with its iOS SDK and a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-The provisional app ID is `com.paperandink.chess`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
+The provisional app ID is `com.simonukus.upapawn`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
 
 ### Shared mobile shell
 
@@ -66,13 +66,13 @@ iOS finger-following swipe-back is not implemented. Device validation remains ne
 ## Project map
 
 ```text
-src/lib/components/  App shell, board, accessible import sheet
+src/lib/components/  Scoped UI components, shared actions/dialogs, shell and navigation
 src/lib/chess.ts     PGN timeline and illustrative demo review data
 src/lib/state.svelte.ts  Shared reactive state and local persistence
 src/lib/native.ts    Capacitor lifecycle, back policy, system bars
-src/lib/styles.css   Design tokens, shared controls, responsive layouts
-src/lib/review.css   Viewport-sized review workspace and analysis sheet
-src/routes/          Review, game library, insights, preferences
+src/lib/styles.css   Tokens/reset/accessibility and reduced-motion CSS entry point
+src/lib/styles/      Only foundation and reduced-motion defaults; UI styles are scoped
+src/routes/          Review, game library, insights, preferences and error fallback
 tests/               Game parser and replay verification
 android/             Native Android project
 ios/                 Native iOS project

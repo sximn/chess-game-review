@@ -1,16 +1,11 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/state';
-	import { Dialog, DropdownMenu } from 'bits-ui';
-	import { Download, Ellipsis, Lightbulb, RotateCcw, Settings2, X } from 'lucide-svelte';
-	import { goto } from '$app/navigation';
-	import Board from '#lib/components/Board.svelte';
-	import Knight from '#lib/components/Knight.svelte';
+	import GameReplay from '#lib/components/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/AnalysisPanel.svelte';
-	import MoveControls from '#lib/components/MoveControls.svelte';
+	import AnalysisSheet from '#lib/components/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
 	import { demoAnalysis, demoEvaluations, parseGame } from '#lib/chess.js';
-	import '#lib/review.css';
 
 	let game = $derived(
 		app.games.find((g) => g.id === (page.url.searchParams.get('game') || app.currentId)) ??
@@ -24,14 +19,12 @@
 	let compact = $state(true);
 	let activeTab = $state('overview');
 	let previousId = '';
-	let currentMove = $derived(timeline.moves[ply - 1]);
 	let classification = $derived(
 		demo ? demoAnalysis.find((item) => item.plies.includes(ply)) : undefined
 	);
 	let evaluation = $derived(demo ? demoEvaluations[ply] : null);
 	let white = $derived(timeline.headers.White || 'White');
 	let black = $derived(timeline.headers.Black || 'Black');
-	let result = $derived(timeline.headers.Result || '*');
 
 	onMount(() => {
 		const wide = matchMedia('(min-width: 1200px) and (min-height: 620px)');
@@ -110,6 +103,7 @@
 			go(timeline.moves.length);
 		}
 	}
+
 	function download() {
 		try {
 			const url = URL.createObjectURL(new Blob([game.pgn], { type: 'application/x-chess-pgn' }));
@@ -124,7 +118,7 @@
 	}
 </script>
 
-<svelte:head><title>Game review · Paper & Ink</title></svelte:head>
+<svelte:head><title>Game review · Up a Pawn</title></svelte:head>
 <svelte:window onkeydown={onKey} />
 <svelte:document
 	onvisibilitychange={() => {
@@ -132,94 +126,92 @@
 	}}
 />
 
-<div class="page-heading review-heading">
-	<h1>Game review<span class="heading-dot">.</span></h1>
-	<DropdownMenu.Root bind:open={app.menuOpen}>
-		<DropdownMenu.Trigger class="icon-button game-actions" aria-label="Game actions"
-			><Ellipsis size={22} /></DropdownMenu.Trigger
-		>
-		<DropdownMenu.Portal
-			><DropdownMenu.Content class="dropdown-menu">
-				<DropdownMenu.Item onclick={download}><Download size={15} /> Export PGN</DropdownMenu.Item>
-				<DropdownMenu.Item onclick={() => go(0)}
-					><RotateCcw size={15} /> Start from the beginning</DropdownMenu.Item
-				>
-				<DropdownMenu.Item onclick={() => goto('/settings')}
-					><Settings2 size={15} /> Preferences</DropdownMenu.Item
-				>
-				<DropdownMenu.Item onclick={() => (app.helpOpen = true)}
-					><Lightbulb size={15} /> How this review works</DropdownMenu.Item
-				>
-			</DropdownMenu.Content></DropdownMenu.Portal
-		>
-	</DropdownMenu.Root>
-</div>
-
 <div class="review-layout" class:compact-review={compact}>
-	<section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
-		<div class="position-area">
-			<div class="position-frame">
-				<div class="player-row opponent">
-					<div class="player-avatar dark-player"><Knight size={25} /></div>
-					<div class="player-details"><strong>{flipped ? white : black}</strong></div>
-					<span class="piece-color" class:white-piece={flipped}></span>
-				</div>
-				<Board
-					fen={timeline.fens[ply] ?? timeline.fens[0]}
-					{flipped}
-					lastMove={currentMove}
-					{evaluation}
-					marker={classification && ['Great', 'Brilliant'].includes(classification.name)
-						? classification.symbol
-						: ''}
-				/>
-				<div class="player-row self">
-					<div class="player-avatar light-player"><Knight size={25} /></div>
-					<div class="player-details">
-						<strong
-							>{flipped ? black : white}{#if result === (flipped ? '0-1' : '1-0')}<span
-									class="player-winner">WINNER</span
-								>{/if}</strong
-						>
-					</div>
-					<span class="piece-color" class:white-piece={!flipped}></span>
-				</div>
-			</div>
-		</div>
-		<MoveControls
-			moves={timeline.moves}
-			{ply}
-			{playing}
-			{compact}
-			onNavigate={go}
-			onPlay={togglePlayback}
-			onFlip={() => (flipped = !flipped)}
-			onAnalysis={openAnalysis}
-		/>
-	</section>
+	<GameReplay
+		{timeline}
+		{ply}
+		{flipped}
+		{playing}
+		{compact}
+		{evaluation}
+		marker={classification && ['Great', 'Brilliant'].includes(classification.name)
+			? classification.symbol
+			: ''}
+		onNavigate={go}
+		onPlay={togglePlayback}
+		onFlip={() => (flipped = !flipped)}
+		onAnalysis={openAnalysis}
+		onExport={download}
+	/>
+
 	{#if !compact}<aside class="review-details" aria-label="Game analysis">
-			<AnalysisPanel {timeline} {demo} {ply} bind:activeTab onNavigate={goFromAnalysis} />
+			<AnalysisPanel
+				presentation="sidebar"
+				{timeline}
+				{demo}
+				{ply}
+				bind:activeTab
+				onNavigate={goFromAnalysis}
+			/>
 		</aside>{/if}
 </div>
 
 {#if compact}
-	<Dialog.Root bind:open={app.analysisOpen}>
-		<Dialog.Portal
-			><Dialog.Overlay class="dialog-overlay" /><Dialog.Content class="analysis-sheet">
-				<div class="dialog-handle"></div>
-				<div class="analysis-sheet-heading">
-					<Dialog.Title>Game analysis</Dialog.Title><Dialog.Close
-						class="icon-button"
-						aria-label="Close analysis"><X size={21} /></Dialog.Close
-					>
-				</div>
-				<Dialog.Description class="visually-hidden"
-					>Review {white} versus {black}. Choose a move to return to the board.</Dialog.Description
-				>
-				<div class="analysis-sheet-scroll">
-					<AnalysisPanel {timeline} {demo} {ply} bind:activeTab onNavigate={goFromAnalysis} />
-				</div>
-			</Dialog.Content></Dialog.Portal
-		>
-	</Dialog.Root>
+	<AnalysisSheet
+		bind:open={app.analysisOpen}
+		description={`Review ${white} versus ${black}. Choose a move to return to the board.`}
+	>
+		<AnalysisPanel
+			presentation="sheet"
+			{timeline}
+			{demo}
+			{ply}
+			bind:activeTab
+			onNavigate={goFromAnalysis}
+		/>
+	</AnalysisSheet>
 {/if}
+
+<style>
+	.review-layout {
+		display: grid;
+		flex: 1;
+		min-height: 0;
+		grid-template-columns: minmax(0, 1fr) 370px;
+		gap: 24px;
+		align-items: stretch;
+	}
+	.review-layout.compact-review {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	@media (max-width: 760px) {
+		.review-layout {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
+	}
+	/* Hide the column before the media listener remounts the sheet on resize. */
+	@media (max-width: 1199px), (max-height: 619px) {
+		.review-layout {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+	.review-details {
+		min-width: 0;
+	}
+	.review-details {
+		min-height: 0;
+		max-height: none;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		scrollbar-width: thin;
+		scrollbar-color: #c2c9b4 transparent;
+		scrollbar-gutter: stable;
+		padding: 0 2px 2px;
+	}
+	@media (max-width: 1199px), (max-height: 619px) {
+		.review-details {
+			display: none;
+		}
+	}
+</style>
