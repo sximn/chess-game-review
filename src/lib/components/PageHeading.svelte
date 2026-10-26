@@ -138,7 +138,7 @@
 			margin-top: 0;
 			flex-shrink: 0;
 		}
-		.page-heading > :global(.heading-action) > :global(svg:last-child) {
+		 .page-heading > :global(.heading-action) > :global(svg ~ svg:last-child) {
 			display: none;
 		}
 		.page-heading > :global(.heading-action) > :global(svg:first-child) {

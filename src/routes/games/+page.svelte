@@ -9,6 +9,9 @@
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
 	import AppLogo from '#lib/components/AppLogo.svelte';
+	import { useBreakpoints } from '#lib/breakpoints.js';
+
+	const { mobile } = useBreakpoints();
 
 	let query = $state('');
 	let filter = $state('all');
@@ -29,7 +32,7 @@
 
 <svelte:head><title>My games · Up a Pawn</title></svelte:head>
 <PageHeading title="My games" description="Old favorites. Fresh perspectives. All in one place.">
-	{#snippet actions()}<Button class="heading-action" onclick={() => (app.importOpen = true)}
+	{#snippet actions()}<Button size={mobile ? "icon" : "lg"} class="heading-action" onclick={() => (app.importOpen = true)}
 			><Plus size={18} /> Import game</Button
 		>{/snippet}
 </PageHeading>
