@@ -4,14 +4,13 @@
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
 	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
-	import { ArrowLeft, Check, Moon, Sun, Monitor, Smartphone, ShieldCheck } from 'lucide-svelte';
+	import { Check, Moon, Sun, ShieldCheck } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 </script>
 
 <svelte:head><title>Preferences · Paper & Ink</title></svelte:head>
 <PageHeading
 	title="Just your style"
-	eyebrow="MAKE YOURSELF AT HOME"
 	description="A few small adjustments. A space that feels like you."
 />
 <div class="settings-layout">

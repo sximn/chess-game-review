@@ -4,6 +4,7 @@
 	import Board from './Board.svelte';
 	import PlayerRow from './PlayerRow.svelte';
 	import MoveControls from './MoveControls.svelte';
+
 	let {
 		timeline,
 		ply,
@@ -15,7 +16,8 @@
 		onNavigate,
 		onPlay,
 		onFlip,
-		onAnalysis
+		onAnalysis,
+		onExport
 	}: {
 		timeline: Timeline;
 		ply: number;
@@ -28,7 +30,9 @@
 		onPlay: () => void;
 		onFlip: () => void;
 		onAnalysis: () => void;
+		onExport: () => void;
 	} = $props();
+
 	let white = $derived(timeline.headers.White || 'White');
 	let black = $derived(timeline.headers.Black || 'Black');
 	let result = $derived(timeline.headers.Result || '*');
@@ -69,6 +73,7 @@
 		{onPlay}
 		{onFlip}
 		{onAnalysis}
+		{onExport}
 	/>
 </section>
 

@@ -5,10 +5,11 @@
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import Button from '#lib/components/Button.svelte';
 	import MiniEyebrow from '#lib/components/MiniEyebrow.svelte';
-	import { ArrowUpRight, ChevronRight, FileUp, Plus, Search } from 'lucide-svelte';
+	import { ArrowUpRight, ChevronRight, Plus, Search } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
 	import Knight from '#lib/components/Knight.svelte';
+
 	let query = $state('');
 	let filter = $state('all');
 	let games = $derived(
@@ -27,11 +28,7 @@
 </script>
 
 <svelte:head><title>My games · Paper & Ink</title></svelte:head>
-<PageHeading
-	title="My games"
-	eyebrow="A COLLECTION OF LITTLE LESSONS"
-	description="Old favorites. Fresh perspectives. All in one place."
->
+<PageHeading title="My games" description="Old favorites. Fresh perspectives. All in one place.">
 	{#snippet actions()}<Button class="heading-action" onclick={() => (app.importOpen = true)}
 			><Plus size={18} /> Import game</Button
 		>{/snippet}

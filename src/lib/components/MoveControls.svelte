@@ -13,6 +13,8 @@
 		SkipForward
 	} from 'lucide-svelte';
 	import { moveLabel } from '#lib/chess.js';
+	import GameActions from './GameActions.svelte';
+
 	let {
 		moves,
 		ply,
@@ -21,7 +23,8 @@
 		onNavigate,
 		onPlay,
 		onFlip,
-		onAnalysis
+		onAnalysis,
+		onExport
 	}: {
 		moves: Move[];
 		ply: number;
@@ -31,8 +34,11 @@
 		onPlay: () => void;
 		onFlip: () => void;
 		onAnalysis: () => void;
+		onExport: () => void;
 	} = $props();
+
 	let carousel = $state<HTMLDivElement>();
+
 	function center(animate: boolean) {
 		const selected = carousel?.querySelector<HTMLButtonElement>('[aria-current="step"]');
 		if (!carousel || !selected) return;
@@ -135,19 +141,27 @@
 			class="replay-icon flip-button"
 			aria-label="Flip board"
 			title="Flip board"
-			onclick={onFlip}><ArrowDownUp size={17} /></Button
+			onclick={onFlip}
 		>
-		{#if compact}<Button
+			<ArrowDownUp size={17} />
+		</Button>
+		{#if compact}
+			<GameActions {onExport} />
+
+			<Button
 				variant="secondary"
 				size="sm"
 				class="replay-action analysis-trigger"
 				onclick={onAnalysis}
 				aria-haspopup="dialog"
-				><ChartNoAxesCombined
+			>
+				<ChartNoAxesCombined
 					size={16}
 					style="width:var(--analysis-icon-width);display:var(--analysis-icon-display)"
-				/><span>Analysis</span></Button
-			>{/if}
+				/>
+				<span>Analysis</span>
+			</Button>
+		{/if}
 	</div>
 </div>
 

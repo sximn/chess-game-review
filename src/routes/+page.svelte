@@ -1,16 +1,11 @@
 <script lang="ts">
-	import Button from '#lib/components/Button.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/state';
-	import { DropdownMenu } from 'bits-ui';
-	import { Download, Ellipsis, Lightbulb, RotateCcw, Settings2 } from 'lucide-svelte';
-	import { goto } from '$app/navigation';
 	import GameReplay from '#lib/components/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/AnalysisPanel.svelte';
 	import AnalysisSheet from '#lib/components/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
 	import { demoAnalysis, demoEvaluations, parseGame } from '#lib/chess.js';
-	import PageHeading from '#lib/components/PageHeading.svelte';
 
 	let game = $derived(
 		app.games.find((g) => g.id === (page.url.searchParams.get('game') || app.currentId)) ??
@@ -108,6 +103,7 @@
 			go(timeline.moves.length);
 		}
 	}
+
 	function download() {
 		try {
 			const url = URL.createObjectURL(new Blob([game.pgn], { type: 'application/x-chess-pgn' }));
@@ -130,7 +126,7 @@
 	}}
 />
 
-<PageHeading title="Game review" review>
+<!-- <PageHeading title="Game review" review>
 	{#snippet actions()}
 		<DropdownMenu.Root bind:open={app.menuOpen}>
 			<DropdownMenu.Trigger aria-label="Game actions"
@@ -172,7 +168,7 @@
 			>
 		</DropdownMenu.Root>
 	{/snippet}
-</PageHeading>
+</PageHeading> -->
 
 <div class="review-layout" class:compact-review={compact}>
 	<GameReplay
@@ -189,6 +185,7 @@
 		onPlay={togglePlayback}
 		onFlip={() => (flipped = !flipped)}
 		onAnalysis={openAnalysis}
+		onExport={download}
 	/>
 
 	{#if !compact}<aside class="review-details" aria-label="Game analysis">
@@ -261,7 +258,7 @@
 			display: none;
 		}
 	}
-	.dropdown-menu {
+	/* .dropdown-menu {
 		min-width: 230px;
 		z-index: 60;
 		padding: 5px;
@@ -284,5 +281,5 @@
 	.dropdown-menu [data-highlighted] {
 		background: var(--paper-deep);
 		color: var(--ink);
-	}
+	} */
 </style>
