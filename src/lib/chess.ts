@@ -16,8 +16,10 @@ export type SavedGame = { id: string; pgn: string; addedAt: string };
 export type Timeline = { moves: Move[]; fens: string[]; headers: Record<string, string> };
 
 export function parseGame(pgn: string): Timeline {
-	if (!pgn.trim()) throw new Error('Paste a PGN or choose a .pgn file to get started.');
-	if (pgn.length > 500_000) throw new Error('Please import a single game smaller than 500 KB.');
+	if (typeof pgn !== 'string' || !pgn.trim())
+		throw new Error('Paste a PGN or choose a .pgn file to get started.');
+	if (typeof pgn !== 'string' || new TextEncoder().encode(pgn).length > 1_048_576)
+		throw new Error('Please import a single game no larger than 1 MiB.');
 	const game = new Chess();
 	try {
 		game.loadPgn(pgn);
@@ -25,6 +27,8 @@ export function parseGame(pgn: string): Timeline {
 		throw new Error('That PGN could not be read. Check the move notation and try again.');
 	}
 	const moves = game.history({ verbose: true });
+	if (moves.length > 2000)
+		throw new Error('Please import a game with no more than 2,000 half-moves.');
 	if (!moves.length) throw new Error('This PGN has no moves yet. Try a completed game.');
 	return {
 		moves,

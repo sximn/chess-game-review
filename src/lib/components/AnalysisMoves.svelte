@@ -3,18 +3,19 @@
 	import type { AnalysisPresentation } from './analysis.types';
 
 	import type { Move } from 'chess.js';
-	import { demoAnalysis, moveLabel, type Timeline } from '#lib/chess.js';
+	import type { MoveQuality } from '#lib/engine/classification.js';
+	import { moveLabel, type Timeline } from '#lib/chess.js';
 	let {
 		contentProps,
 		timeline,
-		demo,
+		qualities,
 		ply,
 		presentation,
 		onNavigate
 	}: {
 		contentProps: HTMLAttributes<HTMLDivElement>;
 		timeline: Timeline;
-		demo: boolean;
+		qualities: (MoveQuality | undefined)[];
 		ply: number;
 		presentation: AnalysisPresentation;
 		onNavigate: (ply: number) => void;
@@ -54,7 +55,7 @@
 				<span>{pair.number}.</span>
 				{#each [pair.white, pair.black] as move, colorIndex}
 					{@const movePly = colorIndex === 0 ? pair.whitePly : pair.blackPly}
-					{@const quality = demo ? demoAnalysis.find((q) => q.plies.includes(movePly)) : null}
+					{@const quality = qualities[movePly]}
 
 					{#if move}
 						<button
@@ -65,7 +66,10 @@
 						>
 							{move.san}
 							{#if quality}
-								<span style={`color:${quality.color}`}>{quality.symbol}</span>
+								<span
+									title={`${quality.preliminary ? 'Preliminary' : 'Refined'} ${quality.name}`}
+									style={`color:${quality.color}`}>{quality.symbol}</span
+								>
 							{/if}
 						</button>
 					{:else}

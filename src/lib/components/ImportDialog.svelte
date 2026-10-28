@@ -20,8 +20,8 @@
 	let fileInput: HTMLInputElement;
 	async function readFile(file?: File) {
 		if (!file) return;
-		if (file.size > 500_000) {
-			error = 'Please choose a PGN file smaller than 500 KB.';
+		if (file.size > 1_048_576) {
+			error = 'Please choose a PGN file no larger than 1 MiB.';
 			return;
 		}
 		pgn = await file.text();
@@ -42,12 +42,7 @@
 	}
 </script>
 
-<DialogFrame
-	bind:open={app.importOpen}
-	kind="import"
-	title="Import Game"
-	closeLabel="Close import"
->
+<DialogFrame bind:open={app.importOpen} kind="import" title="Import Game" closeLabel="Close import">
 	{#snippet symbol()}<FileUp size={24} />{/snippet}
 	<Tabs.Root value="paste">
 		{#snippet child({ props })}
@@ -60,11 +55,7 @@
 				/>
 				<Tabs.Content value="paste">
 					{#snippet child({ props })}
-						<Field
-							{...props}
-							controlId="pgn"
-							label="Game notation"
-						>
+						<Field {...props} controlId="pgn" label="Game notation">
 							<Textarea
 								monospace
 								bind:value={pgn}
@@ -73,6 +64,8 @@
 								aria-describedby={error ? 'import-error' : undefined}
 								placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}
 								spellcheck="false"
+								autocapitalize="off"
+								autocorrect="off"
 							/>
 						</Field>
 					{/snippet}
@@ -87,9 +80,7 @@
 					/>
 					<button class="file-drop" onclick={() => fileInput.click()}
 						><FileUp size={32} /><strong>{filename || 'Choose a PGN file'}</strong><span
-							>{filename
-								? 'Click to choose another file'
-								: '.pgn - Up to 500 KB'}</span
+							>{filename ? 'Click to choose another file' : '.pgn - Up to 1 MiB'}</span
 						></button
 					>
 				</Tabs.Content>
@@ -163,7 +154,7 @@
 	@media (max-width: 760px) {
 		.import-form {
 			--textarea-min-height: 170px;
-			--textarea-font-size: 12px;
+			--textarea-font-size: 16px; /* Avoid iOS focusing zoom, which persists after closing the sheet. */
 		}
 	}
 </style>

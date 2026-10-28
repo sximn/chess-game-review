@@ -12,6 +12,7 @@
 		playing,
 		compact,
 		evaluation,
+		evaluationLabel,
 		marker,
 		onNavigate,
 		onPlay,
@@ -25,6 +26,7 @@
 		playing: boolean;
 		compact: boolean;
 		evaluation: number | null;
+		evaluationLabel: string;
 		marker: string;
 		onNavigate: (ply: number) => void;
 		onPlay: () => void;
@@ -54,6 +56,7 @@
 				{flipped}
 				lastMove={currentMove}
 				{evaluation}
+				{evaluationLabel}
 				{marker}
 			/>
 			<PlayerRow

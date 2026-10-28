@@ -12,3 +12,6 @@ android/build
 ios/App/Pods
 ios/App/build
 .idea
+engine/frozenight/target
+playwright-report
+test-results

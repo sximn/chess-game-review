@@ -5,6 +5,22 @@
 	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
 	import { Check, Moon, Sun, ShieldCheck } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
+	const noticeFiles = [
+		{ file: 'LICENSE-MIT.txt', title: 'Engine license' },
+		{ file: 'DEPENDENCY-NOTICES.txt', title: 'Third-party notices' }
+	];
+	let notices = $state<Record<string, string>>({});
+	async function readNotice(file: string) {
+		if (notices[file]) return;
+		notices[file] = 'Loading…';
+		try {
+			const response = await fetch('/engine/frozenight/' + file);
+			if (!response.ok) throw new Error();
+			notices[file] = await response.text();
+		} catch {
+			notices[file] = 'The notice could not be loaded. Reopen preferences to retry.';
+		}
+	}
 </script>
 
 <svelte:head><title>Preferences · Up a Pawn</title></svelte:head>
@@ -65,19 +81,62 @@
 			>
 				<PreferenceSwitch bind:checked={app.coordinates} />
 			</Field>
-			<Field
-				controlId="evaluation"
-				label="Evaluation bar"
-				layout="inline"
-				class="setting-row"
-			>
+			<Field controlId="evaluation" label="Evaluation bar" layout="inline" class="setting-row">
 				<PreferenceSwitch bind:checked={app.showEvaluation} />
 			</Field>
+			<div class="settings-divider"></div>
+			<h2>Local analysis</h2>
+			<p class="analysis-notice">Frozenight runs on this device. Games stay private.</p>
+			<a class="diagnostics-link" href="/diagnostics">Engine diagnostics</a>
+			{#each noticeFiles as notice}
+				<details
+					class="license-notice"
+					ontoggle={(event) => {
+						if (event.currentTarget.open) void readNotice(notice.file);
+					}}
+				>
+					<summary>{notice.title}</summary>
+					<pre>{notices[notice.file] ?? 'Loading…'}</pre>
+				</details>
+			{/each}
 		</div></Card
 	>
 </div>
 
 <style>
+	.license-notice {
+		margin: 10px 0;
+		font-size: 13px;
+	}
+	.license-notice summary {
+		cursor: pointer;
+		min-height: 36px;
+		padding: 8px 0;
+	}
+	.license-notice pre {
+		max-height: 240px;
+		overflow: auto;
+		white-space: pre-wrap;
+		overflow-wrap: anywhere;
+		font-size: 11px;
+		line-height: 1.6;
+		padding: 12px;
+		background: var(--field);
+		border-radius: 8px;
+	}
+	.diagnostics-link {
+		display: block;
+		min-height: 36px;
+		padding: 8px 0;
+		font-size: 13px;
+		text-decoration: underline;
+	}
+	.analysis-notice {
+		font-size: 12px;
+		line-height: 1.7;
+		color: var(--muted);
+	}
+
 	.settings-layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1.5fr) minmax(200px, 0.8fr);
