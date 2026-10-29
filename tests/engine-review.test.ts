@@ -1,17 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Chess } from 'chess.js';
-import { ReviewController, type ReviewState } from '../src/lib/engine/review.ts';
-import type { EngineClient } from '../src/lib/engine/client.ts';
-import type { AnalyzeRequest, AnalysisResult } from '../src/lib/engine/types.ts';
-import { BUILD } from '../src/lib/engine/build.ts';
+import { ReviewController, ReviewError, type ReviewState } from '../src/lib/engine/review.ts';
+import {
+	frozenightManifest,
+	type ChessEngine,
+	type AnalyzeRequest,
+	type AnalysisResult
+} from 'chess-engine-kit';
 
-test('played-root comparisons use the best completed horizon and finish a progressive review', async () => {
+async function review(depth: number | null = 4) {
 	const requests: AnalyzeRequest[] = [];
 	const identity = {
-		engineCommit: BUILD.upstreamCommit,
-		buildHash: BUILD.buildHash,
-		networkHash: BUILD.networkHash,
+		...frozenightManifest.descriptor,
 		settingsFingerprint: 'test-hash32'
 	};
 	const engine = {
@@ -43,7 +44,7 @@ test('played-root comparisons use the best completed horizon and finish a progre
 				completedIteration: true,
 				completion: 'completed',
 				reason: 'depth',
-				depth: 4,
+				depth,
 				nodes: 1000,
 				iterationNodes: 1000,
 				lines: moves.map((rootMove, i) => ({
@@ -54,7 +55,7 @@ test('played-root comparisons use the best completed horizon and finish a progre
 				}))
 			};
 		}
-	} as unknown as EngineClient;
+	} as unknown as ChessEngine;
 	let done!: (state: ReviewState) => void;
 	const complete = new Promise<ReviewState>((resolve) => (done = resolve));
 	const review = new ReviewController((state) => {
@@ -63,6 +64,17 @@ test('played-root comparisons use the best completed horizon and finish a progre
 	try {
 		review.reviewGame('1. e4 e5 *');
 		const state = await complete;
+		return { state, requests };
+	} finally {
+		review.dispose();
+	}
+}
+
+test(
+	'played-root comparisons use the best completed horizon and finish a progressive review',
+	{ timeout: 5000 },
+	async () => {
+		const { state, requests } = await review();
 		assert.equal(state.scored, 3);
 		assert.equal(state.qualities.filter(Boolean).length, 2);
 		const restricted = requests.filter((r) => r.rootMoves);
@@ -71,7 +83,35 @@ test('played-root comparisons use the best completed horizon and finish a progre
 		assert.ok(
 			state.qualities.filter(Boolean).every((q) => q!.comparedDepths[0] === q!.comparedDepths[1])
 		);
+	}
+);
+test(
+	'unknown engine depths finish review with uncertain labels and no fabricated depth limit',
+	{ timeout: 5000 },
+	async () => {
+		const { state, requests } = await review(null);
+		assert.equal(state.scored, 3);
+		assert.ok(state.qualities.filter(Boolean).every((q) => q!.name === 'Uncertain'));
+		assert.ok(requests.filter((r) => r.rootMoves).every((r) => r.limits.maxDepth === undefined));
+	}
+);
+test('invalid PGN remains an app error and does not reset the active engine', () => {
+	let reset = false;
+	const engine = {
+		onEvent: () => () => {},
+		reset: () => {
+			reset = true;
+		},
+		dispose: () => {}
+	} as unknown as ChessEngine;
+	const controller = new ReviewController(() => {}, engine);
+	try {
+		assert.throws(
+			() => controller.reviewGame('1. Qz9'),
+			(error) => error instanceof ReviewError && error.code === 'INVALID_PGN'
+		);
+		assert.equal(reset, false);
 	} finally {
-		review.dispose();
+		controller.dispose();
 	}
 });

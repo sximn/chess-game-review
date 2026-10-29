@@ -1,5 +1,5 @@
 import { parseGame, type Timeline } from '../chess.ts';
-import { EngineClient } from './client.ts';
+import { createReviewEngine } from './provider.ts';
 import { ResultCache, resultKey } from './cache.ts';
 import { classify, type MoveQuality } from './classification.ts';
 import {
@@ -8,12 +8,24 @@ import {
 	type AnalyzeRequest,
 	type AnalysisResult,
 	type SearchLimits,
-	type Position
-} from './types.ts';
-import { validateResult } from './validation.ts';
+	type Position,
+	type ChessEngine
+} from 'chess-engine-kit';
+import { isCachedResult } from './cached-result.ts';
+
 export const QUICK_LIMITS: SearchLimits = { maxNodes: 30_000, maxTimeMs: 750 };
 export const SELECTED_LIMITS: SearchLimits = { maxNodes: 100_000, maxTimeMs: 1500 };
 const DEEP_LIMITS: SearchLimits = { maxNodes: 150_000, maxTimeMs: 2000 };
+
+export class ReviewError extends Error {
+	readonly code = 'INVALID_PGN';
+	readonly retryable = false;
+}
+
+function comparisonLimits(limits: SearchLimits, depth: number | null): SearchLimits {
+	return depth === null ? limits : { ...limits, maxDepth: Math.max(1, depth) };
+}
+
 export type ReviewState = {
 	phase: 'idle' | 'loading' | 'reviewing' | 'refining' | 'paused' | 'complete' | 'error';
 	positions: (AnalysisResult | undefined)[];
@@ -27,6 +39,7 @@ export type ReviewState = {
 	warning: string;
 	activeJob?: string;
 };
+
 export const emptyReview = (): ReviewState => ({
 	phase: 'idle',
 	positions: [],
@@ -37,6 +50,7 @@ export const emptyReview = (): ReviewState => ({
 	total: 0,
 	warning: ''
 });
+
 export class ReviewController {
 	state: ReviewState = emptyReview();
 	private timeline?: Timeline;
@@ -54,8 +68,8 @@ export class ReviewController {
 	private cache = new ResultCache();
 	private unsubscribe: () => void;
 	private update: (state: ReviewState) => void;
-	readonly engine: EngineClient;
-	constructor(update: (state: ReviewState) => void, engine = new EngineClient()) {
+	readonly engine: ChessEngine;
+	constructor(update: (state: ReviewState) => void, engine: ChessEngine = createReviewEngine()) {
 		this.update = update;
 		this.engine = engine;
 		this.unsubscribe = engine.onEvent((event) => {
@@ -93,7 +107,7 @@ export class ReviewController {
 		try {
 			timeline = parseGame(pgn);
 		} catch (error) {
-			throw new EngineError('INVALID_PGN', (error as Error).message);
+			throw new ReviewError((error as Error).message);
 		}
 		this.epoch++;
 		this.revision++;
@@ -190,7 +204,7 @@ export class ReviewController {
 			multiPv,
 			...(rootMoves ? { rootMoves } : {})
 		};
-		const key = await resultKey(request, this.engine.identity.settingsFingerprint);
+		const key = await resultKey(request, this.engine.identity);
 		const cached = await this.cache.get(key);
 		if (
 			epoch !== this.epoch ||
@@ -200,22 +214,8 @@ export class ReviewController {
 			this.disposed
 		)
 			throw new EngineError('CANCELLED', 'Review paused.', true);
-		if (cached) {
-			try {
-				validateResult(cached, request.position, multiPv, rootMoves);
-				if (
-					cached.completedIteration &&
-					cached.apiVersion === 1 &&
-					cached.networkHash === this.engine.identity.networkHash &&
-					cached.engineCommit === this.engine.identity.engineCommit &&
-					cached.buildHash === this.engine.identity.buildHash &&
-					cached.settingsFingerprint === this.engine.identity.settingsFingerprint
-				)
-					return { ...cached, jobId: request.jobId, positionId: request.positionId };
-			} catch {
-				/* Corrupt cached results are replaced by a real search. */
-			}
-		}
+		if (isCachedResult(cached, request, this.engine.identity))
+			return { ...cached, jobId: request.jobId, positionId: request.positionId };
 		this.state.activeJob = request.jobId;
 		if (foreground) this.foregroundJob = request.jobId;
 		this.publish();
@@ -259,12 +259,9 @@ export class ReviewController {
 					const played =
 						best.lines[0]?.rootMove === move.lan
 							? best
-							: await this.search(
-									ply - 1,
-									{ ...QUICK_LIMITS, maxDepth: Math.max(1, best.depth) },
-									1,
-									[move.lan]
-								);
+							: await this.search(ply - 1, comparisonLimits(QUICK_LIMITS, best.depth), 1, [
+									move.lan
+								]);
 					if (epoch !== this.epoch) break;
 					this.state.qualities[ply] = classify(best, played, move.color, move.lan, ply - 1);
 					classified = true;
@@ -303,12 +300,9 @@ export class ReviewController {
 						played =
 							best.lines[0]?.rootMove === move.lan
 								? best
-								: await this.search(
-										deepen - 1,
-										{ ...DEEP_LIMITS, maxDepth: Math.max(1, best.depth) },
-										1,
-										[move.lan]
-									);
+								: await this.search(deepen - 1, comparisonLimits(DEEP_LIMITS, best.depth), 1, [
+										move.lan
+									]);
 					if (epoch !== this.epoch) break;
 					this.state.qualities[deepen] = classify(
 						best,

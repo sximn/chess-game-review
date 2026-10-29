@@ -36,6 +36,9 @@ test('engine notices can be read without leaving the app navigation', async ({ p
 		.filter({ has: page.locator('summary').filter({ hasText: 'Engine license' }) });
 	await notice.locator('summary').click();
 	await expect(notice.locator('pre')).toContainText('Mark Carlson');
+	const dependencies = page.locator('details').filter({ hasText: 'Third-party notices' });
+	await dependencies.locator('summary').click();
+	await expect(dependencies.locator('pre')).toContainText('chess.js');
 	await page.getByRole('link', { name: 'Game review', exact: true }).click();
 	await expect(page.locator('.chessboard')).toBeVisible();
 });
@@ -46,10 +49,10 @@ test('a corrupt persistent engine cache is evicted and repaired before review', 
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('/diagnostics');
 	await page.evaluate(async () => {
-		const manifest = await (await fetch('/engine/frozenight/manifest.json')).json();
-		const cache = await caches.open('upapawn-engine-assets-v1');
+		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
+		const cache = await caches.open('chess-engine-kit-assets-v1');
 		await cache.put(
-			new URL(manifest.wasmPath, location.href).href,
+			new URL('/engines/frozenight/' + manifest.wasm.file, location.href).href,
 			new Response('damaged persistent cache')
 		);
 		localStorage.setItem(
@@ -60,15 +63,15 @@ test('a corrupt persistent engine cache is evicted and repaired before review', 
 	await page.goto('/?game=cache-repair');
 	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 60000 });
 	const repaired = await page.evaluate(async () => {
-		const manifest = await (await fetch('/engine/frozenight/manifest.json')).json();
-		const cache = await caches.open('upapawn-engine-assets-v1');
+		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
+		const cache = await caches.open('chess-engine-kit-assets-v1');
 		const bytes = await (await cache.match(
-			new URL(manifest.wasmPath, location.href).href
+			new URL('/engines/frozenight/' + manifest.wasm.file, location.href).href
 		))!.arrayBuffer();
 		const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
 			.map((b) => b.toString(16).padStart(2, '0'))
 			.join('');
-		return digest === manifest.wasmSha256;
+		return digest === manifest.wasm.sha256;
 	});
 	expect(repaired).toBe(true);
 });

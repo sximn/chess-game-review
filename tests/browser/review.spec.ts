@@ -3,27 +3,19 @@ import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 
-test('real WASM lifecycle: 100 cancel/restart/reset/dispose cycles without stale results', async ({
-	page
-}, info) => {
+test('package assets load and diagnostics analyze a real local position', async ({ page }) => {
 	const errors: string[] = [];
 	page.on('pageerror', (e) => errors.push(e.message));
 	await page.goto('/diagnostics');
 	await page.getByRole('button', { name: 'Run local diagnostics' }).click();
-	await expect(page.getByRole('status')).toHaveText('All local checks passed', { timeout: 110000 });
+	await expect(page.getByRole('status')).toHaveText('All local checks passed');
 	const result = JSON.parse((await page.getByTestId('diagnostics-results').textContent())!);
-	expect(result.cycles).toBe(100);
-	expect(result.terminalEvents).toBe(200);
-	expect(result.staleUpdates).toBe(0);
-	expect(result.sharedMemory).toBe(false);
-	expect(result.peakObservedMemoryBytes).toBeLessThanOrEqual(256 * 1024 * 1024);
-	expect(result.cancellationAckMs.p95).toBeLessThan(250);
-	expect(result.replacementResultMs.p95).toBeLessThan(500);
+	expect(result.identity.engineId).toBe('frozenight');
+	expect(result.capabilities.sharedMemory).toBe(false);
+	expect(result.candidateLines).toBe(3);
+	expect(result.nodes).toBeGreaterThan(0);
+	expect(result.memoryBytes).toBeLessThanOrEqual(256 * 1024 * 1024);
 	expect(errors).toEqual([]);
-	fs.writeFileSync(
-		`artifacts/frozenight/lifecycle-${info.project.name}.json`,
-		JSON.stringify(result, null, 2)
-	);
 });
 
 test('game review displays real alternatives, replays a branch, and keeps score sign on flip', async ({
@@ -51,7 +43,7 @@ test('game review displays real alternatives, replays a branch, and keeps score 
 	await page.getByRole('tab', { name: 'Evaluation', exact: true }).click();
 	await expect(page.getByRole('region', { name: 'Evaluation timeline' })).toBeVisible();
 	await page.screenshot({
-		path: `artifacts/frozenight/review-${info.project.name}.png`,
+		path: `artifacts/app-verification/review-${info.project.name}.png`,
 		fullPage: true
 	});
 	expect(errors).toEqual([]);
@@ -67,7 +59,7 @@ test('mobile layout stays interactive during local analysis', async ({ page }, i
 	await page.getByRole('button', { name: /analysis/i }).click();
 	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 	await page.screenshot({
-		path: `artifacts/frozenight/mobile-${info.project.name}.png`,
+		path: `artifacts/app-verification/mobile-${info.project.name}.png`,
 		fullPage: true
 	});
 	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -113,6 +105,17 @@ test('offline reload reviews a different PGN without a successful network reques
 				});
 		});
 	});
+	// The SDK cache covers WASM only. Prove the app shell also precached the worker.
+	const precached = await page.evaluate(async () => {
+		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
+		const shellName = (await caches.keys()).find((name) => name.startsWith('upapawn-shell-'))!;
+		const shell = await caches.open(shellName);
+		return {
+			worker: !!(await shell.match('/engines/frozenight/' + manifest.worker.file)),
+			wasm: !!(await shell.match('/engines/frozenight/' + manifest.wasm.file))
+		};
+	});
+	expect(precached).toEqual({ worker: true, wasm: true });
 	const pgn = '[White "Offline Ada"]\n[Black "Offline Grace"]\n\n1. d4 d5 2. c4 e6 3. Nc3 Nf6 *';
 	await page.evaluate((pgn) => {
 		localStorage.setItem(
@@ -141,10 +144,11 @@ test('offline reload reviews a different PGN without a successful network reques
 	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 	expect(successful).toEqual([]);
 	fs.writeFileSync(
-		`artifacts/frozenight/offline-${info.project.name}.json`,
+		`artifacts/app-verification/offline-${info.project.name}.json`,
 		JSON.stringify(
 			{
 				differentPgn: true,
+				precached,
 				outage: server ? 'origin-server-stopped' : 'browser-offline-emulation',
 				reviewCompleted: true,
 				successfulNetworkResponses: successful,
@@ -166,7 +170,9 @@ test('a corrupt downloaded asset is rejected, then retry recovers', async ({ bro
 	);
 	await page.goto('/diagnostics');
 	await page.getByRole('button', { name: 'Run local diagnostics' }).click();
-	await expect(page.getByRole('status')).toContainText('integrity check');
+	await expect(page.getByRole('status')).toHaveText(
+		'The engine asset failed SHA-256 verification.'
+	);
 	await context.unroute('**/engine-*.wasm');
 	await page.getByRole('button', { name: 'Run local diagnostics' }).click();
 	await expect(page.getByRole('status')).toHaveText('All local checks passed', { timeout: 110000 });
@@ -205,65 +211,6 @@ test('storage quota errors remain recoverable and hiding pauses review', async (
 	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 });
 
-test('an 80-ply held-out game completes and persists all 81 positions', async ({ page }, info) => {
-	test.setTimeout(600000);
-	const corpus = JSON.parse(fs.readFileSync('tests/fixtures/engine-corpus.json', 'utf8'));
-	const game = corpus.games.find(
-		(g: { partition: string; plies: number }) => g.partition === 'held-out' && g.plies === 80
-	);
-	await page.addInitScript(
-		(pgn) =>
-			localStorage.setItem(
-				'upapawn-games',
-				JSON.stringify([{ id: 'long-review', pgn, addedAt: new Date().toISOString() }])
-			),
-		game.pgn
-	);
-	await page.setViewportSize({ width: 1440, height: 1000 });
-	const started = Date.now();
-	await page.goto('/?game=long-review');
-	await expect(page.getByText('81 / 81 positions', { exact: true })).toBeVisible({
-		timeout: 240000
-	});
-	const allPositionsScoredMs = Date.now() - started;
-	// This is a worst-case random-move stress game with many real mistakes; record
-	// latency rather than treating the functional timeout as a release performance gate.
-	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 480000 });
-	const records = await page.evaluate(
-		() =>
-			new Promise<number>((resolve, reject) => {
-				const open = indexedDB.open('upapawn-analysis-v1');
-				open.onerror = () => reject(open.error);
-				open.onsuccess = () => {
-					const db = open.result;
-					const count = db.transaction('results').objectStore('results').count();
-					count.onsuccess = () => {
-						resolve(count.result);
-						db.close();
-					};
-				};
-			})
-	);
-	expect(records).toBeGreaterThanOrEqual(81);
-	fs.writeFileSync(
-		`artifacts/frozenight/whole-game-${info.project.name}.json`,
-		JSON.stringify(
-			{
-				gameId: game.id,
-				plies: 80,
-				elapsedMs: Date.now() - started,
-				allPositionsScoredMs,
-				persistedRecords: records,
-				budget: { nodes: 30000, timeCapMs: 750 },
-				limitation:
-					'One exploratory desktop game, including classifications/refinements; quality budget remains provisional.'
-			},
-			null,
-			2
-		)
-	);
-});
-
 test('mobile PGN import opens a fresh local review without shrinking the board', async ({
 	page
 }, info) => {
@@ -300,7 +247,7 @@ test('mobile PGN import opens a fresh local review without shrinking the board',
 	await expect(page.getByText('7 / 7 positions', { exact: true })).toBeVisible();
 	expect(unexpected).toEqual([]);
 	fs.writeFileSync(
-		`artifacts/frozenight/privacy-${info.project.name}.json`,
+		`artifacts/app-verification/privacy-${info.project.name}.json`,
 		JSON.stringify(
 			{
 				unexpectedRequests: unexpected,

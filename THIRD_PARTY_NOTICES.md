@@ -8,10 +8,8 @@ The Opera Game moves are historical game notation. Review scores, classification
 
 ## Frozenight engine and model
 
-Frozenight by Mark Carlson is vendored at commit `f4d5a00725b2cd5f1c32910d57a84c77b66cc670`. Its source and repository-bundled `model.json.zst` use MIT OR Apache-2.0; this distribution elects MIT. The original licenses are retained in `engine/frozenight/` and shipped under `/engine/frozenight/`. The Up a Pawn bridge and modifications use MIT. No code from the CrispChess wrapper is used.
+Frozenight by Mark Carlson is provided by the pinned npm dependency `chess-engine-kit@0.0.1`. The package records the upstream source revision, model hash, engine build and adapter identity in its deployment manifest. Frozenight and its repository-bundled model use MIT OR Apache-2.0; the package elects MIT.
 
-The Cargo dependency manifest is [engine/frozenight/dependencies.json](engine/frozenight/dependencies.json). Full notices for 23 locked dependencies, including build dependencies, ship in [DEPENDENCY-NOTICES.txt](static/engine/frozenight/DEPENDENCY-NOTICES.txt). Rust 1.90.0 standard-library notices and referenced license texts ship alongside them as `RUST-COPYRIGHT.html` and `licenses/`; those upstream notices also cover unused components/other compilation targets.
+The package's asset-copy CLI deploys the original `LICENSE-MIT.txt` and `LICENSE-APACHE.txt`, consolidated `THIRD-PARTY-NOTICES.txt`, and provenance manifests alongside its worker and WASM under `/engines/frozenight/`. These generated assets are included in the web offline shell and native application bundles. The consolidated notices cover the bundled chess.js, Cargo and Rust standard-library components. Read the engine license and consolidated notices from Preferences in the app.
 
-The exact engine/model/build hashes, toolchain and byte sizes are recorded in [manifest.json](static/engine/frozenight/manifest.json). Regenerate notices with `node scripts/engine-notices.mjs` when the lockfile or toolchain changes.
-
-The frozen tactical test fixtures in `tests/fixtures/tactical-corpus.json` are a CC0 subset of the [Lichess puzzle database](https://database.lichess.org/#puzzles). Their source, sampling, retrieval date and rights are recorded in that file. They are test data and are not shipped in the runtime app.
+Engine licensing records and notice regeneration are maintained in [chess-engine-kit](https://github.com/sximn/chess-engine-kit). This app does not vendor or compile engine source. The original deterministic game in `tests/fixtures/review-game.json` is app test data and is not shipped at runtime.

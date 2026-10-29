@@ -1,0 +1,7 @@
+{
+	"rights": "Original deterministic self-generated legal positions and games. No third-party game corpus.",
+	"id": "self-20",
+	"partition": "held-out",
+	"pgn": "[Event \"?\"]\n[Site \"?\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"?\"]\n[Black \"?\"]\n[Result \"*\"]\n\n1. h4 f6 2. Nh3 e6 3. c3 Ba3 4. Qc2 Nc6 5. f4 Bc5 6. e3 Bb4 7. g3 f5 8. Na3 Ba5 9. Bd3 Nce7 10. c4 Ng6 11. Qc3 Bxc3 12. Rf1 Kf8 13. e4 Qe8 14. Bc2 Ke7 15. b4 a6 16. Rf2 Ne5 17. Kd1 Qd8 18. Rh2 h6 19. Rb1 Bxd2 20. Ke2 Kf8 21. b5 g5 22. Bd1 Nf6 23. Kf1 Ba5 24. fxg5 Bc3 25. Rh1 c6 26. Bc2 Bd2 27. gxh6 Bxc1 28. bxc6 Ke7 29. exf5 Bd2 30. fxe6 b5 31. Rb2 Nxc6 32. Kf2 Bxh6 33. Rf1 Ng4+ 34. Ke2 Na5 35. Rg1 Be3 36. Kd3 Rh6 37. Rh1 Qb6 38. Ba4 Rb8 39. Ng5 Qxe6 40. Rbb1 Bf4 *",
+	"plies": 80
+}

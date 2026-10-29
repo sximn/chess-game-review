@@ -4,10 +4,11 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
-const manifest = JSON.parse(fs.readFileSync('static/engine/frozenight/manifest.json', 'utf8'));
+const manifest = JSON.parse(fs.readFileSync('static/engines/frozenight/manifest.json', 'utf8'));
 const files = [];
 function walk(dir) {
 	for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+		if (e.name === '.DS_Store') continue;
 		const p = path.join(dir, e.name);
 		if (e.isDirectory()) walk(p);
 		else files.push(path.relative('build', p));
@@ -16,8 +17,8 @@ function walk(dir) {
 walk('build');
 const report = {
 	timestamp: new Date().toISOString(),
-	engineBuild: manifest.buildHash,
-	wasmSha256: manifest.wasmSha256,
+	engineBuild: manifest.descriptor.buildHash,
+	wasmSha256: manifest.wasm.sha256,
 	files: files.length,
 	platforms: {}
 };
@@ -52,8 +53,9 @@ if (ios >= 0) {
 	report.platforms.ios = { app, allAssetsIdentical: true };
 }
 if (!Object.keys(report.platforms).length) throw Error('Select --android and/or --ios <built-app>');
+fs.mkdirSync('artifacts/app-verification', { recursive: true });
 fs.writeFileSync(
-	'artifacts/frozenight/' +
+	'artifacts/app-verification/' +
 		(process.argv.includes('--release') ? 'native-assets-release.json' : 'native-assets.json'),
 	JSON.stringify(report, null, 2) + '\n'
 );

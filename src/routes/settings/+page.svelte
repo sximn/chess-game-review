@@ -7,14 +7,14 @@
 	import { app } from '#lib/state.svelte.js';
 	const noticeFiles = [
 		{ file: 'LICENSE-MIT.txt', title: 'Engine license' },
-		{ file: 'DEPENDENCY-NOTICES.txt', title: 'Third-party notices' }
+		{ file: 'THIRD-PARTY-NOTICES.txt', title: 'Third-party notices' }
 	];
 	let notices = $state<Record<string, string>>({});
 	async function readNotice(file: string) {
 		if (notices[file]) return;
 		notices[file] = 'Loading…';
 		try {
-			const response = await fetch('/engine/frozenight/' + file);
+			const response = await fetch('/engines/frozenight/' + file);
 			if (!response.ok) throw new Error();
 			notices[file] = await response.text();
 		} catch {

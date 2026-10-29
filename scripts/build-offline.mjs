@@ -5,6 +5,10 @@ const assets = [];
 function walk(dir) {
 	for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
 		const file = path.join(dir, e.name);
+		if (e.name === '.DS_Store') {
+			fs.unlinkSync(file);
+			continue;
+		}
 		if (e.isDirectory()) walk(file);
 		else if (!/\.map$|\.br$|\.gz$|service-worker\.js$/.test(file))
 			assets.push('/' + path.relative('build', file).split(path.sep).join('/'));

@@ -1,4 +1,6 @@
+import fs from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+fs.mkdirSync('artifacts/app-verification', { recursive: true });
 export default defineConfig({
 	testDir: 'tests/browser',
 	timeout: 120000,
@@ -10,7 +12,8 @@ export default defineConfig({
 		[
 			'json',
 			{
-				outputFile: process.env.ENGINE_BROWSER_REPORT || 'artifacts/frozenight/browser-results.json'
+				outputFile:
+					process.env.APP_BROWSER_REPORT || 'artifacts/app-verification/browser-results.json'
 			}
 		]
 	],

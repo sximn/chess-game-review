@@ -106,9 +106,9 @@
 					</p>
 					{#if quality}<div class="played-quality">
 							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong><span
-								>{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths.join(
-									' / '
-								)}</span
+								>{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
+									.map((depth) => depth ?? '—')
+									.join(' / ')}</span
 							>{#if quality.lossCp !== null}<span>{quality.lossCp} cp measured loss</span
 								>{/if}{#if quality.noise}<span
 									>These moves were too close to distinguish reliably.</span
@@ -153,7 +153,7 @@
 	</div>
 	<p class="review-caption">
 		White’s perspective{#if result}
-			· depth {result.depth} · {result.nodes.toLocaleString()} nodes{/if}
+			· depth {result.depth ?? '—'} · {result.nodes?.toLocaleString() ?? '—'} nodes{/if}
 	</p>
 	{#if result?.lines.length}
 		{#each result.lines as line}

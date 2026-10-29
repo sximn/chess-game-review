@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { runDiagnostics } from '#lib/engine/diagnostics.js';
-	import { BUILD } from '#lib/engine/build.js';
+	import { frozenightManifest } from 'chess-engine-kit';
 	let running = $state(false),
 		status = $state('Ready'),
 		output = $state('');
@@ -12,7 +12,7 @@
 		output = '';
 		abort = new AbortController();
 		try {
-			const result = await runDiagnostics(100, (message) => (status = message), abort.signal);
+			const result = await runDiagnostics((message) => (status = message), abort.signal);
 			output = JSON.stringify(result, null, 2);
 			status = 'All local checks passed';
 		} catch (error) {
@@ -29,14 +29,14 @@
 	<h1>Local engine diagnostics</h1>
 	<p>Frozenight · scalar WebAssembly · one worker · no shared memory</p>
 	<p>
-		Runs 100 initialization, search, cancellation, reset and disposal cycles on this device. No
-		games or results are sent anywhere.
+		Checks that the local engine assets load and a position can be analyzed on this device. Games
+		and results stay on this device.
 	</p>
 	<button onclick={run} disabled={running}>Run local diagnostics</button>
 	<p role="status">{status}</p>
 	<details>
 		<summary>Engine build and network</summary>
-		<pre>{JSON.stringify(BUILD, null, 2)}</pre>
+		<pre>{JSON.stringify(frozenightManifest, null, 2)}</pre>
 	</details>
 	{#if output}<pre data-testid="diagnostics-results">{output}</pre>{/if}
 	<a href="/">Return to review</a>

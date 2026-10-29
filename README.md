@@ -15,7 +15,7 @@ Open [localhost:5173](http://localhost:5173).
 
 ```sh
 bun run check   # Svelte and TypeScript diagnostics
-bun run test    # PGN, legal replay, API and native/WASM parity tests
+bun run test    # PGN, review scheduling, classification and cache tests
 bun run build  # Static SPA in build/
 ```
 
@@ -39,14 +39,27 @@ The review workspace fits the board and controls inside the viewport without pag
 
 Overview, Moves, and Evaluation use real engine results. The worker prioritizes the selected position, then reviews the whole game and refines uncertain moments. Pause/resume and typed retry states remain available. All game content stays on the device. The web app installs an offline shell; Capacitor bundles the assets at build time.
 
-**Review budgets and move labels are preliminary.** Browser correctness and native builds have been verified, but the requirements' full quality and physical-phone performance/thermal gates are not release-qualified. See [verification and remaining gates](artifacts/frozenight/verification.md).
+**Review budgets and move labels are preliminary.** The app owns review scheduling, classification thresholds and device performance qualification. Engine correctness does not establish review accuracy or physical-phone performance/thermal suitability.
 
-Frozenight is pinned, vendored and distributed under MIT, including its repository-bundled model. [Engine build instructions, local API and caching policy](engine/frozenight/README.md) document the fork and reproduction. The earlier [Caissa feasibility report](artifacts/caissa-feasibility/decision.md) remains for context; no Caissa code or network is bundled.
+Local analysis uses the exact npm dependency `chess-engine-kit@0.0.1`, which ships a prebuilt Frozenight WASM engine and module worker. App developers need neither Rust nor Docker. `dev` and `build` run the package's asset-copy CLI into the ignored `static/engines/frozenight/` directory; the build includes those assets in the offline shell and Capacitor bundle.
 
 ```sh
-bun run engine:build  # Requires Rust 1.90.0 + wasm32-unknown-unknown
-bun run test:browser # Chromium, Firefox, WebKit against the production build
+bun run engine:assets # Copy and verify the package's engine, worker and notices
+bun run test:browser  # Chromium, Firefox and WebKit against a production build
 ```
+
+`src/lib/engine/provider.ts` selects the SDK provider and asset URL. Review logic uses the public `ChessEngine` interface. The app's IndexedDB result cache keys include the full position/history, SDK identity and adapter/model hashes, settings, budget and classification policy. Cached records are checked for valid identity, schema and legal continuations before reuse. Previous vendored-engine cache entries are excluded by the new `upapawn-analysis-v2` namespace.
+
+The SDK caches verified WASM bytes; the app's service worker caches the page, application chunks, SDK worker, WASM and notices. Browser tests verify a different game completes after an offline reload. On Capacitor, all assets are shipped inside the application.
+
+Runtime diagnostics are at `/diagnostics`. Browser and native verification reports are generated under `artifacts/app-verification/`. The native asset verifier compares every final APK/.app web asset with `build/`:
+
+```sh
+node scripts/verify-native-assets.mjs --android
+node scripts/verify-native-assets.mjs --ios /absolute/path/to/App.app
+```
+
+Engine source/build/parity/reproducibility and notice maintenance belong to [chess-engine-kit](https://github.com/sximn/chess-engine-kit). This app retains full-game review, legal replay, classification, retry/pause, storage recovery, offline and native packaging checks. Physical-device latency, sustained memory/energy/thermal behavior and review-quality acceptance still need application-level qualification.
 
 ## Android and iOS
 
@@ -80,9 +93,9 @@ src/lib/native.ts    Capacitor lifecycle, back policy, system bars
 src/lib/styles.css   Tokens/reset/accessibility and reduced-motion CSS entry point
 src/lib/styles/      Only foundation and reduced-motion defaults; UI styles are scoped
 src/routes/          Review, game library, insights, preferences and error fallback
-src/lib/engine/     Worker API, progressive review, score policy, caching and diagnostics
-engine/frozenight/   Pinned MIT/Apache engine, model, Rust bridge and native reference
-tests/               PGN, API, parity, failure recovery and production-browser verification
+src/lib/engine/      SDK provider, progressive review, score policy, cache guards and diagnostics
+static/engines/       Generated SDK worker, WASM, manifests and notices (ignored)
+tests/               PGN, review policy, cache, failure recovery and production-browser verification
 android/             Native Android project
 ios/                 Native iOS project
 ```
