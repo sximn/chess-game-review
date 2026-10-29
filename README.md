@@ -73,8 +73,6 @@ bun run cap:ios      # Open in Xcode
 
 Android builds require Android Studio, the configured Android SDK, and a compatible JDK. iOS builds require Xcode with its iOS SDK and a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-The provisional app ID is `com.simonukus.upapawn`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
-
 ### Shared mobile shell
 
 `src/lib/native.ts` owns native integration. Android Back closes an open menu or dialog first, then follows WebView history, then minimizes at the root. Plugin listeners are removed on teardown. The keyboard uses native viewport resizing; CSS hides bottom navigation when the keyboard appears. System bar style follows the selected theme. Autoplay pauses when the document becomes hidden.
