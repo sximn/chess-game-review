@@ -2,12 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Chess } from 'chess.js';
 import { ReviewController, ReviewError, type ReviewState } from '../src/lib/engine/review.ts';
-import {
-	frozenightManifest,
-	type ChessEngine,
-	type AnalyzeRequest,
-	type AnalysisResult
-} from 'chess-engine-kit';
+import type { ChessEngine, AnalyzeRequest, AnalysisResult } from 'chess-engine-kit';
+import { frozenightManifest } from 'chess-engine-kit/frozenight/manual';
 
 async function review(depth: number | null = 4) {
 	const requests: AnalyzeRequest[] = [];

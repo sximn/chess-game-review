@@ -41,14 +41,13 @@ Overview, Moves, and Evaluation use real engine results. The worker prioritizes 
 
 **Review budgets and move labels are preliminary.** The app owns review scheduling, classification thresholds and device performance qualification. Engine correctness does not establish review accuracy or physical-phone performance/thermal suitability.
 
-Local analysis uses the exact npm dependency `chess-engine-kit@0.0.1`, which ships a prebuilt Frozenight WASM engine and module worker. App developers need neither Rust nor Docker. `dev` and `build` run the package's asset-copy CLI into the ignored `static/engines/frozenight/` directory; the build includes those assets in the offline shell and Capacitor bundle.
+Local analysis uses the exact npm dependency `chess-engine-kit@0.1.0`, which ships a prebuilt Frozenight WASM engine and module worker. App developers need neither Rust nor Docker. The `chess-engine-kit/frozenight` entry lets Vite serve the packaged worker, WASM, notices and build metadata directly in development and emit them into the production build. No asset-copy command or generated static engine directory is needed; the build includes the emitted assets in the offline shell and Capacitor bundle.
 
 ```sh
-bun run engine:assets # Copy and verify the package's engine, worker and notices
 bun run test:browser  # Chromium, Firefox and WebKit against a production build
 ```
 
-`src/lib/engine/provider.ts` selects the SDK provider and asset URL. Review logic uses the public `ChessEngine` interface. The app's IndexedDB result cache keys include the full position/history, SDK identity and adapter/model hashes, settings, budget and classification policy. Cached records are checked for valid identity, schema and legal continuations before reuse. Previous vendored-engine cache entries are excluded by the new `upapawn-analysis-v2` namespace.
+`src/lib/engine/provider.ts` selects the SDK provider with `createFrozenight()`. Diagnostics expose the resolved worker and WASM URLs through `frozenightAssetUrls()`. Review logic uses the public `ChessEngine` interface. The app's IndexedDB result cache keys include the full position/history, SDK identity and adapter/model hashes, settings, budget and classification policy. Cached records are checked for valid identity, schema and legal continuations before reuse. Previous vendored-engine cache entries are excluded by the new `upapawn-analysis-v2` namespace.
 
 The SDK caches verified WASM bytes; the app's service worker caches the page, application chunks, SDK worker, WASM and notices. Browser tests verify a different game completes after an offline reload. On Capacitor, all assets are shipped inside the application.
 
@@ -92,7 +91,6 @@ src/lib/styles.css   Tokens/reset/accessibility and reduced-motion CSS entry poi
 src/lib/styles/      Only foundation and reduced-motion defaults; UI styles are scoped
 src/routes/          Review, game library, insights, preferences and error fallback
 src/lib/engine/      SDK provider, progressive review, score policy, cache guards and diagnostics
-static/engines/       Generated SDK worker, WASM, manifests and notices (ignored)
 tests/               PGN, review policy, cache, failure recovery and production-browser verification
 android/             Native Android project
 ios/                 Native iOS project

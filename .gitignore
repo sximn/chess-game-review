@@ -12,7 +12,6 @@ android/build
 ios/App/Pods
 ios/App/build
 .idea
-static/engines/frozenight
 playwright-report
 test-results
 artifacts/app-verification/

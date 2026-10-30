@@ -3,24 +3,8 @@
 	import Field from '#lib/components/Field.svelte';
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
-	import { Check, Moon, Sun, ShieldCheck } from 'lucide-svelte';
+	import { Check, Moon, Sun } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
-	const noticeFiles = [
-		{ file: 'LICENSE-MIT.txt', title: 'Engine license' },
-		{ file: 'THIRD-PARTY-NOTICES.txt', title: 'Third-party notices' }
-	];
-	let notices = $state<Record<string, string>>({});
-	async function readNotice(file: string) {
-		if (notices[file]) return;
-		notices[file] = 'Loading…';
-		try {
-			const response = await fetch('/engines/frozenight/' + file);
-			if (!response.ok) throw new Error();
-			notices[file] = await response.text();
-		} catch {
-			notices[file] = 'The notice could not be loaded. Reopen preferences to retry.';
-		}
-	}
 </script>
 
 <svelte:head><title>Preferences · Up a Pawn</title></svelte:head>
@@ -88,42 +72,11 @@
 			<h2>Local analysis</h2>
 			<p class="analysis-notice">Frozenight runs on this device. Games stay private.</p>
 			<a class="diagnostics-link" href="/diagnostics">Engine diagnostics</a>
-			{#each noticeFiles as notice}
-				<details
-					class="license-notice"
-					ontoggle={(event) => {
-						if (event.currentTarget.open) void readNotice(notice.file);
-					}}
-				>
-					<summary>{notice.title}</summary>
-					<pre>{notices[notice.file] ?? 'Loading…'}</pre>
-				</details>
-			{/each}
 		</div></Card
 	>
 </div>
 
 <style>
-	.license-notice {
-		margin: 10px 0;
-		font-size: 13px;
-	}
-	.license-notice summary {
-		cursor: pointer;
-		min-height: 36px;
-		padding: 8px 0;
-	}
-	.license-notice pre {
-		max-height: 240px;
-		overflow: auto;
-		white-space: pre-wrap;
-		overflow-wrap: anywhere;
-		font-size: 11px;
-		line-height: 1.6;
-		padding: 12px;
-		background: var(--field);
-		border-radius: 8px;
-	}
 	.diagnostics-link {
 		display: block;
 		min-height: 36px;

@@ -3,8 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import { frozenightManifest as manifest } from 'chess-engine-kit/frozenight/manual';
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
-const manifest = JSON.parse(fs.readFileSync('static/engines/frozenight/manifest.json', 'utf8'));
 const files = [];
 function walk(dir) {
 	for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -15,6 +15,13 @@ function walk(dir) {
 	}
 }
 walk('build');
+const buildHashes = new Map(
+	files.map((file) => [file, hash(fs.readFileSync(path.join('build', file)))])
+);
+for (const asset of [manifest.wasm, manifest.worker]) {
+	if (![...buildHashes.values()].includes(asset.sha256))
+		throw Error('Build is missing the packaged engine asset: ' + asset.file);
+}
 const report = {
 	timestamp: new Date().toISOString(),
 	engineBuild: manifest.descriptor.buildHash,
@@ -30,8 +37,7 @@ if (process.argv.includes('--android')) {
 		const actual = execFileSync('unzip', ['-p', apk, 'assets/public/' + file], {
 			maxBuffer: 32 * 1024 * 1024
 		});
-		if (hash(actual) !== hash(fs.readFileSync(path.join('build', file))))
-			throw Error('APK asset mismatch: ' + file);
+		if (hash(actual) !== buildHashes.get(file)) throw Error('APK asset mismatch: ' + file);
 	}
 	report.platforms.android = {
 		apk,
@@ -44,10 +50,7 @@ if (ios >= 0) {
 	const app = process.argv[ios + 1];
 	if (!app) throw Error('--ios requires the built .app path');
 	for (const file of files) {
-		if (
-			hash(fs.readFileSync(path.join(app, 'public', file))) !==
-			hash(fs.readFileSync(path.join('build', file)))
-		)
+		if (hash(fs.readFileSync(path.join(app, 'public', file))) !== buildHashes.get(file))
 			throw Error('iOS asset mismatch: ' + file);
 	}
 	report.platforms.ios = { app, allAssetsIdentical: true };

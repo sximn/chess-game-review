@@ -1,13 +1,21 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { runDiagnostics } from '#lib/engine/diagnostics.js';
-	import { frozenightManifest } from 'chess-engine-kit';
-	let running = $state(false),
-		status = $state('Ready'),
-		output = $state('');
+	import { frozenightManifest, frozenightAssetUrls } from 'chess-engine-kit/frozenight';
+
+	const { worker, wasm } = frozenightAssetUrls();
+
+	let running = $state(false);
+	let status = $state('Ready');
+	let output = $state('');
+
 	let abort: AbortController | undefined;
+
 	async function run() {
-		if (running) return;
+		if (running) {
+			return;
+		}
+
 		running = true;
 		output = '';
 		abort = new AbortController();
@@ -21,6 +29,7 @@
 			running = false;
 		}
 	}
+
 	onDestroy(() => abort?.abort());
 </script>
 
@@ -37,6 +46,7 @@
 	<details>
 		<summary>Engine build and network</summary>
 		<pre>{JSON.stringify(frozenightManifest, null, 2)}</pre>
+		<pre data-testid="engine-asset-urls">{JSON.stringify({ worker, wasm }, null, 2)}</pre>
 	</details>
 	{#if output}<pre data-testid="diagnostics-results">{output}</pre>{/if}
 	<a href="/">Return to review</a>

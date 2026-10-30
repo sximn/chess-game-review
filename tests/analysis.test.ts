@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { frozenightManifest, type AnalysisResult, type AnalyzeRequest } from 'chess-engine-kit';
+import type { AnalysisResult, AnalyzeRequest } from 'chess-engine-kit';
+import { frozenightManifest } from 'chess-engine-kit/frozenight/manual';
 import { resultKey, ResultCache } from '../src/lib/engine/cache.ts';
 import { isCachedResult } from '../src/lib/engine/cached-result.ts';
 import { classify, formatScore } from '../src/lib/engine/classification.ts';

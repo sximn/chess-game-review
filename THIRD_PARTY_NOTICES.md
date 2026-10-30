@@ -8,8 +8,8 @@ The Opera Game moves are historical game notation. Review scores, classification
 
 ## Frozenight engine and model
 
-Frozenight by Mark Carlson is provided by the pinned npm dependency `chess-engine-kit@0.0.1`. The package records the upstream source revision, model hash, engine build and adapter identity in its deployment manifest. Frozenight and its repository-bundled model use MIT OR Apache-2.0; the package elects MIT.
+Frozenight by Mark Carlson is provided by the pinned npm dependency `chess-engine-kit@0.1.0`. The package records the upstream source revision, model hash, engine build and adapter identity in its manifest. Frozenight and its repository-bundled model use MIT OR Apache-2.0; the package elects MIT.
 
-The package's asset-copy CLI deploys the original `LICENSE-MIT.txt` and `LICENSE-APACHE.txt`, consolidated `THIRD-PARTY-NOTICES.txt`, and provenance manifests alongside its worker and WASM under `/engines/frozenight/`. These generated assets are included in the web offline shell and native application bundles. The consolidated notices cover the bundled chess.js, Cargo and Rust standard-library components. Read the engine license and consolidated notices from Preferences in the app.
+The package includes the original `LICENSE-MIT.txt` and `LICENSE-APACHE.txt`, consolidated `THIRD-PARTY-NOTICES.txt`, and engine build metadata. Vite emits the assets referenced by `chess-engine-kit/frozenight` into the application bundle. The consolidated notices cover the bundled chess.js, Cargo and Rust standard-library components.
 
 Engine licensing records and notice regeneration are maintained in [chess-engine-kit](https://github.com/sximn/chess-engine-kit). This app does not vendor or compile engine source. The original deterministic game in `tests/fixtures/review-game.json` is app test data and is not shipped at runtime.

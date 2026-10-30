@@ -1,3 +1,3 @@
-import { createFrozenight } from 'chess-engine-kit';
+import { createFrozenight } from "chess-engine-kit/frozenight";
 
-export const createReviewEngine = () => createFrozenight({ assetBaseUrl: '/engines/frozenight/' });
+export const createReviewEngine = () => createFrozenight();

@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { frozenightManifest } from 'chess-engine-kit/frozenight/manual';
+import { readEngineAssetUrls } from './engine-assets';
 
 test('mobile timeline stays aligned after importing a game and exploring an alternative', async ({
 	page
@@ -28,52 +30,38 @@ test('mobile timeline stays aligned after importing a game and exploring an alte
 	await expect(current).toBeInViewport();
 });
 
-test('engine notices can be read without leaving the app navigation', async ({ page }) => {
-	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/settings');
-	const notice = page
-		.locator('details')
-		.filter({ has: page.locator('summary').filter({ hasText: 'Engine license' }) });
-	await notice.locator('summary').click();
-	await expect(notice.locator('pre')).toContainText('Mark Carlson');
-	const dependencies = page.locator('details').filter({ hasText: 'Third-party notices' });
-	await dependencies.locator('summary').click();
-	await expect(dependencies.locator('pre')).toContainText('chess.js');
-	await page.getByRole('link', { name: 'Game review', exact: true }).click();
-	await expect(page.locator('.chessboard')).toBeVisible();
-});
-
-test('a corrupt persistent engine cache is evicted and repaired before review', async ({
-	page
-}) => {
+test('a corrupt engine cache is evicted and repaired before review', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.goto('/diagnostics');
-	await page.evaluate(async () => {
-		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
+	const assets = await readEngineAssetUrls(page);
+	await page.evaluate(async (assets) => {
+		await navigator.serviceWorker.ready;
 		const cache = await caches.open('chess-engine-kit-assets-v1');
-		await cache.put(
-			new URL('/engines/frozenight/' + manifest.wasm.file, location.href).href,
-			new Response('damaged persistent cache')
-		);
+		await cache.put(assets.wasm, new Response('damaged persistent cache'));
+		if ((await (await cache.match(assets.wasm))!.text()) !== 'damaged persistent cache')
+			throw new Error('The corrupt cache fixture was not stored.');
 		localStorage.setItem(
 			'upapawn-games',
 			JSON.stringify([{ id: 'cache-repair', pgn: '1. e4 e5 *', addedAt: new Date().toISOString() }])
 		);
-	});
+	}, assets);
+	// Initialize on the seeded page so WebKit cannot discard its CacheStorage
+	// during a document navigation before the SDK has read the corrupt bytes.
+	await page.getByRole('button', { name: 'Run local diagnostics' }).click();
+	await expect(page.getByRole('status')).toHaveText('All local checks passed');
+	const repaired = await page.evaluate(
+		async ({ assets, expectedHash }) => {
+			const cache = await caches.open('chess-engine-kit-assets-v1');
+			const bytes = await (await cache.match(assets.wasm))!.arrayBuffer();
+			const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
+				.map((b) => b.toString(16).padStart(2, '0'))
+				.join('');
+			return digest === expectedHash;
+		},
+		{ assets, expectedHash: frozenightManifest.wasm.sha256 }
+	);
+	expect(repaired).toBe(true);
 	await page.goto('/?game=cache-repair');
 	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 60000 });
-	const repaired = await page.evaluate(async () => {
-		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
-		const cache = await caches.open('chess-engine-kit-assets-v1');
-		const bytes = await (await cache.match(
-			new URL('/engines/frozenight/' + manifest.wasm.file, location.href).href
-		))!.arrayBuffer();
-		const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
-			.map((b) => b.toString(16).padStart(2, '0'))
-			.join('');
-		return digest === manifest.wasm.sha256;
-	});
-	expect(repaired).toBe(true);
 });
 
 test('a worker crash gives a recoverable review state and retry completes', async ({ page }) => {

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import { readEngineAssetUrls } from './engine-assets';
 
 test('package assets load and diagnostics analyze a real local position', async ({ page }) => {
 	const errors: string[] = [];
@@ -83,6 +84,7 @@ test('offline reload reviews a different PGN without a successful network reques
 		await once(server.stdout!, 'data');
 	}
 	await page.setViewportSize({ width: 1440, height: 1000 });
+	const assets = await readEngineAssetUrls(page, origin);
 	await page.goto(origin + '/');
 	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 	await page.evaluate(() =>
@@ -106,15 +108,14 @@ test('offline reload reviews a different PGN without a successful network reques
 		});
 	});
 	// The SDK cache covers WASM only. Prove the app shell also precached the worker.
-	const precached = await page.evaluate(async () => {
-		const manifest = await (await fetch('/engines/frozenight/manifest.json')).json();
+	const precached = await page.evaluate(async (assets) => {
 		const shellName = (await caches.keys()).find((name) => name.startsWith('upapawn-shell-'))!;
 		const shell = await caches.open(shellName);
 		return {
-			worker: !!(await shell.match('/engines/frozenight/' + manifest.worker.file)),
-			wasm: !!(await shell.match('/engines/frozenight/' + manifest.wasm.file))
+			worker: !!(await shell.match(assets.worker)),
+			wasm: !!(await shell.match(assets.wasm))
 		};
-	});
+	}, assets);
 	expect(precached).toEqual({ worker: true, wasm: true });
 	const pgn = '[White "Offline Ada"]\n[Black "Offline Grace"]\n\n1. d4 d5 2. c4 e6 3. Nc3 Nf6 *';
 	await page.evaluate((pgn) => {

@@ -53,6 +53,7 @@ export const emptyReview = (): ReviewState => ({
 
 export class ReviewController {
 	state: ReviewState = emptyReview();
+
 	private timeline?: Timeline;
 	private epoch = 0;
 	private revision = 0;
@@ -63,12 +64,16 @@ export class ReviewController {
 	private visible = true;
 	private disposed = false;
 	private selectedDemand = true;
+
 	private quick: (AnalysisResult | undefined)[] = [];
 	private refined = new Set<number>();
 	private cache = new ResultCache();
+
 	private unsubscribe: () => void;
 	private update: (state: ReviewState) => void;
+
 	readonly engine: ChessEngine;
+
 	constructor(update: (state: ReviewState) => void, engine: ChessEngine = createReviewEngine()) {
 		this.update = update;
 		this.engine = engine;
@@ -83,8 +88,12 @@ export class ReviewController {
 			}
 		});
 	}
+
 	private publish() {
-		if (this.disposed) return;
+		if (this.disposed) {
+			return;
+		}
+
 		this.state.warning = this.cache.warning;
 		this.update({
 			...this.state,
@@ -93,15 +102,18 @@ export class ReviewController {
 			qualities: [...this.state.qualities]
 		});
 	}
+
 	private positionId(ply: number) {
 		return `game-${this.epoch}-ply-${ply}`;
 	}
+
 	private position(ply: number): Position {
 		return {
 			rootFen: this.timeline!.fens[0],
 			movesUci: this.timeline!.moves.slice(0, ply).map((m) => m.lan)
 		};
 	}
+
 	reviewGame(pgn: string, options: { selectedPly?: number } = {}) {
 		let timeline: Timeline;
 		try {
@@ -109,6 +121,7 @@ export class ReviewController {
 		} catch (error) {
 			throw new ReviewError((error as Error).message);
 		}
+
 		this.epoch++;
 		this.revision++;
 		this.engine.reset();
@@ -126,6 +139,7 @@ export class ReviewController {
 		this.publish();
 		this.schedule();
 	}
+
 	selectPosition(ply: number) {
 		if (!this.timeline) return;
 		const selected = Math.min(this.timeline.moves.length, Math.max(0, Math.floor(ply)));
@@ -174,6 +188,7 @@ export class ReviewController {
 		this.engine.dispose();
 		this.cache.dispose();
 	}
+
 	private schedule() {
 		if (
 			this.busy ||
@@ -186,6 +201,7 @@ export class ReviewController {
 			return;
 		void this.pump();
 	}
+
 	private async search(
 		ply: number,
 		limits: SearchLimits,
@@ -193,8 +209,8 @@ export class ReviewController {
 		rootMoves?: string[],
 		foreground = false
 	) {
-		const epoch = this.epoch,
-			revision = this.revision;
+		const epoch = this.epoch;
+		const revision = this.revision;
 		const request: AnalyzeRequest = {
 			apiVersion: API_VERSION,
 			jobId: `review-${epoch}-${++this.sequence}`,
@@ -204,27 +220,41 @@ export class ReviewController {
 			multiPv,
 			...(rootMoves ? { rootMoves } : {})
 		};
+
 		const key = await resultKey(request, this.engine.identity);
 		const cached = await this.cache.get(key);
+
 		if (
 			epoch !== this.epoch ||
 			revision !== this.revision ||
 			this.paused ||
 			!this.visible ||
 			this.disposed
-		)
+		) {
 			throw new EngineError('CANCELLED', 'Review paused.', true);
-		if (isCachedResult(cached, request, this.engine.identity))
+		}
+
+		if (isCachedResult(cached, request, this.engine.identity)) {
 			return { ...cached, jobId: request.jobId, positionId: request.positionId };
+		}
+
 		this.state.activeJob = request.jobId;
-		if (foreground) this.foregroundJob = request.jobId;
+		if (foreground) {
+			this.foregroundJob = request.jobId;
+		}
+
 		this.publish();
+
 		const result = await this.engine.analyzePosition(request);
-		if (epoch !== this.epoch || revision !== this.revision)
+
+		if (epoch !== this.epoch || revision !== this.revision) {
 			throw new EngineError('CANCELLED', 'Game changed.', true);
+		}
+
 		await this.cache.put(key, result);
 		return result;
 	}
+
 	private async pump() {
 		this.busy = true;
 		const epoch = this.epoch;
@@ -239,11 +269,18 @@ export class ReviewController {
 			) {
 				if (this.selectedDemand) {
 					this.selectedDemand = false;
+
 					const ply = this.state.selectedPly;
+
 					this.state.phase = 'reviewing';
 					this.publish();
+
 					const result = await this.search(ply, SELECTED_LIMITS, 3, undefined, true);
-					if (epoch !== this.epoch) break;
+
+					if (epoch !== this.epoch) {
+						break;
+					}
+
 					if (ply === this.state.selectedPly) {
 						this.state.alternatives[ply] = result;
 						this.state.selectedLive = undefined;
@@ -251,32 +288,49 @@ export class ReviewController {
 					this.publish();
 					continue;
 				}
+
 				let classified = false;
 				for (let ply = 1; ply <= this.timeline!.moves.length; ply++) {
-					if (this.state.qualities[ply] || !this.quick[ply - 1]) continue;
-					const move = this.timeline!.moves[ply - 1],
-						best = this.quick[ply - 1]!;
+					if (this.state.qualities[ply] || !this.quick[ply - 1]) {
+						continue;
+					}
+					const move = this.timeline!.moves[ply - 1];
+					const best = this.quick[ply - 1]!;
 					const played =
 						best.lines[0]?.rootMove === move.lan
 							? best
 							: await this.search(ply - 1, comparisonLimits(QUICK_LIMITS, best.depth), 1, [
 									move.lan
 								]);
-					if (epoch !== this.epoch) break;
+					if (epoch !== this.epoch) {
+						break;
+					}
+
 					this.state.qualities[ply] = classify(best, played, move.color, move.lan, ply - 1);
 					classified = true;
 					this.publish();
 					break;
 				}
-				if (epoch !== this.epoch) break;
-				if (classified) continue;
+
+				if (epoch !== this.epoch) {
+					break;
+				}
+
+				if (classified) {
+					continue;
+				}
+
 				const missing = Array.from({ length: this.state.total }, (_, i) => i).find(
 					(i) => !this.quick[i]
 				);
+
 				if (missing !== undefined) {
 					this.state.phase = 'reviewing';
 					const result = await this.search(missing, QUICK_LIMITS);
-					if (epoch !== this.epoch) break;
+					if (epoch !== this.epoch) {
+						break;
+					}
+
 					this.quick[missing] = result;
 					this.state.positions[missing] = result;
 					this.state.scored = this.quick.filter(Boolean).length;
