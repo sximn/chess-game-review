@@ -15,7 +15,7 @@
 		"cap:android": "cap open android",
 		"cap:ios": "cap open ios",
 		"format": "prettier --write .",
-		"test:browser": "playwright test"
+		"test:browser": "playwright test --workers 4"
 	},
 	"dependencies": {
 		"@capacitor/android": "8.5.3",
