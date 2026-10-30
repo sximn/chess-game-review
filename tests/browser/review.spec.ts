@@ -260,3 +260,60 @@ test('mobile PGN import opens a fresh local review without shrinking the board',
 		)
 	);
 });
+
+test('stepping into an unexplored move keeps review ready and commits the evaluation once', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.addInitScript(() => {
+		localStorage.setItem(
+			'upapawn-games',
+			JSON.stringify([
+				{ id: 'stable-review', pgn: '1. e4 e5 2. Nf3 Nc6 *', addedAt: new Date().toISOString() }
+			])
+		);
+	});
+	await page.goto('/?game=stable-review');
+	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 60000 });
+	// Watch DOM mutations from the moment navigation starts, including brief intermediate states.
+	await page.evaluate(() => {
+		const status = document.querySelector('.engine-status')!;
+		const rail = document.querySelector('.eval-white')!;
+		const tabs = document.querySelector('.review-tabs')!;
+		const samples: { status: string | null; top: number }[] = [];
+		let scoreChanges = 0;
+		const observer = new MutationObserver((records) => {
+			scoreChanges += records.filter((record) => record.target === rail).length;
+			samples.push({
+				status: status.querySelector('strong')!.textContent,
+				top: tabs.getBoundingClientRect().top
+			});
+		});
+		observer.observe(status, { subtree: true, childList: true, characterData: true });
+		observer.observe(rail, { attributes: true, attributeFilter: ['style'] });
+		samples.push({
+			status: status.querySelector('strong')!.textContent,
+			top: tabs.getBoundingClientRect().top
+		});
+		(window as any).reviewStability = {
+			samples,
+			stop: () => {
+				observer.disconnect();
+				return scoreChanges;
+			}
+		};
+	});
+	await page.keyboard.press('ArrowRight');
+	await page.keyboard.press('ArrowRight');
+	await expect(page.locator('.engine-line')).toHaveCount(3);
+	const stability = await page.evaluate(() => {
+		const tracking = (window as any).reviewStability;
+		return { samples: tracking.samples, scoreChanges: tracking.stop() };
+	});
+	expect(
+		stability.samples.every((sample: { status: string }) => sample.status === 'Review ready')
+	).toBe(true);
+	expect(new Set(stability.samples.map((sample: { top: number }) => sample.top)).size).toBe(1);
+	// Two immediate game scores (one per move), then the final selected-position score.
+	expect(stability.scoreChanges).toBeLessThanOrEqual(3);
+});
