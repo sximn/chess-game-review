@@ -1,5 +1,10 @@
 name: Verify app
-on: [push, pull_request]
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
 jobs:
   web:
     runs-on: ubuntu-latest
@@ -8,37 +13,48 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.3
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - run: bun install --frozen-lockfile
       - run: bun run check && bun run test && bun run build
       - run: bunx playwright install --with-deps chromium firefox webkit
       - run: bun run test:browser
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: app-verification
           path: artifacts/app-verification/
+
   android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.3
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
+
       - uses: android-actions/setup-android@v3
         with:
           packages: platform-tools
+
       - run: bun install --frozen-lockfile
       - run: bun run cap:sync
+
       - run: ./gradlew :app:assembleDebug --console=plain
         working-directory: android
+
       - run: node scripts/verify-native-assets.mjs --android
