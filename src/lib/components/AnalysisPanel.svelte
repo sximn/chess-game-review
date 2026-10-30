@@ -9,6 +9,7 @@
 	import type { ReviewState } from '#lib/engine/review.js';
 	import { formatScore, visualValue } from '#lib/engine/classification.js';
 	import { continuation } from '#lib/engine/presentation.js';
+
 	let {
 		timeline,
 		review,
@@ -32,7 +33,12 @@
 		onResume: () => void;
 		onRetry: () => void;
 	} = $props();
-	let result = $derived(review.selectedLive ?? review.alternatives[ply] ?? review.positions[ply]);
+
+	let result = $derived(
+		review.alternatives[ply] ??
+			review.positions[ply] ??
+			(review.selectedPly === ply ? review.selectedLive : undefined)
+	);
 	let quality = $derived(review.qualities[ply]);
 	let summary = $derived(
 		['Best', 'Good', 'Inaccuracy', 'Mistake', 'Blunder', 'Uncertain'].map((name) => ({

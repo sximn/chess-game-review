@@ -5,15 +5,19 @@ import { ReviewController, ReviewError, type ReviewState } from '../src/lib/engi
 import type { ChessEngine, AnalyzeRequest, AnalysisResult } from 'chess-engine-kit';
 import { frozenightManifest } from 'chess-engine-kit/frozenight/manual';
 
-async function review(depth: number | null = 4) {
+function createEngine(depth: number | null = 4) {
 	const requests: AnalyzeRequest[] = [];
+	let listener: Parameters<ChessEngine['onEvent']>[0] = () => {};
 	const identity = {
 		...frozenightManifest.descriptor,
 		settingsFingerprint: 'test-hash32'
 	};
 	const engine = {
 		identity,
-		onEvent: () => () => {},
+		onEvent: (callback: typeof listener) => {
+			listener = callback;
+			return () => {};
+		},
 		reset: () => {},
 		dispose: () => {},
 		initialize: async () => {},
@@ -52,6 +56,11 @@ async function review(depth: number | null = 4) {
 			};
 		}
 	} as unknown as ChessEngine;
+	return { engine, requests, emit: (event: Parameters<typeof listener>[0]) => listener(event) };
+}
+
+async function review(depth: number | null = 4) {
+	const { engine, requests } = createEngine(depth);
 	let done!: (state: ReviewState) => void;
 	const complete = new Promise<ReviewState>((resolve) => (done = resolve));
 	const review = new ReviewController((state) => {
@@ -111,3 +120,64 @@ test('invalid PGN remains an app error and does not reset the active engine', ()
 		controller.dispose();
 	}
 });
+
+test(
+	'completed review stays ready during new position searches and reuses explored positions',
+	{ timeout: 5000 },
+	async () => {
+		const { engine, requests, emit } = createEngine();
+		const states: ReviewState[] = [];
+		let update: (() => void) | undefined;
+		const controller = new ReviewController((state) => {
+			states.push(state);
+			update?.();
+		}, engine);
+		const until = (predicate: () => boolean) =>
+			new Promise<void>((resolve) => {
+				update = () => {
+					if (predicate()) resolve();
+				};
+				update();
+			});
+		try {
+			controller.reviewGame('1. e4 e5 *');
+			await until(() => controller.state.phase === 'complete');
+			const analyze = engine.analyzePosition.bind(engine);
+			let finish!: () => void;
+			engine.analyzePosition = async (request) => {
+				const result = await analyze(request);
+				emit({
+					...result,
+					type: 'progress',
+					completion: 'progress',
+					result: { ...result, completion: 'progress' }
+				});
+				await new Promise<void>((resolve) => {
+					finish = resolve;
+				});
+				return result;
+			};
+			const start = states.length;
+			controller.selectPosition(1);
+			await until(() => !!controller.state.selectedLive);
+			assert.equal(controller.state.alternatives[1], undefined);
+			assert.ok(controller.state.positions[1], 'the game review already has a score for this move');
+			assert.ok(states.slice(start).every((state) => state.phase === 'complete'));
+			finish();
+			await until(() => !!controller.state.alternatives[1] && !controller.state.activeJob);
+			assert.ok(states.slice(start).every((state) => state.phase === 'complete'));
+			const count = requests.length;
+			const published = states.length;
+			controller.selectPosition(0);
+			controller.selectPosition(1);
+			await until(() => states.length > published + 2);
+			assert.equal(requests.length, count, 'revisiting explored moves needs no new engine search');
+			engine.analyzePosition = analyze;
+			controller.reviewGame('1. d4 d5 *');
+			assert.equal(controller.state.phase, 'loading');
+			await until(() => controller.state.phase === 'complete');
+		} finally {
+			controller.dispose();
+		}
+	}
+);

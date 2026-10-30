@@ -6,12 +6,12 @@
 	import AnalysisSheet from '#lib/components/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
 	import { parseGame, type Timeline } from '#lib/chess.js';
-
 	import { ReviewController, emptyReview, type ReviewState } from '#lib/engine/review.js';
 	import { visualValue, formatScore } from '#lib/engine/classification.js';
 	import { branchTimeline } from '#lib/engine/presentation.js';
 	import { Capacitor } from '@capacitor/core';
 	import { App } from '@capacitor/app';
+
 	let controller = $state<ReviewController | null>(null);
 	let review = $state<ReviewState>(emptyReview());
 	let branch = $state<{ timeline: Timeline; ply: number } | null>(null);
@@ -20,6 +20,7 @@
 			app.games[0]
 	);
 	let timeline = $derived(parseGame(game.pgn));
+
 	let demo = $derived(game.id === 'opera');
 	let ply = $state(19);
 	let flipped = $state(false);
@@ -29,7 +30,10 @@
 	let previousId = '';
 	let classification = $derived(review.qualities[ply]);
 	let currentResult = $derived(
-		review.selectedLive ?? review.alternatives[ply] ?? review.positions[ply]
+		// Keep the existing score while a deeper search streams intermediate iterations.
+		review.alternatives[ply] ??
+			review.positions[ply] ??
+			(review.selectedPly === ply ? review.selectedLive : undefined)
 	);
 	let evaluation = $derived(branch ? null : visualValue(currentResult));
 	let evaluationLabel = $derived(
@@ -106,44 +110,66 @@
 		}, 1200);
 		return () => clearInterval(interval);
 	});
+
 	function go(value: number) {
 		playing = false;
-		if (branch)
+		if (branch) {
 			branch = { ...branch, ply: Math.max(0, Math.min(branch.timeline.moves.length, value)) };
-		else ply = Math.max(0, Math.min(timeline.moves.length, value));
+		} else {
+			ply = Math.max(0, Math.min(timeline.moves.length, value));
+		}
 	}
+
 	function goFromAnalysis(value: number) {
 		branch = null;
 		go(value);
-		if (compact) app.analysisOpen = false;
+
+		if (compact) {
+			app.analysisOpen = false;
+		}
 	}
+
 	function togglePlayback() {
 		if (displayPly === displayTimeline.moves.length) {
-			if (branch) branch = { ...branch, ply: 0 };
-			else ply = 0;
+			if (branch) {
+				branch = { ...branch, ply: 0 };
+			} else {
+				ply = 0;
+			}
 		}
 		playing = !playing;
 	}
+
 	function explore(rootPly: number, pv: string[]) {
 		playing = false;
 		ply = rootPly;
 		branch = { timeline: branchTimeline(timeline, rootPly, pv), ply: Math.min(1, pv.length) };
-		if (compact) app.analysisOpen = false;
+
+		if (compact) {
+			app.analysisOpen = false;
+		}
 	}
+
 	function openAnalysis() {
 		playing = false;
 		app.analysisOpen = true;
 	}
+
 	function onKey(event: KeyboardEvent) {
-		if (app.importOpen || app.helpOpen || app.analysisOpen || app.menuOpen) return;
+		if (app.importOpen || app.helpOpen || app.analysisOpen || app.menuOpen) {
+			return;
+		}
+
 		const target = event.target;
 		if (
 			target instanceof HTMLElement &&
 			(['INPUT', 'TEXTAREA'].includes(target.tagName) ||
 				target.isContentEditable ||
 				target.closest('[role="tablist"],[role="menu"]'))
-		)
+		) {
 			return;
+		}
+
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
 			go(displayPly - 1);

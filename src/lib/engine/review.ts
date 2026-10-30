@@ -64,6 +64,7 @@ export class ReviewController {
 	private visible = true;
 	private disposed = false;
 	private selectedDemand = true;
+	private reviewComplete = false;
 
 	private quick: (AnalysisResult | undefined)[] = [];
 	private refined = new Set<number>();
@@ -128,6 +129,8 @@ export class ReviewController {
 		this.timeline = timeline;
 		this.quick = [];
 		this.refined.clear();
+		this.reviewComplete = false;
+		this.foregroundJob = undefined;
 		this.paused = false;
 		this.selectedDemand = true;
 		this.state = {
@@ -147,6 +150,7 @@ export class ReviewController {
 		this.revision++;
 		this.state.selectedPly = selected;
 		this.state.selectedLive = undefined;
+		this.foregroundJob = undefined;
 		this.state.error = undefined;
 		this.selectedDemand = true;
 		if (this.state.activeJob) this.engine.cancel(this.state.activeJob);
@@ -272,7 +276,12 @@ export class ReviewController {
 
 					const ply = this.state.selectedPly;
 
-					this.state.phase = 'reviewing';
+					// Exploring a position does not restart the completed game review.
+					if (this.state.alternatives[ply]) {
+						continue;
+					}
+					this.state.phase = this.reviewComplete ? 'complete' : 'reviewing';
+
 					this.publish();
 
 					const result = await this.search(ply, SELECTED_LIMITS, 3, undefined, true);
@@ -377,6 +386,7 @@ export class ReviewController {
 					}
 					continue;
 				}
+				this.reviewComplete = true;
 				this.state.phase = 'complete';
 				this.state.activeJob = undefined;
 				this.publish();
