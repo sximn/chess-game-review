@@ -14,4 +14,4 @@ ios/App/build
 .idea
 playwright-report
 test-results
-artifacts/app-verification/
+artifacts/
