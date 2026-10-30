@@ -5,5 +5,10 @@
 		"strict": true,
 		"rewriteRelativeImportExtensions": true
 	},
-	"include": ["src", "vite.config.ts", "tests"]
+	"include": [
+		"src",
+		"tests",
+		"vite.config.ts",
+		"playwright.config.ts"
+	]
 }
