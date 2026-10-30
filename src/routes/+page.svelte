@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/state';
-	import GameReplay from '#lib/components/GameReplay.svelte';
-	import AnalysisPanel from '#lib/components/AnalysisPanel.svelte';
-	import AnalysisSheet from '#lib/components/AnalysisSheet.svelte';
+	import GameReplay from '#lib/components/replay/GameReplay.svelte';
+	import AnalysisPanel from '#lib/components/analysis/AnalysisPanel.svelte';
+	import AnalysisSheet from '#lib/components/analysis/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
 	import { parseGame, type Timeline } from '#lib/chess.js';
 	import { ReviewController, emptyReview, type ReviewState } from '#lib/engine/review.js';
@@ -216,14 +216,19 @@
 
 <div class="review-layout" class:compact-review={compact}>
 	<div class="board-workspace">
-		{#if branch}<div class="branch-banner">
-				<span>Exploring an alternative</span><button
+		{#if branch}
+			<div class="branch-banner">
+				<span>Exploring an alternative</span>
+				<button
 					onclick={() => {
 						branch = null;
 						playing = false;
-					}}>Return to game</button
+					}}
 				>
-			</div>{/if}
+					Return to game
+				</button>
+			</div>
+		{/if}
 		<GameReplay
 			timeline={displayTimeline}
 			ply={displayPly}

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ArrowUpRight, BookOpen, Trophy } from 'lucide-svelte';
 	import type { SavedGame, Timeline } from '#lib/chess.js';
-	import AppLogo from './AppLogo.svelte';
-	import Card from './Card.svelte';
+	import AppLogo from '#lib/components/app/AppLogo.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
 	let { game }: { game: SavedGame & Timeline } = $props();
 </script>
 

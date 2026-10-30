@@ -87,7 +87,7 @@
 	.board-with-eval {
 		display: flex;
 		align-items: stretch;
-		gap: 9px;
+		gap: 4px;
 		width: 100%;
 	}
 	.evaluation-rail {

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import Card from '#lib/components/Card.svelte';
-	import Input from '#lib/components/Input.svelte';
-	import LibraryGameCard from '#lib/components/LibraryGameCard.svelte';
-	import PageHeading from '#lib/components/PageHeading.svelte';
-	import Button from '#lib/components/Button.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
+	import Input from '#lib/components/ui/Input.svelte';
+	import LibraryGameCard from '#lib/components/games/LibraryGameCard.svelte';
+	import PageHeading from '#lib/components/app/PageHeading.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
 	import { ChevronRight, Plus, Search } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
-	import AppLogo from '#lib/components/AppLogo.svelte';
+	import AppLogo from '#lib/components/app/AppLogo.svelte';
 	import { useBreakpoints } from '#lib/breakpoints.js';
 
 	const { mobile } = useBreakpoints();

@@ -98,7 +98,7 @@ Native integration lives in `src/lib/native.ts`:
 ## Project structure
 
 ```text
-src/lib/components/      UI components, dialogs, shell, and navigation
+src/lib/components/      ui/, app/, replay/, analysis/, and games/ components
 src/lib/chess.ts         PGN parsing and legal position timeline
 src/lib/state.svelte.ts  Shared state and local persistence
 src/lib/native.ts        Capacitor integration
@@ -110,6 +110,8 @@ tests/                   Unit and production-browser verification
 android/                 Native Android project
 ios/                     Native iOS project
 ```
+
+See [the components guide](src/lib/components/README.md) for folder responsibilities and import conventions.
 
 ## Diagnostics and verification
 

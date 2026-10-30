@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Card from '#lib/components/Card.svelte';
-	import Field from '#lib/components/Field.svelte';
-	import PageHeading from '#lib/components/PageHeading.svelte';
-	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
+	import Field from '#lib/components/ui/Field.svelte';
+	import PageHeading from '#lib/components/app/PageHeading.svelte';
+	import PreferenceSwitch from '#lib/components/ui/PreferenceSwitch.svelte';
 	import { Check, Moon, Sun } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { pieceSets, pieceSrc } from '#lib/pieces.js';

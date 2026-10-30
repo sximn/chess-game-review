@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { BookOpen, CircleQuestionMark, LayoutGrid, Plus, Settings2 } from 'lucide-svelte';
 	import AppLogo from './AppLogo.svelte';
-	import Button from './Button.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
 	import { app } from '#lib/state.svelte.js';
 
 	let {

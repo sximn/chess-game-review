@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tabs } from 'bits-ui';
-	import Card from './Card.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
 	import AnalysisTabs from './AnalysisTabs.svelte';
 	import AnalysisMoves from './AnalysisMoves.svelte';
 	import EvaluationTimeline from './EvaluationTimeline.svelte';

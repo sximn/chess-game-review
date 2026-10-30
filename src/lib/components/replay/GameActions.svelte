@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from '#lib/components/Button.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
 	import { DropdownMenu } from 'bits-ui';
 	import { Download, Ellipsis, Lightbulb, Settings2 } from 'lucide-svelte';
 	import { goto } from '$app/navigation';

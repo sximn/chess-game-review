@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AppLogo from './AppLogo.svelte';
+	import AppLogo from '#lib/components/app/AppLogo.svelte';
 	let {
 		name,
 		position,
