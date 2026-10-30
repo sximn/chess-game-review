@@ -1,4 +1,5 @@
 import { DEMO_PGN, parseGame, type SavedGame } from './chess';
+import type { PieceSet } from './pieces';
 
 const starter: SavedGame = { id: 'opera', pgn: DEMO_PGN, addedAt: '1858-11-02' };
 export const app = $state({
@@ -11,6 +12,7 @@ export const app = $state({
 	coordinates: true,
 	showEvaluation: true,
 	theme: 'light',
+	pieceSet: 'classic' as PieceSet,
 	notice: '',
 	hydrated: false
 });
@@ -43,6 +45,7 @@ export function hydrate() {
 		app.coordinates = settings.coordinates !== false;
 		app.showEvaluation = settings.showEvaluation !== false;
 		app.theme = settings.theme === 'dark' ? 'dark' : 'light';
+		app.pieceSet = settings.pieceSet === 'custom' ? 'custom' : 'classic';
 	} catch {
 		notify('Local storage is unavailable. You can still review this session.');
 	}
@@ -61,7 +64,8 @@ export function persistSettings() {
 			JSON.stringify({
 				coordinates: app.coordinates,
 				showEvaluation: app.showEvaluation,
-				theme: app.theme
+				theme: app.theme,
+				pieceSet: app.pieceSet
 			})
 		);
 	} catch {

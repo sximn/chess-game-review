@@ -2,6 +2,7 @@
 	import { Chess } from 'chess.js';
 	import type { Move } from 'chess.js';
 	import { app } from '#lib/state.svelte.js';
+	import { pieceSrc } from '#lib/pieces.js';
 	let {
 		fen,
 		flipped = false,
@@ -70,7 +71,7 @@
 				{#if app.coordinates && i >= 56}<span class="file-label">{square.square[0]}</span>{/if}
 				{#if square.piece}
 					<img
-						src={`/pieces/${square.piece.color}${square.piece.type.toUpperCase()}.svg`}
+						src={pieceSrc(app.pieceSet, square.piece.color, square.piece.type)}
 						alt={`${square.piece.color === 'w' ? 'White' : 'Black'} ${pieceNames[square.piece.type]} on ${square.square}`}
 						draggable="false"
 					/>
