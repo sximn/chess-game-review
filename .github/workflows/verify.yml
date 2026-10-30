@@ -35,6 +35,8 @@ jobs:
           distribution: temurin
           java-version: 21
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - run: bun install --frozen-lockfile
       - run: bun run cap:sync
       - run: ./gradlew :app:assembleDebug --console=plain
