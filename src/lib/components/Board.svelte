@@ -7,13 +7,15 @@
 		flipped = false,
 		lastMove,
 		evaluation = null,
-		marker = ''
+		marker = '',
+		evaluationLabel = '—'
 	}: {
 		fen: string;
 		flipped?: boolean;
 		lastMove?: Move;
 		evaluation?: number | null;
 		marker?: string;
+		evaluationLabel?: string;
 	} = $props();
 	const pieceNames: Record<string, string> = {
 		k: 'king',
@@ -41,13 +43,13 @@
 			class:flipped
 			aria-label={evaluation === null
 				? 'Evaluation unavailable'
-				: `White advantage ${evaluation.toFixed(1)}`}
+				: `White perspective: ${evaluationLabel}`}
 		>
 			<div
 				class="eval-white"
-				style:height={`${evaluation === null ? 50 : Math.min(94, Math.max(6, 50 + evaluation * 7))}%`}
+				style:height={`${evaluation === null ? 50 : 50 + 46 * Math.tanh(evaluation / 3)}%`}
 			></div>
-			<span>{evaluation === null ? '–' : evaluation >= 9 ? 'M1' : evaluation.toFixed(1)}</span>
+			<span>{evaluation === null ? '–' : evaluationLabel}</span>
 		</div>
 	{/if}
 	<div

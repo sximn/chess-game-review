@@ -14,6 +14,7 @@
 		value?: string;
 		ref?: HTMLTextAreaElement | null;
 		monospace?: boolean;
+		autocorrect?: 'on' | 'off'; // WebKit input behavior for notation fields.
 	} = $props();
 	const field = getFieldContext();
 	let control = $derived(fieldControlAttributes(field, id, describedBy, invalid));

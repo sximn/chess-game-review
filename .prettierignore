@@ -5,3 +5,5 @@ android
 ios
 bun.lock
 static/pieces
+static/engines/frozenight
+artifacts/app-verification

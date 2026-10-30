@@ -1,27 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		BookOpen,
-		CircleQuestionMark,
-		LayoutGrid,
-		Plus,
-		Settings2,
-	} from 'lucide-svelte';
+	import { BookOpen, CircleQuestionMark, LayoutGrid, Plus, Settings2 } from 'lucide-svelte';
 	import AppLogo from './AppLogo.svelte';
 	import Button from './Button.svelte';
 	import { app } from '#lib/state.svelte.js';
 
-	let { 
+	let {
 		presentation,
-		review = false,
+		review = false
 	}: {
 		presentation: 'sidebar' | 'mobile';
 		review?: boolean;
 	} = $props();
 
+	let pathname = $derived(
+		page.url.pathname === '' || page.url.pathname === '/index.html' ? '/' : page.url.pathname
+	);
 	const links = [
 		{ href: '/', label: 'Game review', icon: LayoutGrid },
-		{ href: '/games', label: 'My games', icon: BookOpen },
+		{ href: '/games', label: 'My games', icon: BookOpen }
 	];
 </script>
 
@@ -40,10 +37,10 @@
 			{#each links as link}<a
 					href={link.href}
 					aria-label={link.label}
-					class:active={page.url.pathname === link.href}
-					aria-current={page.url.pathname === link.href ? 'page' : undefined}
+					class:active={pathname === link.href}
+					aria-current={pathname === link.href ? 'page' : undefined}
 					><link.icon size={19} strokeWidth={1.7} /><span>{link.label}</span
-					>{#if link.href === '/' && page.url.pathname === '/'}<span class="nav-dot"></span>{/if}</a
+					>{#if link.href === '/' && pathname === '/'}<span class="nav-dot"></span>{/if}</a
 				>{/each}
 		</nav>
 		<Button class="sidebar-import" aria-label="Import game" onclick={() => (app.importOpen = true)}
@@ -67,8 +64,8 @@
 		{#each links as link}<a
 				href={link.href}
 				aria-label={link.label}
-				class:active={page.url.pathname === link.href}
-				aria-current={page.url.pathname === link.href ? 'page' : undefined}
+				class:active={pathname === link.href}
+				aria-current={pathname === link.href ? 'page' : undefined}
 				><link.icon size={21} /><span
 					>{link.href === '/' ? 'Review' : link.href === '/games' ? 'Games' : 'Insights'}</span
 				></a

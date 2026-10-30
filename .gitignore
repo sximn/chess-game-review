@@ -12,3 +12,6 @@ android/build
 ios/App/Pods
 ios/App/build
 .idea
+playwright-report
+test-results
+artifacts/app-verification/

@@ -11,6 +11,9 @@
 	import { app, hydrate, persistSettings } from '#lib/state.svelte.js';
 	import { initializeNative, setNativeTheme } from '#lib/native.js';
 	let { children }: { children: Snippet } = $props();
+	let isReview = $derived(
+		page.url.pathname === '' || page.url.pathname === '/' || page.url.pathname === '/index.html'
+	);
 	onMount(() => {
 		hydrate();
 		let disposed = false;
@@ -32,8 +35,8 @@
 	});
 </script>
 
-<div class="app-layout" class:review-route={page.url.pathname === '/'}>
-	<AppNavigation presentation="sidebar" review={page.url.pathname === '/'} />
+<div class="app-layout" class:review-route={isReview}>
+	<AppNavigation presentation="sidebar" review={isReview} />
 	<div class="main-area">
 		<header class="topbar">
 			<div class="breadcrumb">
@@ -41,9 +44,9 @@
 				><strong
 					>{page.url.pathname === '/games'
 						? 'My games'
-							: page.url.pathname === '/settings'
-								? 'Preferences'
-								: 'Game review'}</strong
+						: page.url.pathname === '/settings'
+							? 'Preferences'
+							: 'Game review'}</strong
 				>
 			</div>
 			<a href="/" class="mobile-brand">
@@ -68,7 +71,7 @@
 			</span>
 		</footer>
 	</div>
-	<AppNavigation presentation="mobile" review={page.url.pathname === '/'} />
+	<AppNavigation presentation="mobile" review={isReview} />
 </div>
 <ImportDialog />
 <HelpDialog />

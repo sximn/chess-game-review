@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from './Button.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import type { Move } from 'chess.js';
 	import {
 		ArrowDownUp,
@@ -48,10 +48,22 @@
 				animate && !matchMedia('(prefers-reduced-motion: reduce)').matches ? 'smooth' : 'instant'
 		});
 	}
+	let centeredMoves: Move[] | undefined;
 	$effect(() => {
 		ply;
-		moves;
-		if (carousel) center(true);
+		const currentMoves = moves;
+		const currentCarousel = carousel;
+		let cancelled = false;
+		// A game/branch change can update the chips and current ply in the same batch.
+		// Wait for their aria-current attributes before reading the selected chip.
+		void tick().then(() => {
+			if (cancelled || !currentCarousel || currentCarousel !== carousel) return;
+			center(centeredMoves === currentMoves);
+			centeredMoves = currentMoves;
+		});
+		return () => {
+			cancelled = true;
+		};
 	});
 	onMount(() => {
 		if (!carousel) return;

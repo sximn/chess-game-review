@@ -35,7 +35,7 @@ test('rejects empty, malformed, moveless, and oversized PGNs with useful errors'
 	assert.throws(() => parseGame(''), /Paste a PGN/);
 	assert.throws(() => parseGame('1. e4 e5 2. Qz9'), /could not be read/);
 	assert.throws(() => parseGame('[White "Ada"]'), /no moves/);
-	assert.throws(() => parseGame('a'.repeat(500_001)), /500 KB/);
+	assert.throws(() => parseGame('a'.repeat(1_048_577)), /1 MiB/);
 });
 
 test('uses the PGN starting side and full-move number in move labels', () => {

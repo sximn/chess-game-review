@@ -15,13 +15,13 @@ Open [localhost:5173](http://localhost:5173).
 
 ```sh
 bun run check   # Svelte and TypeScript diagnostics
-bun run test    # PGN validation and legal replay tests
+bun run test    # PGN, review scheduling, classification and cache tests
 bun run build  # Static SPA in build/
 ```
 
 ## Stack and architecture
 
-- **Svelte 5 + SvelteKit 2**, TypeScript, Vite. The root layout sets `ssr = false`. `adapter-static` emits `build/index.html` as the SPA fallback. Static web hosts should rewrite unknown application paths to `/index.html`.
+- **Svelte 5 + SvelteKit 3**, TypeScript, Vite. The root layout sets `ssr = false`. `adapter-static` emits `build/index.html` as the SPA fallback. Static web hosts should rewrite unknown application paths to `/index.html`.
 - **Bits UI** for accessible tabs, modal dialogs, dropdown menus, and switches. Styling lives in our components and CSS; this keeps the supplied design language independent of a mobile framework's router.
 - **Capacitor 8**, including checked-in Android and iOS projects. Both platforms use the same static build and SvelteKit routes.
 - **chess.js** for PGN parsing and legal game positions. Every half-move maps to a FEN, including custom FEN starting positions.
@@ -29,7 +29,7 @@ bun run build  # Static SPA in build/
 
 ## What works
 
-- Opera Game demo with a responsive chessboard, illustrative accuracy recap, move classifications, coach cards, and evaluation graph.
+- Opera Game and imported-game reviews with local Frozenight WASM analysis, move classifications, legal alternatives, and an evaluation graph.
 - First/previous/next/last move, autoplay, board flip, timeline scrubbing, and move selection. Keyboard: left/right arrows, Home/End, Space to play while the page body has focus.
 - PGN paste or file import with validation, an on-device game library, search, filters, and shareable local review URLs (`/?game=<local-id>`).
 - Light/dark themes and coordinate/evaluation preferences, saved on this device.
@@ -37,9 +37,28 @@ bun run build  # Static SPA in build/
 
 The review workspace fits the board and controls inside the viewport without page scrolling. A primary Next button and Previous button flank a scrollable move carousel; first/last and autoplay are grouped separately. On phones the controls stay near the bottom navigation. Analysis appears beside the board only at widths of 1200px or more and heights of 620px or more; otherwise an Analysis button opens an accessible sheet. Choosing a move from the sheet returns to the board. Desktop analysis scrolls independently. Landscape phones use a compact navigation rail.
 
-Overview, Moves, and Evaluation use a sliding tab indicator. The accuracy count, ring, and raised player progress bars animate together on mount, with immediate final values when reduced motion is enabled. Routine actions are silent; toasts only report storage or export failures. Import has one entry point in the sidebar or mobile navigation.
+Overview, Moves, and Evaluation use real engine results. The worker prioritizes the selected position, then reviews the whole game and refines uncertain moments. Pause/resume and typed retry states remain available. All game content stays on the device. The web app installs an offline shell; Capacitor bundles the assets at build time.
 
-**Analysis is illustrative demo data.** Imported games support legal replay; no chess engine, backend, account, cloud synchronization, or live accuracy calculation is connected. Insights show actual counts of local imports. Historical ratings are not used by the interface.
+**Review budgets and move labels are preliminary.** The app owns review scheduling, classification thresholds and device performance qualification. Engine correctness does not establish review accuracy or physical-phone performance/thermal suitability.
+
+Local analysis uses the exact npm dependency `chess-engine-kit@0.1.0`, which ships a prebuilt Frozenight WASM engine and module worker. App developers need neither Rust nor Docker. The `chess-engine-kit/frozenight` entry lets Vite serve the packaged worker, WASM, notices and build metadata directly in development and emit them into the production build. No asset-copy command or generated static engine directory is needed; the build includes the emitted assets in the offline shell and Capacitor bundle.
+
+```sh
+bun run test:browser  # Chromium, Firefox and WebKit against a production build
+```
+
+`src/lib/engine/provider.ts` selects the SDK provider with `createFrozenight()`. Diagnostics expose the resolved worker and WASM URLs through `frozenightAssetUrls()`. Review logic uses the public `ChessEngine` interface. The app's IndexedDB result cache keys include the full position/history, SDK identity and adapter/model hashes, settings, budget and classification policy. Cached records are checked for valid identity, schema and legal continuations before reuse. Previous vendored-engine cache entries are excluded by the new `upapawn-analysis-v2` namespace.
+
+The SDK caches verified WASM bytes; the app's service worker caches the page, application chunks, SDK worker, WASM and notices. Browser tests verify a different game completes after an offline reload. On Capacitor, all assets are shipped inside the application.
+
+Runtime diagnostics are at `/diagnostics`. Browser and native verification reports are generated under `artifacts/app-verification/`. The native asset verifier compares every final APK/.app web asset with `build/`:
+
+```sh
+node scripts/verify-native-assets.mjs --android
+node scripts/verify-native-assets.mjs --ios /absolute/path/to/App.app
+```
+
+Engine source/build/parity/reproducibility and notice maintenance belong to [chess-engine-kit](https://github.com/sximn/chess-engine-kit). This app retains full-game review, legal replay, classification, retry/pause, storage recovery, offline and native packaging checks. Physical-device latency, sustained memory/energy/thermal behavior and review-quality acceptance still need application-level qualification.
 
 ## Android and iOS
 
@@ -53,8 +72,6 @@ bun run cap:ios      # Open in Xcode
 
 Android builds require Android Studio, the configured Android SDK, and a compatible JDK. iOS builds require Xcode with its iOS SDK and a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-The provisional app ID is `com.simonukus.upapawn`; change it and native bundle/application identifiers before distribution. Default generated native app icons and splash screens remain placeholders.
-
 ### Shared mobile shell
 
 `src/lib/native.ts` owns native integration. Android Back closes an open menu or dialog first, then follows WebView history, then minimizes at the root. Plugin listeners are removed on teardown. The keyboard uses native viewport resizing; CSS hides bottom navigation when the keyboard appears. System bar style follows the selected theme. Autoplay pauses when the document becomes hidden.
@@ -67,13 +84,14 @@ iOS finger-following swipe-back is not implemented. Device validation remains ne
 
 ```text
 src/lib/components/  Scoped UI components, shared actions/dialogs, shell and navigation
-src/lib/chess.ts     PGN timeline and illustrative demo review data
+src/lib/chess.ts     PGN parsing and legal position timeline
 src/lib/state.svelte.ts  Shared reactive state and local persistence
 src/lib/native.ts    Capacitor lifecycle, back policy, system bars
 src/lib/styles.css   Tokens/reset/accessibility and reduced-motion CSS entry point
 src/lib/styles/      Only foundation and reduced-motion defaults; UI styles are scoped
 src/routes/          Review, game library, insights, preferences and error fallback
-tests/               Game parser and replay verification
+src/lib/engine/      SDK provider, progressive review, score policy, cache guards and diagnostics
+tests/               PGN, review policy, cache, failure recovery and production-browser verification
 android/             Native Android project
 ios/                 Native iOS project
 ```

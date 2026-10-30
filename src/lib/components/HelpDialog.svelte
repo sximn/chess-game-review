@@ -29,8 +29,8 @@
 		</p>
 	</div>
 	<p class="sample-notice">
-		The Opera Game includes illustrative review data. Imported games support replay; engine analysis
-		is a future addition.
+		Frozenight reviews games on this device. Move labels are engine estimates, and key moments
+		receive deeper analysis. Once installed, the app and engine can be used offline.
 	</p>
 </DialogFrame>
 

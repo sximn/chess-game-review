@@ -1,16 +1,19 @@
 <script lang="ts">
 	import type { AnalysisPresentation } from './analysis.types';
 	import type { Move } from 'chess.js';
-	import { demoAnalysis, moveLabel } from '#lib/chess.js';
+	import type { MoveQuality } from '#lib/engine/classification.js';
+	import { moveLabel } from '#lib/chess.js';
 	let {
 		presentation,
 		values,
+		qualities,
 		moves,
 		ply,
 		onNavigate
 	}: {
 		presentation: AnalysisPresentation;
-		values: number[] | null;
+		values: (number | null)[] | null;
+		qualities: (MoveQuality | undefined)[];
 		moves: Move[];
 		ply: number;
 		onNavigate: (ply: number) => void;
@@ -18,35 +21,36 @@
 	const chartY = (value: number) => 60 - 48 * Math.tanh(value / 3);
 	let curve = $derived.by(() => {
 		if (!values || values.length < 2) return '';
-		const step = 600 / (values.length - 1);
-		const ys = values.map(chartY);
-		const slopes = ys.slice(1).map((y, i) => (y - ys[i]) / step);
-		const tangents = ys.map((_, i) => {
-			if (i === 0) return slopes[0];
-			if (i === ys.length - 1) return slopes.at(-1)!;
-			const before = slopes[i - 1],
-				after = slopes[i];
-			return before * after <= 0 ? 0 : (2 * before * after) / (before + after);
+		let path = '',
+			gap = true;
+		values.forEach((value, i) => {
+			if (value === null) {
+				gap = true;
+				return;
+			}
+			path += `${gap ? 'M' : 'L'}${(i * 600) / (values.length - 1)},${chartY(value)} `;
+			gap = false;
 		});
-		return ys.reduce(
-			(path, y, i) =>
-				i === 0
-					? `M0,${y}`
-					: `${path} C${(i - 1) * step + step / 3},${ys[i - 1] + (tangents[i - 1] * step) / 3} ${i * step - step / 3},${y - (tangents[i] * step) / 3} ${i * step},${y}`,
-			''
-		);
+		return path;
 	});
 	let moments = $derived(
 		values
-			? [18, 19, 25, 28, 31, 33]
-					.filter((index) => index <= moves.length)
-					.map((index) => ({
-						ply: index,
-						label: moveLabel(index, moves),
-						quality: demoAnalysis.find((quality) => quality.plies.includes(index)),
-						color: moves[index - 1].color,
-						y: (chartY(values[index]) / 120) * 100
-					}))
+			? qualities.flatMap((quality, index) =>
+					quality &&
+					['Mistake', 'Blunder'].includes(quality.name) &&
+					values[index] !== null &&
+					moves[index - 1]
+						? [
+								{
+									ply: index,
+									label: moveLabel(index, moves),
+									quality,
+									color: moves[index - 1].color,
+									y: (chartY(values[index]!) / 120) * 100
+								}
+							]
+						: []
+				)
 			: []
 	);
 </script>
@@ -59,7 +63,7 @@
 	<div class="evaluation-title">
 		<div>
 			<h3>{values ? 'Evaluation' : 'Game timeline'}</h3>
-			<span>{values ? 'Sample analysis' : `${moves.length} half-moves`}</span>
+			<span>{values ? 'Frozenight · White’s perspective' : `${moves.length} half-moves`}</span>
 		</div>
 		{#if values}<div class="evaluation-sides" aria-label="Evaluation from White’s perspective">
 				<span><i class="white-side"></i> White</span><span><i class="black-side"></i> Black</span>
@@ -75,18 +79,6 @@
 						id="black-evaluation"><rect y="60" width="600" height="60" /></clipPath
 					></defs
 				>
-				<path
-					d={`${curve} L600,60 L0,60 Z`}
-					fill="#8da57b"
-					fill-opacity=".23"
-					clip-path="url(#white-evaluation)"
-				/>
-				<path
-					d={`${curve} L600,60 L0,60 Z`}
-					fill="#454c40"
-					fill-opacity=".3"
-					clip-path="url(#black-evaluation)"
-				/>
 				<path
 					d={curve}
 					fill="none"

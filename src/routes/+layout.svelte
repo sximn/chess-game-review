@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { Capacitor } from '@capacitor/core';
 	import '@fontsource-variable/dm-sans';
 	import '@fontsource/dm-serif-display';
 	import '#lib/styles.css';
@@ -7,6 +9,12 @@
 
 	let { children } = $props();
 
+	onMount(() => {
+		if (!import.meta.env.DEV && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator)
+			void navigator.serviceWorker.register('/service-worker.js').catch(() => {
+				/* Engine still works; offline installation can be retried on reload. */
+			});
+	});
 	initializeBreakpoints();
 </script>
 

@@ -3,7 +3,7 @@
 	import Field from '#lib/components/Field.svelte';
 	import PageHeading from '#lib/components/PageHeading.svelte';
 	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
-	import { Check, Moon, Sun, ShieldCheck } from 'lucide-svelte';
+	import { Check, Moon, Sun } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
 </script>
 
@@ -65,19 +65,31 @@
 			>
 				<PreferenceSwitch bind:checked={app.coordinates} />
 			</Field>
-			<Field
-				controlId="evaluation"
-				label="Evaluation bar"
-				layout="inline"
-				class="setting-row"
-			>
+			<Field controlId="evaluation" label="Evaluation bar" layout="inline" class="setting-row">
 				<PreferenceSwitch bind:checked={app.showEvaluation} />
 			</Field>
+			<div class="settings-divider"></div>
+			<h2>Local analysis</h2>
+			<p class="analysis-notice">Frozenight runs on this device. Games stay private.</p>
+			<a class="diagnostics-link" href="/diagnostics">Engine diagnostics</a>
 		</div></Card
 	>
 </div>
 
 <style>
+	.diagnostics-link {
+		display: block;
+		min-height: 36px;
+		padding: 8px 0;
+		font-size: 13px;
+		text-decoration: underline;
+	}
+	.analysis-notice {
+		font-size: 12px;
+		line-height: 1.7;
+		color: var(--muted);
+	}
+
 	.settings-layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1.5fr) minmax(200px, 0.8fr);
