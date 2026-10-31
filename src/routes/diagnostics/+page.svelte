@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { runDiagnostics } from '#lib/engine/diagnostics.js';
 	import { frozenightManifest, frozenightAssetUrls } from 'chess-engine-kit/frozenight';
+	import Button from "#lib/components/ui/Button.svelte";
 
 	const { worker, wasm } = frozenightAssetUrls();
 
@@ -41,7 +42,7 @@
 		Checks that the local engine assets load and a position can be analyzed on this device. Games
 		and results stay on this device.
 	</p>
-	<button onclick={run} disabled={running}>Run local diagnostics</button>
+	<Button onclick={run} disabled={running}>Run local diagnostics</Button>
 	<p role="status">{status}</p>
 	<details>
 		<summary>Engine build and network</summary>
@@ -70,13 +71,6 @@
 		line-height: 1.7;
 		margin: 10px 0;
 		color: var(--muted);
-	}
-	button {
-		background: var(--yellow);
-		border-radius: 8px;
-		padding: 12px 16px;
-		margin: 12px 0;
-		min-height: 44px;
 	}
 	pre {
 		white-space: pre-wrap;
