@@ -39,6 +39,8 @@
 	let black = $derived(timeline.headers.Black || 'Black');
 	let result = $derived(timeline.headers.Result || '*');
 	let currentMove = $derived(timeline.moves[ply - 1]);
+
+	let fen = $state('4k3/P7/8/8/8/8/8/4K3 w - - 0 1');
 </script>
 
 <section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
@@ -58,6 +60,11 @@
 				{evaluation}
 				{evaluationLabel}
 				{marker}
+				// movable="w"
+				// onMove={(move) => {
+				// 	fen = move.after;
+				// 	currentMove = move;
+				// }}
 			/>
 			<PlayerRow
 				position="self"
@@ -102,7 +109,7 @@
 		width: 100%;
 		container-type: size;
 		display: flex;
-		align-items: center;
+		align-items: start;
 		justify-content: center;
 	}
 	.position-frame {

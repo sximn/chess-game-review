@@ -88,10 +88,7 @@
 	{#each games as game}
 		<LibraryGameCard {game} />
 	{/each}
-	<button
-		class="import-game-card"
-		onclick={() => (app.importOpen = true)}
-	>
+	<button class="import-game-card" onclick={() => (app.importOpen = true)}>
 		<span><Plus size={28} /></span>
 		<strong>Import a game and start a new review.</strong>
 		<span class="text-link">Add a game {@render ArrowRightIcon()}</span>

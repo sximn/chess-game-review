@@ -173,7 +173,7 @@
 	main {
 		max-width: 1220px;
 		margin: 0 auto;
-		padding: 34px 40px 0;
+		padding: 12px 40px;
 	}
 	.app-footer {
 		max-width: 1220px;
@@ -225,7 +225,7 @@
 			padding-left: 176px;
 		}
 		main {
-			padding: 28px 21px 0;
+			padding: 8px 21px;
 		}
 		.topbar {
 			padding: 0 21px;
@@ -283,12 +283,6 @@
 		}
 		.app-footer > span:last-child {
 			display: none;
-		}
-	}
-	@media (max-width: 360px) {
-		main {
-			/* padding-left: 15px;
-			padding-right: 15px; */
 		}
 	}
 	:global(:root[data-theme='dark']) .topbar-avatar {

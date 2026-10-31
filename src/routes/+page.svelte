@@ -165,7 +165,7 @@
 			target instanceof HTMLElement &&
 			(['INPUT', 'TEXTAREA'].includes(target.tagName) ||
 				target.isContentEditable ||
-				target.closest('[role="tablist"],[role="menu"]'))
+				target.closest('[role="grid"],[role="tablist"],[role="menu"]'))
 		) {
 			return;
 		}

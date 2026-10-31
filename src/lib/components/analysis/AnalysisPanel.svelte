@@ -110,21 +110,32 @@
 						Labels compare the best and played moves from the same position. Near-threshold and
 						large changes receive a deeper comparison.
 					</p>
-					{#if quality}<div class="played-quality">
-							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong><span
-								>{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
+					{#if quality}
+						<div class="played-quality">
+							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong>
+							<span>
+								{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
 									.map((depth) => depth ?? '—')
-									.join(' / ')}</span
-							>{#if quality.lossCp !== null}<span>{quality.lossCp} cp measured loss</span
-								>{/if}{#if quality.noise}<span
-									>These moves were too close to distinguish reliably.</span
-								>{/if}
+									.join(' / ')}
+							</span>
+
+							{#if quality.lossCp !== null}
+								<span>{quality.lossCp} cp measured loss</span>
+							{/if}
+
+							{#if quality.noise}
+								<span>These moves were too close to distinguish reliably.</span>
+							{/if}
 						</div>
-						{#if quality.alternative.length && quality.name !== 'Best'}<button
+
+						{#if quality.alternative.length && quality.name !== 'Best'}
+							<button
 								class="review-action"
 								onclick={() => onExplore(quality.rootPly, quality.alternative)}
-								>Explore the alternative before this move</button
-							>{/if}
+							>
+								Explore the alternative before this move
+							</button>
+						{/if}
 					{/if}
 				</div>
 			</Tabs.Content>

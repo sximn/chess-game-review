@@ -74,48 +74,6 @@
 </script>
 
 <div class="move-controls" aria-label="Replay controls">
-	<div class="step-controls">
-		<Button
-			variant="outline"
-			size="icon"
-			class="previous-move"
-			aria-label="Previous move"
-			title="Previous move"
-			disabled={ply === 0}
-			onclick={() => onNavigate(ply - 1)}><ChevronLeft size={24} /></Button
-		>
-		<div class="move-carousel" bind:this={carousel} role="group" aria-label="Move timeline">
-			<button
-				class="move-chip"
-				class:current={ply === 0}
-				aria-current={ply === 0 ? 'step' : undefined}
-				aria-label="Starting position"
-				onclick={() => onNavigate(0)}>Start</button
-			>
-			{#each moves as move, index}
-				<button
-					class="move-chip"
-					class:current={ply === index + 1}
-					aria-current={ply === index + 1 ? 'step' : undefined}
-					aria-label={`Select ${moveLabel(index + 1, moves)}`}
-					onclick={() => onNavigate(index + 1)}
-					><span>{move.before.split(' ')[5]}{move.color === 'w' ? '.' : '…'}</span
-					>{move.san}</button
-				>
-			{/each}
-		</div>
-		<Button
-			variant="primary"
-			size="md"
-			class="replay-action next-move"
-			aria-label="Next move"
-			disabled={ply === moves.length}
-			onclick={() => onNavigate(ply + 1)}
-		>
-			<span class="next-label">Next</span>
-			<ChevronRight size={22} style="width:var(--next-icon-width)" />
-		</Button>
-	</div>
 	<div class="replay-utilities">
 		<div class="playback-controls" role="group" aria-label="Automatic playback">
 			<Button
@@ -175,6 +133,48 @@
 			</Button>
 		{/if}
 	</div>
+	<div class="step-controls">
+		<Button
+			variant="outline"
+			size="icon"
+			class="previous-move"
+			aria-label="Previous move"
+			title="Previous move"
+			disabled={ply === 0}
+			onclick={() => onNavigate(ply - 1)}><ChevronLeft size={24} /></Button
+		>
+		<div class="move-carousel" bind:this={carousel} role="group" aria-label="Move timeline">
+			<button
+				class="move-chip"
+				class:current={ply === 0}
+				aria-current={ply === 0 ? 'step' : undefined}
+				aria-label="Starting position"
+				onclick={() => onNavigate(0)}>Start</button
+			>
+			{#each moves as move, index}
+				<button
+					class="move-chip"
+					class:current={ply === index + 1}
+					aria-current={ply === index + 1 ? 'step' : undefined}
+					aria-label={`Select ${moveLabel(index + 1, moves)}`}
+					onclick={() => onNavigate(index + 1)}
+					><span>{move.before.split(' ')[5]}{move.color === 'w' ? '.' : '…'}</span
+					>{move.san}</button
+				>
+			{/each}
+		</div>
+		<Button
+			variant="primary"
+			size="md"
+			class="replay-action next-move"
+			aria-label="Next move"
+			disabled={ply === moves.length}
+			onclick={() => onNavigate(ply + 1)}
+		>
+			<span class="next-label">Next</span>
+			<ChevronRight size={22} style="width:var(--next-icon-width)" />
+		</Button>
+	</div>
 </div>
 
 <style>
@@ -194,8 +194,7 @@
 		height: 60px;
 		flex-shrink: 0;
 		display: grid;
-		grid-template-columns: 44px minmax(0, 1fr) 90px /*105px*/;
-		/* gap: 8px; */
+		grid-template-columns: 44px minmax(0, 1fr) 90px;
 		padding: 5px;
 		border: 1px solid var(--line);
 		border-radius: 13px;
@@ -396,5 +395,53 @@
 		.step-controls {
 			grid-template-columns: 30px minmax(0, 1fr) 54px;
 		}
+	}
+
+	/* EPERIMENTS */
+	.move-controls {
+		/* Main UX sizing control */
+		--step-controls-height: 48px;
+
+		--step-controls-padding: 5px;
+		--step-controls-border: 1px;
+
+		/* Available height inside the step-controls */
+		--step-inner-height: calc(
+			var(--step-controls-height) - var(--step-controls-padding) * 2 - var(--step-controls-border) *
+				2
+		);
+
+		/* Preserve the current 39px chip / 48px button proportions */
+		--move-chip-height: calc(var(--step-inner-height) * 0.8125);
+
+		/* Step row + existing 8px gap + 40px utilities row */
+		height: calc(var(--step-controls-height) + 48px);
+		flex-basis: calc(var(--step-controls-height) + 48px);
+	}
+
+	.step-controls {
+		box-sizing: border-box;
+		height: var(--step-controls-height);
+		padding: var(--step-controls-padding);
+		border-width: var(--step-controls-border);
+		align-items: center;
+	}
+
+	.step-controls > :global(.previous-move),
+	.step-controls > :global(.next-move) {
+		--button-height: var(--step-inner-height);
+		--button-min-height: var(--step-inner-height);
+	}
+
+	.move-carousel {
+		box-sizing: border-box;
+		height: var(--step-inner-height);
+		min-height: 0;
+	}
+
+	.move-chip {
+		box-sizing: border-box;
+		height: var(--move-chip-height);
+		min-height: 0;
 	}
 </style>
