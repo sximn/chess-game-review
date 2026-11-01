@@ -31,8 +31,10 @@
 	data-variant={variant}
 	class:shadow
 	class:interactive
-	class:clip>{@render children()}</svelte:element
+	class:clip
 >
+	{@render children()}
+</svelte:element>
 
 <style>
 	.card {

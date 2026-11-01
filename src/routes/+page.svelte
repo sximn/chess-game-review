@@ -44,6 +44,8 @@
 	);
 	let displayTimeline = $derived(branch?.timeline ?? timeline);
 	let displayPly = $derived(branch?.ply ?? ply);
+	let analysisDetail = $derived(page.url.searchParams.get('analysis') === 'detail');
+	let beforeResult = $derived(review.positions[ply - 1]);
 
 	let white = $derived(timeline.headers.White || 'White');
 	let black = $derived(timeline.headers.Black || 'Black');
@@ -237,6 +239,15 @@
 			{compact}
 			{evaluation}
 			{evaluationLabel}
+			quality={branch ? undefined : classification}
+			reviewPhase={review.phase}
+			exploring={!!branch}
+			{analysisDetail}
+			beforeEvaluation={visualValue(beforeResult)}
+			beforeEvaluationLabel={formatScore(
+				beforeResult?.terminalScore ?? beforeResult?.lines[0]?.score,
+				beforeResult?.winner
+			)}
 			marker={!branch && classification && ['Great', 'Brilliant'].includes(classification.name)
 				? classification.symbol
 				: ''}
@@ -245,15 +256,19 @@
 			onFlip={() => (flipped = !flipped)}
 			onAnalysis={openAnalysis}
 			onExport={download}
+			onExplore={explore}
+			onReveal={() => (playing = false)}
 		/>
 	</div>
 
-	{#if !compact}<aside class="review-details" aria-label="Game analysis">
+	{#if !compact}
+		<aside class="review-details" aria-label="Game analysis">
 			<AnalysisPanel
 				presentation="sidebar"
 				{timeline}
 				{review}
 				{ply}
+				{analysisDetail}
 				bind:activeTab
 				onNavigate={goFromAnalysis}
 				onExplore={explore}
@@ -261,7 +276,8 @@
 				onResume={() => controller?.resumeReview()}
 				onRetry={() => controller?.retry()}
 			/>
-		</aside>{/if}
+		</aside>
+	{/if}
 </div>
 
 {#if compact}
@@ -274,6 +290,7 @@
 			{timeline}
 			{review}
 			{ply}
+			{analysisDetail}
 			bind:activeTab
 			onNavigate={goFromAnalysis}
 			onExplore={explore}

@@ -23,6 +23,8 @@ Import a PGN or explore the Opera Game, review move classifications and legal al
 
 Keyboard shortcuts work while the page body has focus: Left/Right to navigate, Home/End to jump to the first/last move, and Space to toggle autoplay.
 
+Tap the move rating below the board to compare the played move with the best move and see its board arrow. The Analysis button opens the full review on smaller screens. Technical engine details (preliminary/refined labels, depths, nodes, and measured loss) are visible only with `?analysis=detail`.
+
 ## Run locally
 
 Requires Node.js 22.12+ and Bun 1.4+.

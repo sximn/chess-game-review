@@ -191,6 +191,7 @@
 		fen,
 		flipped = false,
 		lastMove,
+		suggestedMove,
 		evaluation = null,
 		marker = '',
 		evaluationLabel = '—',
@@ -201,6 +202,7 @@
 		fen: string;
 		flipped?: boolean;
 		lastMove?: Move;
+		suggestedMove?: Move;
 		evaluation?: number | null;
 		marker?: string;
 		evaluationLabel?: string;
@@ -246,6 +248,20 @@
 	const rowOf = (sq: Square) => (flipped ? rankOf(sq) : 7 - rankOf(sq));
 	const squareAt = (col: number, row: number) =>
 		toSquare(flipped ? 7 - col : col, flipped ? row : 7 - row);
+	let suggestionPath = $derived.by(() => {
+		if (!suggestedMove) return '';
+		const x1 = colOf(suggestedMove.from) + 0.5;
+		const y1 = rowOf(suggestedMove.from) + 0.5;
+		const x2 = colOf(suggestedMove.to) + 0.5;
+		const y2 = rowOf(suggestedMove.to) + 0.5;
+		const elbow =
+			suggestedMove.piece === 'n'
+				? Math.abs(x2 - x1) === 2
+					? ` L ${x2} ${y1}`
+					: ` L ${x1} ${y2}`
+				: '';
+		return `M ${x1} ${y1}${elbow} L ${x2} ${y2}`;
+	});
 
 	// ==========> piece identity / animation sync
 
@@ -855,6 +871,49 @@
 		{/each}
 	</div>
 
+	{#if suggestedMove}
+		<svg
+			class="suggestion-arrow"
+			data-from={suggestedMove.from}
+			data-to={suggestedMove.to}
+			viewBox="0 0 8 8"
+			role="img"
+			aria-label={`Best move: ${suggestedMove.san}, ${suggestedMove.from} to ${suggestedMove.to}`}
+		>
+			<defs
+				><marker
+					id={`${boardId}-arrowhead`}
+					viewBox="0 0 10 10"
+					refX="8"
+					refY="5"
+					markerWidth="0.65"
+					markerHeight="0.65"
+					markerUnits="userSpaceOnUse"
+					orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="currentColor" /></marker
+				></defs
+			>
+			<path
+				d={suggestionPath}
+				fill="none"
+				stroke="var(--paper)"
+				stroke-width="0.24"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				opacity="0.65"
+			/>
+			<path
+				class="suggestion-path"
+				d={suggestionPath}
+				fill="none"
+				stroke="currentColor"
+				stroke-width="0.16"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				marker-end={`url(#${boardId}-arrowhead)`}
+			/>
+		</svg>
+	{/if}
+
 	{#if promotion}
 		{@const promo = promotion}
 		{@const atTop = rowOf(promo.to) === 0}
@@ -890,6 +949,16 @@
 {/snippet}
 
 <style>
+	.suggestion-arrow {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 6;
+		pointer-events: none;
+		color: var(--violet);
+		opacity: 0.9;
+	}
 	.board-with-eval {
 		display: flex;
 		align-items: stretch;

@@ -14,12 +14,24 @@
 	} from 'lucide-svelte';
 	import { moveLabel } from '#lib/chess.js';
 	import GameActions from './GameActions.svelte';
+	import MoveRating from './MoveRating.svelte';
+	import BestMoveReveal from './BestMoveReveal.svelte';
+	import type { MoveQuality } from '#lib/engine/classification.js';
+	import type { ReviewState } from '#lib/engine/review.js';
 
 	let {
 		moves,
 		ply,
 		playing,
 		compact,
+		quality,
+		reviewPhase,
+		exploring,
+		analysisDetail,
+		suggestion,
+		expanded,
+		onToggleReveal,
+		onExplore,
 		onNavigate,
 		onPlay,
 		onFlip,
@@ -30,6 +42,14 @@
 		ply: number;
 		playing: boolean;
 		compact: boolean;
+		quality?: MoveQuality;
+		reviewPhase: ReviewState['phase'];
+		exploring: boolean;
+		analysisDetail: boolean;
+		suggestion?: Move;
+		expanded: boolean;
+		onToggleReveal: () => void;
+		onExplore: () => void;
 		onNavigate: (ply: number) => void;
 		onPlay: () => void;
 		onFlip: () => void;
@@ -38,6 +58,7 @@
 	} = $props();
 
 	let carousel = $state<HTMLDivElement>();
+	const revealId = $props.id();
 
 	function center(animate: boolean) {
 		const selected = carousel?.querySelector<HTMLButtonElement>('[aria-current="step"]');
@@ -74,65 +95,88 @@
 </script>
 
 <div class="move-controls" aria-label="Replay controls">
-	<div class="replay-utilities">
-		<div class="playback-controls" role="group" aria-label="Automatic playback">
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon"
-				aria-label="First move"
-				title="First move"
-				disabled={ply === 0}
-				onclick={() => onNavigate(0)}><SkipBack size={16} /></Button
-			>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon autoplay-button"
-				aria-label={playing ? 'Pause replay' : 'Play replay'}
-				title={playing ? 'Pause replay' : 'Play replay'}
-				onclick={onPlay}
-				>{#if playing}<Pause size={16} />{:else}<Play size={16} />{/if}</Button
-			>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon"
-				aria-label="Last move"
-				title="Last move"
-				disabled={ply === moves.length}
-				onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
-			>
-		</div>
-		<span class="replay-counter">{ply}<span> / {moves.length}</span></span>
-		<Button
-			variant="ghost"
-			size="icon"
-			class="replay-icon flip-button"
-			aria-label="Flip board"
-			title="Flip board"
-			onclick={onFlip}
-		>
-			<ArrowDownUp size={17} />
-		</Button>
-		{#if compact}
-			<GameActions {onExport} />
+	<div class="replay-utility-container" class:expanded>
+		<div class="replay-utilities">
+			<MoveRating
+				{quality}
+				move={moveLabel(ply, moves)}
+				{ply}
+				phase={reviewPhase}
+				{exploring}
+				{analysisDetail}
+				{expanded}
+				controlsId={revealId}
+				onToggle={onToggleReveal}
+			/>
+			<div class="playback-controls" role="group" aria-label="Automatic playback">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon"
+					aria-label="First move"
+					title="First move"
+					disabled={ply === 0}
+					onclick={() => onNavigate(0)}><SkipBack size={16} /></Button
+				>
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon autoplay-button"
+					aria-label={playing ? 'Pause replay' : 'Play replay'}
+					title={playing ? 'Pause replay' : 'Play replay'}
+					onclick={onPlay}
+					>{#if playing}<Pause size={16} />{:else}<Play size={16} />{/if}</Button
+				>
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon"
+					aria-label="Last move"
+					title="Last move"
+					disabled={ply === moves.length}
+					onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
+				>
+			</div>
+			{#if compact}
+				<GameActions {onExport} {onFlip} />
 
-			<Button
-				variant="secondary"
-				size="sm"
-				class="replay-action analysis-trigger"
-				onclick={onAnalysis}
-				aria-haspopup="dialog"
-			>
-				<ChartNoAxesCombined
-					size={16}
-					style="width:var(--analysis-icon-width);display:var(--analysis-icon-display)"
+				<Button
+					variant="secondary"
+					size="sm"
+					class="analysis-trigger"
+					onclick={onAnalysis}
+					aria-haspopup="dialog"
+				>
+					<ChartNoAxesCombined
+						size={16}
+						style="width:var(--analysis-icon-width);display:var(--analysis-icon-display)"
+					/>
+					<span>Analysis</span>
+				</Button>
+			{:else}
+				<Button
+					variant="ghost"
+					size="icon"
+					class="flip-button"
+					aria-label="Flip board"
+					title="Flip board"
+					onclick={onFlip}><ArrowDownUp size={17} /></Button
+				>
+			{/if}
+		</div>
+
+		<div id={revealId} hidden={!expanded}>
+			{#if expanded}
+				<BestMoveReveal
+					{suggestion}
+					playedMove={moves[ply - 1]}
+					phase={reviewPhase}
+					{onExplore}
 				/>
-				<span>Analysis</span>
-			</Button>
-		{/if}
+			{/if}
+		</div>
 	</div>
+
 	<div class="step-controls">
 		<Button
 			variant="outline"
@@ -166,7 +210,7 @@
 		<Button
 			variant="primary"
 			size="md"
-			class="replay-action next-move"
+			class="next-move"
 			aria-label="Next move"
 			disabled={ply === moves.length}
 			onclick={() => onNavigate(ply + 1)}
@@ -183,8 +227,7 @@
 		--analysis-icon-display: inline;
 	}
 	.move-controls {
-		flex: 0 0 108px;
-		height: 108px;
+		flex: 0 0 auto;
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
@@ -269,11 +312,12 @@
 	.replay-utilities {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		height: 40px;
+		gap: 6px;
+		min-height: 40px;
 		padding: 0 2px;
 	}
 	.playback-controls {
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		gap: 1px;
@@ -293,18 +337,9 @@
 		--button-color: #71845c;
 		--button-hover-color: #71845c;
 	}
-	.replay-counter {
-		margin-left: 2px;
-		font-size: 10px;
-		color: var(--muted);
-	}
-	.replay-counter > span {
-		color: #a6af96;
-	}
 	.replay-utilities > :global(.flip-button) {
 		--button-width: 34px;
 		--button-height: 36px;
-		margin-left: auto;
 	}
 	.replay-utilities > :global(.analysis-trigger) {
 		--button-height: 36px;
@@ -333,9 +368,6 @@
 		.step-controls {
 			grid-template-columns: 40px minmax(0, 1fr) 76px;
 			gap: 6px;
-		}
-		.replay-counter {
-			display: none;
 		}
 		.move-chip {
 			font-size: 12px;
@@ -370,9 +402,6 @@
 		.playback-controls > :global(.replay-icon) {
 			--button-width: 26px;
 			--button-height: 30px;
-		}
-		.replay-counter {
-			display: none;
 		}
 		.replay-utilities > :global(.flip-button) {
 			--button-width: 26px;
@@ -413,10 +442,6 @@
 
 		/* Preserve the current 39px chip / 48px button proportions */
 		--move-chip-height: calc(var(--step-inner-height) * 0.8125);
-
-		/* Step row + existing 8px gap + 40px utilities row */
-		height: calc(var(--step-controls-height) + 48px);
-		flex-basis: calc(var(--step-controls-height) + 48px);
 	}
 
 	.step-controls {
@@ -443,5 +468,33 @@
 		box-sizing: border-box;
 		height: var(--move-chip-height);
 		min-height: 0;
+	}
+	.replay-utility-container {
+		border: 1px solid transparent;
+		border-radius: 11px;
+	}
+	.replay-utility-container.expanded {
+		border-color: var(--line);
+		background: var(--paper);
+		box-shadow: var(--shadow);
+	}
+	.expanded .replay-utilities {
+		padding: 2px 5px;
+	}
+	.replay-utilities > :global(.analysis-trigger) {
+		flex-shrink: 0;
+	}
+	.replay-utilities :global(.game-actions) {
+		--button-width: 30px;
+		--button-height: 36px;
+	}
+	@media (max-height: 520px) and (min-width: 480px) {
+		.replay-utilities {
+			flex-wrap: wrap;
+			row-gap: 4px;
+		}
+		.replay-utilities :global(.move-rating) {
+			flex-basis: 100%;
+		}
 	}
 </style>
