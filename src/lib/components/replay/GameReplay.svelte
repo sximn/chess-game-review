@@ -59,11 +59,16 @@
 	let result = $derived(timeline.headers.Result || '*');
 	let currentMove = $derived(timeline.moves[ply - 1]);
 	let expanded = $state(false);
-	let suggestion = $derived(
-		!exploring && quality?.rootPly === ply - 1 && quality.alternative.length
-			? continuation(timeline.fens[quality.rootPly], [quality.alternative[0]]).moves[0]
-			: undefined
-	);
+	let suggestion = $derived.by(() => {
+		if (
+			exploring ||
+			quality?.name === 'Best' ||
+			quality?.rootPly !== ply - 1 ||
+			!quality.alternative.length
+		) return undefined;
+		const bestMove = continuation(timeline.fens[quality.rootPly], [quality.alternative[0]]).moves[0];
+		return bestMove.lan !== currentMove?.lan ? bestMove : undefined;
+	});
 	let previewing = $derived(expanded && !!suggestion);
 	$effect.pre(() => {
 		timeline;
@@ -71,7 +76,11 @@
 		exploring;
 		expanded = false;
 	});
+	$effect.pre(() => {
+		if (!suggestion) expanded = false;
+	});
 	function toggleReveal() {
+		if (!suggestion) return;
 		if (!expanded) onReveal();
 		expanded = !expanded;
 	}

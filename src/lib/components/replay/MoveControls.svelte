@@ -15,7 +15,7 @@
 	import { moveLabel } from '#lib/chess.js';
 	import GameActions from './GameActions.svelte';
 	import MoveRating from './MoveRating.svelte';
-	import BestMoveReveal from './BestMoveReveal.svelte';
+	import BestMoveCard from './BestMoveCard.svelte';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
 
@@ -58,7 +58,6 @@
 	} = $props();
 
 	let carousel = $state<HTMLDivElement>();
-	const revealId = $props.id();
 
 	function center(animate: boolean) {
 		const selected = carousel?.querySelector<HTMLButtonElement>('[aria-current="step"]');
@@ -95,8 +94,8 @@
 </script>
 
 <div class="move-controls" aria-label="Replay controls">
-	<div class="replay-utility-container" class:expanded>
-		<div class="replay-utilities">
+	<div class="replay-utilities">
+		<div class="move-review-cards">
 			<MoveRating
 				{quality}
 				move={moveLabel(ply, moves)}
@@ -104,10 +103,12 @@
 				phase={reviewPhase}
 				{exploring}
 				{analysisDetail}
-				{expanded}
-				controlsId={revealId}
-				onToggle={onToggleReveal}
 			/>
+			{#if suggestion}
+				<BestMoveCard {suggestion} {expanded} onToggle={onToggleReveal} {onExplore} />
+			{/if}
+		</div>
+		<div class="replay-actions">
 			<div class="playback-controls" role="group" aria-label="Automatic playback">
 				<Button
 					variant="ghost"
@@ -116,8 +117,10 @@
 					aria-label="First move"
 					title="First move"
 					disabled={ply === 0}
-					onclick={() => onNavigate(0)}><SkipBack size={16} /></Button
+					onclick={() => onNavigate(0)}
 				>
+					<SkipBack size={16} />
+				</Button>
 				<Button
 					variant="ghost"
 					size="icon-sm"
@@ -125,8 +128,13 @@
 					aria-label={playing ? 'Pause replay' : 'Play replay'}
 					title={playing ? 'Pause replay' : 'Play replay'}
 					onclick={onPlay}
-					>{#if playing}<Pause size={16} />{:else}<Play size={16} />{/if}</Button
 				>
+					{#if playing}
+						<Pause size={16} />
+					{:else}
+						<Play size={16} />
+					{/if}
+				</Button>
 				<Button
 					variant="ghost"
 					size="icon-sm"
@@ -137,6 +145,7 @@
 					onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
 				>
 			</div>
+
 			{#if compact}
 				<GameActions {onExport} {onFlip} />
 
@@ -162,17 +171,6 @@
 					title="Flip board"
 					onclick={onFlip}><ArrowDownUp size={17} /></Button
 				>
-			{/if}
-		</div>
-
-		<div id={revealId} hidden={!expanded}>
-			{#if expanded}
-				<BestMoveReveal
-					{suggestion}
-					playedMove={moves[ply - 1]}
-					phase={reviewPhase}
-					{onExplore}
-				/>
 			{/if}
 		</div>
 	</div>
@@ -232,6 +230,19 @@
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
+	}
+	.move-review-cards {
+		/* Keep both tracks reserved even when there is no alternative. */
+		flex: 0 1 340px;
+		min-width: min(100%, 320px);
+		max-width: 100%;
+		display: grid;
+		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		align-items: start;
+		gap: 8px;
+	}
+	.move-review-cards > :global(.card) {
+		min-width: 0;
 	}
 	.step-controls {
 		height: 60px;
@@ -312,9 +323,17 @@
 	.replay-utilities {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
 		gap: 6px;
 		min-height: 40px;
-		padding: 0 2px;
+		padding: 0;
+	}
+	.replay-actions {
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 6px;
+		margin-left: auto;
 	}
 	.playback-controls {
 		flex-shrink: 0;
@@ -337,11 +356,11 @@
 		--button-color: #71845c;
 		--button-hover-color: #71845c;
 	}
-	.replay-utilities > :global(.flip-button) {
+	.replay-actions > :global(.flip-button) {
 		--button-width: 34px;
 		--button-height: 36px;
 	}
-	.replay-utilities > :global(.analysis-trigger) {
+	.replay-actions > :global(.analysis-trigger) {
 		--button-height: 36px;
 		--button-min-height: 36px;
 		--button-padding: 0 11px;
@@ -403,10 +422,10 @@
 			--button-width: 26px;
 			--button-height: 30px;
 		}
-		.replay-utilities > :global(.flip-button) {
+		.replay-actions > :global(.flip-button) {
 			--button-width: 26px;
 		}
-		.replay-utilities > :global(.analysis-trigger) {
+		.replay-actions > :global(.analysis-trigger) {
 			--button-padding: 0 7px;
 			--button-font-size: 10px;
 		}
@@ -415,7 +434,7 @@
 		}
 	}
 	@media (max-height: 400px) and (min-width: 480px) and (max-width: 620px) {
-		.replay-utilities > :global(.analysis-trigger) {
+		.replay-actions > :global(.analysis-trigger) {
 			--analysis-icon-display: none;
 		}
 		.move-controls :global(.next-move) {
@@ -469,19 +488,7 @@
 		height: var(--move-chip-height);
 		min-height: 0;
 	}
-	.replay-utility-container {
-		border: 1px solid transparent;
-		border-radius: 11px;
-	}
-	.replay-utility-container.expanded {
-		border-color: var(--line);
-		background: var(--paper);
-		box-shadow: var(--shadow);
-	}
-	.expanded .replay-utilities {
-		padding: 2px 5px;
-	}
-	.replay-utilities > :global(.analysis-trigger) {
+	.replay-actions > :global(.analysis-trigger) {
 		flex-shrink: 0;
 	}
 	.replay-utilities :global(.game-actions) {
@@ -492,9 +499,6 @@
 		.replay-utilities {
 			flex-wrap: wrap;
 			row-gap: 4px;
-		}
-		.replay-utilities :global(.move-rating) {
-			flex-basis: 100%;
 		}
 	}
 </style>

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { ChevronDown } from 'lucide-svelte';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
-	import Card from '../ui/Card.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
 
 	let {
 		quality,
@@ -10,10 +9,7 @@
 		ply,
 		phase,
 		exploring,
-		analysisDetail,
-		expanded,
-		controlsId,
-		onToggle
+		analysisDetail
 	}: {
 		quality?: MoveQuality;
 		move: string;
@@ -21,9 +17,6 @@
 		phase: ReviewState['phase'];
 		exploring: boolean;
 		analysisDetail: boolean;
-		expanded: boolean;
-		controlsId: string;
-		onToggle: () => void;
 	} = $props();
 
 	let label = $derived(
@@ -44,66 +37,47 @@
 		exploring
 			? 'Return to game for ratings'
 			: ply === 0
-				? 'Play a move to see its rating'
+				? ''
 				: `${move}${analysisDetail && quality ? ` · ${quality.preliminary ? 'Preliminary' : 'Refined'}` : ''}`
 	);
-	let canReveal = $derived(ply > 0 && !exploring);
 </script>
 
-<div
+<Card
 	class="move-rating"
-	style:--rating-color={!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'}
+	variant="paper"
+	aria-label="Current move rating"
+	style={`--card-radius:11px;--rating-color:${!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'}`}
 >
 	<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
 		{label}. {detail}
 	</div>
 
-	<button
-		class="rating-content"
-		onclick={onToggle}
-		disabled={!canReveal}
-		aria-expanded={expanded}
-		aria-controls={controlsId}
-		aria-label={`${expanded ? 'Hide' : 'Show'} best move: ${label}. ${detail}`}
-	>
-		<span class="rating-symbol" aria-hidden="true"
-			>{!exploring && ply > 0 && quality ? quality.symbol : '·'}</span
-		>
-		<span class="rating-copy">
-			<strong>
-				{label}
-				{#if canReveal}
-					<ChevronDown
-						size={13}
-						class={expanded ? 'expanded-chevron' : ''}
-					/>
-				{/if}
-			</strong>
-			<span>{detail}</span>
+	<div class="rating-content">
+		<span class="rating-symbol" aria-hidden="true">
+			{!exploring && ply > 0 && quality ? quality.symbol : '·'}
 		</span>
-	</button>
-</div>
+
+		<span class="rating-copy">
+			<strong title={label}>
+				{label}
+			</strong>
+			<span title={detail}>{detail}</span>
+		</span>
+	</div>
+</Card>
 
 <style>
-	.move-rating {
-		min-width: 0;
-		flex: 1;
-	}
 	.rating-content {
 		display: flex;
 		align-items: center;
 		gap: 8px;
 		width: 100%;
 		min-width: 0;
-		min-height: 40px;
-		padding: 0 2px;
+		height: 48px;
+		padding: 10px 12px;
 		background: transparent;
 		text-align: left;
 		border-radius: 8px;
-	}
-	.rating-content:disabled {
-		opacity: 1;
-		cursor: default;
 	}
 	.rating-symbol {
 		display: grid;
@@ -123,20 +97,21 @@
 		gap: 2px;
 	}
 	.rating-copy strong {
-		display: flex;
-		align-items: center;
-		gap: 3px;
+		display: block;
 		font-size: 12px;
 		line-height: 1.2;
 		color: var(--rating-color);
 	}
 	.rating-copy > span {
-		font-size: 10px;
+		font-size: 12px;
 		color: var(--muted);
 		line-height: 1.3;
 	}
-	.rating-copy :global(.expanded-chevron) {
-		transform: rotate(180deg);
+	.rating-copy > strong,
+	.rating-copy > span {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 	@media (max-width: 360px) {
 		.rating-symbol {
@@ -146,7 +121,7 @@
 			font-size: 11px;
 		}
 		.rating-copy > span {
-			font-size: 9px;
+			font-size: 11px;
 		}
 	}
 </style>
