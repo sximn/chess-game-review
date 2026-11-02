@@ -109,10 +109,7 @@
 
 <section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
 	<div class="position-area">
-		<div
-			class="position-frame"
-			class:exploring={!!branch || previewing}
-		>
+		<div class="position-frame" class:exploring={!!branch || previewing}>
 			<PlayerRow
 				position="opponent"
 				name={flipped ? white : black}

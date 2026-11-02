@@ -2,7 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { runDiagnostics } from '#lib/engine/diagnostics.js';
 	import { frozenightManifest, frozenightAssetUrls } from 'chess-engine-kit/frozenight';
-	import Button from "#lib/components/ui/Button.svelte";
+	import Button from '#lib/components/ui/Button.svelte';
 
 	const { worker, wasm } = frozenightAssetUrls();
 
