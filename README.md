@@ -2,7 +2,7 @@
 
 A chess game review app for web, Android, and iOS, with on-device engine analysis and offline support.
 
-Import a PGN or explore the Opera Game, review move classifications and legal alternatives, and track evaluations throughout the game. Games and analysis stay on your device.
+Import a PGN, review move classifications and legal alternatives, and track evaluations throughout the game. Games and analysis stay on your device.
 
 > **Status: early / pre-release.** Review budgets and classification thresholds are preliminary, and native behavior has not been validated on physical devices. See [Known limitations](#known-limitations).
 
@@ -16,7 +16,7 @@ Import a PGN or explore the Opera Game, review move classifications and legal al
 
 - Local Frozenight WASM analysis with move classifications, legal alternatives, and an evaluation graph.
 - PGN paste and file import, including games with custom FEN starting positions.
-- On-device game library with search, filters, and device-local review links (`/?game=<local-id>`).
+- A simple welcome screen before your first import, then an on-device game library with results, search, and device-local review links (`/review?game=<local-id>`).
 - Move navigation, autoplay, board flip, timeline scrubbing, and move selection.
 - Responsive layouts, light/dark themes, and saved board preferences.
 - Offline web support and bundled native assets. No runtime asset CDN.

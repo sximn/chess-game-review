@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { readEngineAssetUrls } from './engine-assets';
+import { OPERA_PGN } from '../fixtures/opera-game';
 
 test('package assets load and diagnostics analyze a real local position', async ({ page }) => {
 	const errors: string[] = [];
@@ -25,7 +26,14 @@ test('game review displays real alternatives, replays a branch, and keeps score 
 	const errors: string[] = [];
 	page.on('pageerror', (e) => errors.push(e.message));
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.goto('/');
+	await page.addInitScript((pgn) => {
+		localStorage.setItem(
+			'upapawn-games',
+			JSON.stringify([{ id: 'test-opera', pgn, addedAt: '2026-11-02' }])
+		);
+	}, OPERA_PGN);
+	await page.goto('/?game=test-opera');
+	await page.getByRole('button', { name: 'Select 10. Nxb5', exact: true }).click();
 	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 	// Freeze iterative evaluation so a deeper result cannot race the flip assertion.
 	await page.getByRole('button', { name: 'Pause review' }).click();
@@ -55,7 +63,13 @@ test('game review displays real alternatives, replays a branch, and keeps score 
 test('mobile layout stays interactive during local analysis', async ({ page }, info) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	// Capacitor can launch the SPA fallback by its filename.
-	await page.goto('/index.html');
+	await page.addInitScript(() => {
+		localStorage.setItem(
+			'upapawn-games',
+			JSON.stringify([{ id: 'mobile', pgn: '1. e4 e5 *', addedAt: '2026-11-02' }])
+		);
+	});
+	await page.goto('/index.html?game=mobile');
 	await expect(page.locator('.chessboard')).toBeVisible();
 	expect((await page.locator('.chessboard').boundingBox())!.height).toBeGreaterThan(200);
 	await page.keyboard.press('ArrowRight');
@@ -87,8 +101,6 @@ test('offline reload reviews a different PGN without a successful network reques
 	}
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	const assets = await readEngineAssetUrls(page, origin);
-	await page.goto(origin + '/');
-	await expect(page.getByRole('button', { name: 'Explore alternative 1' })).toBeVisible();
 	await page.evaluate(() =>
 		localStorage.setItem(
 			'upapawn-games',
@@ -229,10 +241,7 @@ test('mobile PGN import opens a fresh local review without shrinking the board',
 	});
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/');
-	await page
-		.getByRole('navigation', { name: 'Mobile navigation' })
-		.getByRole('button', { name: 'Import', exact: true })
-		.click();
+	await page.getByRole('button', { name: 'Import your game', exact: true }).click();
 	const input = page.getByLabel('Game notation', { exact: true });
 	await expect(input).toHaveAttribute('autocapitalize', 'off');
 	await expect(input).toHaveAttribute('autocorrect', 'off');

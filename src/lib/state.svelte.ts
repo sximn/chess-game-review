@@ -1,10 +1,9 @@
-import { DEMO_PGN, parseGame, type SavedGame } from './chess';
+import { parseGame, type SavedGame } from './chess';
 import type { PieceSet } from './pieces';
 
-const starter: SavedGame = { id: 'opera', pgn: DEMO_PGN, addedAt: '1858-11-02' };
 export const app = $state({
-	games: [starter] as SavedGame[],
-	currentId: 'opera',
+	games: [] as SavedGame[],
+	currentId: '',
 	importOpen: false,
 	helpOpen: false,
 	menuOpen: false,
@@ -39,8 +38,12 @@ export function hydrate() {
 					return false;
 				}
 			});
-			app.games = [starter, ...valid.filter((item) => item.id !== 'opera')];
+			// Older versions included a built-in game. Keep only the user's imports.
+			app.games = valid.filter((item) => item.id !== 'opera');
 		}
+		const currentId = localStorage.getItem('upapawn-current-game');
+		app.currentId =
+			app.games.find((game) => game.id === currentId)?.id ?? app.games.at(-1)?.id ?? '';
 		const settings = JSON.parse(localStorage.getItem('upapawn-settings') ?? '{}');
 		app.coordinates = settings.coordinates !== false;
 		app.showEvaluation = settings.showEvaluation !== false;
@@ -77,19 +80,29 @@ export function addGame(pgn: string) {
 	const parsed = parseGame(pgn);
 	const existing = app.games.find((game) => game.pgn.trim() === pgn.trim());
 	if (existing) {
-		app.currentId = existing.id;
+		selectGame(existing.id);
 		return parsed;
 	}
 	const game = { id: crypto.randomUUID(), pgn, addedAt: new Date().toISOString() };
 	app.games = [...app.games, game];
-	app.currentId = game.id;
+	selectGame(game.id);
 	try {
-		localStorage.setItem(
-			'upapawn-games',
-			JSON.stringify(app.games.filter((item) => item.id !== 'opera'))
-		);
+		localStorage.setItem('upapawn-games', JSON.stringify(app.games));
 	} catch {
 		notify('Game opened. Device storage is full, so it was not saved.');
 	}
 	return parsed;
+}
+
+export function currentReviewGame(requestedId: string | null) {
+	return app.games.find((game) => game.id === (requestedId ?? app.currentId));
+}
+
+export function selectGame(id: string) {
+	app.currentId = id;
+	try {
+		localStorage.setItem('upapawn-current-game', id);
+	} catch {
+		/* The selected game remains available for this session. */
+	}
 }

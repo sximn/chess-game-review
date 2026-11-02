@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { Feather } from 'lucide-svelte';
+	import { Feather, Settings2 } from 'lucide-svelte';
 	import type { Snippet } from 'svelte';
 	import AppLogo from './AppLogo.svelte';
 	import AppNavigation from './AppNavigation.svelte';
 	import ImportDialog from '#lib/components/games/ImportDialog.svelte';
 	import HelpDialog from './HelpDialog.svelte';
 	import NoticeToast from './NoticeToast.svelte';
-	import { app, hydrate, persistSettings } from '#lib/state.svelte.js';
+	import { app, hydrate, persistSettings, currentReviewGame } from '#lib/state.svelte.js';
 	import { initializeNative, setNativeTheme } from '#lib/native.js';
 
 	let {
@@ -18,7 +18,13 @@
 	} = $props();
 
 	const isReview = $derived(
-		page.url.pathname === '' || page.url.pathname === '/' || page.url.pathname === '/index.html'
+		app.hydrated &&
+			(page.url.pathname === '/review'
+				? !!currentReviewGame(page.url.searchParams.get('game'))
+				: (page.url.pathname === '' ||
+						page.url.pathname === '/' ||
+						page.url.pathname === '/index.html') &&
+					app.games.some((game) => game.id === page.url.searchParams.get('game')))
 	);
 
 	onMount(() => {
@@ -49,11 +55,11 @@
 			<div class="breadcrumb">
 				<Feather size={16} /><span>Your chess corner</span><span class="breadcrumb-slash">/</span
 				><strong
-					>{page.url.pathname === '/games'
-						? 'My games'
-						: page.url.pathname === '/settings'
-							? 'Preferences'
-							: 'Game review'}</strong
+					>{page.url.pathname === '/settings'
+						? 'Preferences'
+						: page.url.pathname === '/review'
+							? 'Review'
+							: 'My games'}</strong
 				>
 			</div>
 			<a href="/" class="mobile-brand">
@@ -63,10 +69,10 @@
 				<strong>Up a Pawn</strong>
 			</a>
 			<div class="topbar-right">
-				<span class="local-status"><span></span> Your own little space</span><a
+				<span class="local-status"><span></span> Saved on this device</span><a
 					class="topbar-avatar"
 					aria-label="Open preferences"
-					href="/settings">S</a
+					href="/settings"><Settings2 size={17} /></a
 				>
 			</div>
 		</header>
@@ -272,8 +278,8 @@
 			gap: 0;
 		}
 		main {
-			/* padding: 27px max(20px, env(safe-area-inset-right, 0px)) 0
-				max(20px, env(safe-area-inset-left, 0px)); */
+			padding: 24px max(20px, env(safe-area-inset-right, 0px)) 0
+				max(20px, env(safe-area-inset-left, 0px));
 			max-width: 640px;
 		}
 		.app-footer {

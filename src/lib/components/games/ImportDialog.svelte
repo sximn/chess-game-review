@@ -35,7 +35,7 @@
 			pgn = '';
 			filename = '';
 			error = '';
-			void goto(`/?game=${encodeURIComponent(app.currentId)}`);
+			void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
 		}
