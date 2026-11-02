@@ -97,13 +97,9 @@
 		height: 43px;
 		display: grid;
 		place-items: center;
-		background: linear-gradient(145deg, #ffe986, #ffd84d);
+		background: #151412;
 		border-radius: 12px;
-		color: #32352a;
-		border: 1px solid #e4bf43;
-		box-shadow:
-			inset 0 1px #fff8,
-			0 3px 6px #4f420a0c;
+		border: 1px solid rgb(from var(--ink) r g b / 40%);
 	}
 	.brand-amp {
 		font-weight: 450;

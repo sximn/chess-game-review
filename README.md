@@ -81,7 +81,9 @@ bun run cap:ios      # Open in Xcode
 
 Android requires Android Studio, the configured Android SDK, and a compatible JDK. iOS requires Xcode and its iOS SDK, plus a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-**Before distributing:** the app ID `com.simonukus.upapawn` is provisional, so change it along with the native bundle and application identifiers. Generated native app icons and splash screens are still placeholders.
+**Before distributing:** the app ID `com.simonukus.upapawn` is provisional, so change it along with the native bundle and application identifiers. Generated splash screens are still placeholders.
+
+The app icons use the artwork from `favicon-candidate/`: web favicons, the Apple touch icon, and PWA icons are in `static/`, with their links in `src/app.html` and `static/site.webmanifest`. Android launcher and adaptive icons are in `android/app/src/main/res/` at all five densities, with the supplied dark background. The opaque 1024px iOS icon is in `ios/App/App/Assets.xcassets/AppIcon.appiconset/`. Native icon changes require a rebuild and reinstall. The optional dynamic favicon script and environment badges are not published.
 
 Native integration lives in `src/lib/native.ts`:
 
