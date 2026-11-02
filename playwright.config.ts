@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import { defineConfig, devices } from '@playwright/test';
+
 fs.mkdirSync('artifacts/app-verification', { recursive: true });
+
 export default defineConfig({
 	testDir: 'tests/browser',
 	timeout: 120000,

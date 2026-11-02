@@ -74,7 +74,7 @@ Engine source, builds, parity checks, reproducibility, and engine notices are ma
 Native projects are included. After a UI change:
 
 ```sh
-bun run cap:sync
+bun run cap:build:sync
 bun run cap:android  # Open in Android Studio
 bun run cap:ios      # Open in Xcode
 ```
