@@ -7,7 +7,7 @@
 	"scripts": {
 		"dev": "vite --host 0.0.0.0",
 		"build": "vite build && node scripts/build-offline.mjs",
-		"preview": "node scripts/serve-build.mjs",
+		"preview": "bun scripts/serve-build.mjs",
 		"prepare": "svelte-kit sync",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "bun test tests/*.test.ts",
