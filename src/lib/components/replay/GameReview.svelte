@@ -1,10 +1,16 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import { page } from '$app/state';
 	import GameReplay from '#lib/components/replay/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/analysis/AnalysisPanel.svelte';
 	import AnalysisSheet from '#lib/components/analysis/AnalysisSheet.svelte';
-	import { app, notify, selectGame } from '#lib/state.svelte.js';
+	import {
+		app,
+		notify,
+		selectGame,
+		getReviewPosition,
+		rememberReviewPosition
+	} from '#lib/state.svelte.js';
 	import { parseGame, type SavedGame } from '#lib/chess.js';
 	import { ReviewController, emptyReview, type ReviewState } from '#lib/engine/review.js';
 	import { visualValue, formatScore } from '#lib/engine/classification.js';
@@ -17,7 +23,7 @@
 	let branch = $state<Exploration | null>(null);
 	let { game }: { game: SavedGame } = $props();
 	let timeline = $derived(parseGame(game.pgn));
-	let ply = $state(0);
+	let ply = $state(untrack(() => Math.min(getReviewPosition(game.id), timeline.moves.length)));
 	let flipped = $state(false);
 	let playing = $state(false);
 	let compact = $state(true);
@@ -78,18 +84,29 @@
 		};
 	});
 	onDestroy(() => {
+		if (previousId) {
+			rememberReviewPosition(previousId, ply);
+		}
 		app.analysisOpen = false;
 	});
+
 	$effect(() => {
-		if (!controller) return;
+		if (!controller) {
+			return;
+		}
+
 		if (game.id !== previousId) {
+			if (previousId) {
+				rememberReviewPosition(previousId, ply);
+			}
+
 			previousId = game.id;
 			activeTab = 'overview';
-			ply = 0;
+			ply = Math.min(getReviewPosition(game.id), timeline.moves.length);
 			selectGame(game.id);
 			playing = false;
 			branch = null;
-			controller.reviewGame(game.pgn, { selectedPly: 0 });
+			controller.reviewGame(game.pgn, { selectedPly: ply });
 			app.analysisOpen = false;
 		}
 	});
@@ -97,11 +114,15 @@
 		controller?.selectPosition(ply);
 	});
 	$effect(() => {
-		if (!playing) return;
+		if (!playing) {
+			return;
+		}
+
 		const interval = setInterval(() => {
 			if (ply < timeline.moves.length) ply++;
 			else playing = false;
 		}, 1200);
+
 		return () => clearInterval(interval);
 	});
 
@@ -122,7 +143,11 @@
 
 	function togglePlayback() {
 		branch = null;
-		if (ply === timeline.moves.length) ply = 0;
+
+		if (ply === timeline.moves.length) {
+			ply = 0;
+		}
+
 		playing = !playing;
 	}
 

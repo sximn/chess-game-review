@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { ChevronRight } from 'lucide-svelte';
 	import type { SavedGame, Timeline } from '#lib/chess.js';
-	let { game }: { game: SavedGame & Timeline } = $props();
+	import { rememberReviewPosition } from '#lib/state.svelte.js';
+
+	let {
+		game
+	}: {
+		game: SavedGame & Timeline;
+	} = $props();
+
 	let result = $derived(
 		game.headers.Result === '1-0'
 			? 'White won'
@@ -13,7 +20,11 @@
 	);
 </script>
 
-<a href={`/review?game=${encodeURIComponent(game.id)}`} class="library-game">
+<a
+	href={`/review?game=${encodeURIComponent(game.id)}`}
+	class="library-game"
+	onclick={() => rememberReviewPosition(game.id, 0)}
+>
 	<div class="game-info">
 		<h3>{game.headers.White || 'White'} <span>vs</span> {game.headers.Black || 'Black'}</h3>
 		<p>

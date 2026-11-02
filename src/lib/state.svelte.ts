@@ -15,7 +15,19 @@ export const app = $state({
 	notice: '',
 	hydrated: false
 });
+
 let noticeTimer: ReturnType<typeof setTimeout>;
+
+const reviewPositions = new Map<string, number>();
+
+export function getReviewPosition(gameId: string) {
+	return reviewPositions.get(gameId) ?? 0;
+}
+
+export function rememberReviewPosition(gameId: string, ply: number) {
+	console.log({ gameId, ply });
+	reviewPositions.set(gameId, ply);
+}
 
 export function notify(message: string) {
 	clearTimeout(noticeTimer);

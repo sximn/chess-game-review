@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { frozenightManifest } from 'chess-engine-kit/frozenight/manual';
 import { readEngineAssetUrls } from './engine-assets';
+import { OPERA_PGN } from '../fixtures/opera-game';
 
 test('mobile timeline stays aligned after importing a game and exploring an alternative', async ({
 	page
@@ -199,3 +200,70 @@ test('Review remembers the selected library game rather than always using the ne
 	await navigation.getByRole('link', { name: 'Review', exact: true }).click();
 	await expect(page.getByText('Newer', { exact: true }).first()).toBeVisible();
 });
+
+for (const viewport of [
+	{ width: 1440, height: 1000 },
+	{ width: 390, height: 844 }
+]) {
+	test(`switching tabs restores each game's review move at ${viewport.width}px`, async ({
+		page
+	}) => {
+		await page.setViewportSize(viewport);
+		const errors: string[] = [];
+		page.on('pageerror', (error) => errors.push(error.message));
+		await page.addInitScript((pgn) => {
+			localStorage.setItem(
+				'upapawn-games',
+				JSON.stringify([
+					{ id: 'cursor-opera', pgn, addedAt: '2026-11-01' },
+					{
+						id: 'cursor-other',
+						pgn: '[White "Other"]\n[Black "Opponent"]\n\n1. d4 d5 2. c4 e6 *',
+						addedAt: '2026-11-02'
+					}
+				])
+			);
+		}, OPERA_PGN);
+		const navigation = page.getByRole('navigation', {
+			name: viewport.width <= 760 ? 'Mobile navigation' : 'Main navigation'
+		});
+		const current = page.locator('.move-chip[aria-current="step"]');
+		const openLibrary = () =>
+			navigation.getByRole('link', { name: 'My games', exact: true }).click();
+		const returnToReview = () =>
+			navigation.getByRole('link', { name: 'Review', exact: true }).click();
+		await page.goto('/review?game=cursor-opera');
+		await page.locator('.move-chip').nth(29).click();
+		await expect(current).toContainText('Bxd7+');
+		await openLibrary();
+		await expect(page.locator('.library-game')).toHaveCount(2);
+		await returnToReview();
+		await expect(current).toContainText('Bxd7+');
+		await expect(current).toBeInViewport();
+		await expect(page.getByRole('img', { name: 'White bishop on d7', exact: true })).toBeVisible();
+		await navigation.getByRole('link', { name: 'Preferences', exact: true }).click();
+		await returnToReview();
+		await expect(current).toContainText('Bxd7+');
+
+		await openLibrary();
+		await page.locator('.library-game').filter({ hasText: 'Other' }).click();
+		await expect(current).toHaveText('Start');
+		await page.locator('.move-chip').nth(2).click();
+		await expect(current).toContainText('d5');
+		await openLibrary();
+		await page.locator('.library-game').filter({ hasText: 'Paul Morphy' }).click();
+		await expect(current).toContainText('Bxd7+');
+		await page.getByRole('button', { name: 'Last move', exact: true }).click();
+		await openLibrary();
+		await returnToReview();
+		await expect(current).toContainText('Rd8#');
+		await page.getByRole('button', { name: 'First move', exact: true }).click();
+		await openLibrary();
+		await returnToReview();
+		await expect(current).toHaveText('Start');
+		await openLibrary();
+		await page.locator('.library-game').filter({ hasText: 'Other' }).click();
+		await expect(current).toContainText('d5');
+		expect(errors).toEqual([]);
+	});
+}
