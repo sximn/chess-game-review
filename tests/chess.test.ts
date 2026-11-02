@@ -1,10 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { Chess } from 'chess.js';
-import { DEMO_PGN, parseGame, moveLabel } from '../src/lib/chess.ts';
+import { parseGame, moveLabel } from '../src/lib/chess.ts';
+import { OPERA_PGN } from './fixtures/opera-game';
 
 test('the sample replays to the Opera Game checkmate, one legal position per half-move', () => {
-	const game = parseGame(DEMO_PGN);
+	const game = parseGame(OPERA_PGN);
 	assert.equal(game.moves.length, 33);
 	assert.equal(game.fens.length, 34);
 	assert.equal(game.moves[18].san, 'Nxb5');

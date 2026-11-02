@@ -6,9 +6,9 @@ Group components by the part of the app they serve. Use the five folders below; 
 | ----------- | ------------------------------------------------- | --------------------------------------------------------------------------------------- |
 | `ui/`       | Reusable controls and visual containers           | `Button`, `Card`, `Field`, `DialogFrame`, `TabList`                                     |
 | `app/`      | Shell, navigation, branding, help, and notices    | `AppShell`, `AppNavigation`, `AppLogo`, `PageHeading`, `HelpDialog`, `NoticeToast`      |
-| `replay/`   | Chessboard, players, and game playback            | `GameReplay`, `Board`, `PlayerRow`, `MoveControls`, `GameActions`                       |
+| `replay/`   | Review workspace, chessboard, and game playback   | `GameReview`, `GameReplay`, `Board`, `PlayerRow`, `MoveControls`, `GameActions`         |
 | `analysis/` | Engine review panels, tabs, moves, and evaluation | `AnalysisPanel`, `AnalysisSheet`, `AnalysisTabs`, `AnalysisMoves`, `EvaluationTimeline` |
-| `games/`    | Saved-game library and importing                  | `LibraryGameCard`, `ImportDialog`                                                       |
+| `games/`    | Welcome screen, saved-game library, and importing | `GameLibrary`, `WelcomeBoard`, `LibraryGameCard`, `ImportDialog`                        |
 
 ## Where new code belongs
 

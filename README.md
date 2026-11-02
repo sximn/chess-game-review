@@ -2,7 +2,7 @@
 
 A chess game review app for web, Android, and iOS, with on-device engine analysis and offline support.
 
-Import a PGN or explore the Opera Game, review move classifications and legal alternatives, and track evaluations throughout the game. Games and analysis stay on your device.
+Import a PGN, review move classifications and legal alternatives, and track evaluations throughout the game. Games and analysis stay on your device.
 
 > **Status: early / pre-release.** Review budgets and classification thresholds are preliminary, and native behavior has not been validated on physical devices. See [Known limitations](#known-limitations).
 
@@ -16,7 +16,7 @@ Import a PGN or explore the Opera Game, review move classifications and legal al
 
 - Local Frozenight WASM analysis with move classifications, legal alternatives, and an evaluation graph.
 - PGN paste and file import, including games with custom FEN starting positions.
-- On-device game library with search, filters, and device-local review links (`/?game=<local-id>`).
+- A simple welcome screen before your first import, then an on-device game library with results, search, and device-local review links (`/review?game=<local-id>`).
 - Move navigation, autoplay, board flip, timeline scrubbing, and move selection.
 - Responsive layouts, light/dark themes, and saved board preferences.
 - Offline web support and bundled native assets. No runtime asset CDN.
@@ -81,7 +81,9 @@ bun run cap:ios      # Open in Xcode
 
 Android requires Android Studio, the configured Android SDK, and a compatible JDK. iOS requires Xcode and its iOS SDK, plus a signing team for physical devices. The iOS project uses Swift Package Manager.
 
-**Before distributing:** the app ID `com.simonukus.upapawn` is provisional, so change it along with the native bundle and application identifiers. Generated native app icons and splash screens are still placeholders.
+**Before distributing:** the app ID `com.simonukus.upapawn` is provisional, so change it along with the native bundle and application identifiers. Generated splash screens are still placeholders.
+
+The app icons use the artwork from `favicon-candidate/`: web favicons, the Apple touch icon, and PWA icons are in `static/`, with their links in `src/app.html` and `static/site.webmanifest`. Android launcher and adaptive icons are in `android/app/src/main/res/` at all five densities, with the supplied dark background. The opaque 1024px iOS icon is in `ios/App/App/Assets.xcassets/AppIcon.appiconset/`. Native icon changes require a rebuild and reinstall. The optional dynamic favicon script and environment badges are not published.
 
 Native integration lives in `src/lib/native.ts`:
 

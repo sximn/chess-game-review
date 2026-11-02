@@ -1,85 +1,81 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { BookOpen, CircleQuestionMark, LayoutGrid, Plus, Settings2 } from 'lucide-svelte';
+	import { BookOpen, CircleQuestionMark, LayoutGrid, Settings2 } from 'lucide-svelte';
 	import AppLogo from './AppLogo.svelte';
-	import Button from '#lib/components/ui/Button.svelte';
 	import { app } from '#lib/state.svelte.js';
 
-	let {
-		presentation,
-		review = false
-	}: {
-		presentation: 'sidebar' | 'mobile';
-		review?: boolean;
-	} = $props();
-
-	let pathname = $derived(
-		page.url.pathname === '' || page.url.pathname === '/index.html' ? '/' : page.url.pathname
-	);
-	const links = [
-		{ href: '/', label: 'Game review', icon: LayoutGrid },
-		{ href: '/games', label: 'My games', icon: BookOpen }
-	];
+	let { presentation, review = false }: { presentation: 'sidebar' | 'mobile'; review?: boolean } =
+		$props();
+	let reviewTab = $derived(page.url.pathname === '/review' || review);
+	let links = $derived([
+		{
+			href: '/',
+			label: 'My games',
+			icon: BookOpen,
+			active:
+				!reviewTab && page.url.pathname !== '/settings' && page.url.pathname !== '/diagnostics'
+		},
+		{
+			href: '/review',
+			label: 'Review',
+			icon: LayoutGrid,
+			active: reviewTab
+		},
+		{
+			href: '/settings',
+			label: 'Preferences',
+			icon: Settings2,
+			active: page.url.pathname === '/settings'
+		}
+	]);
 </script>
 
 {#if presentation === 'sidebar'}
 	<aside class="sidebar" class:review>
 		<a href="/" class="brand" aria-label="Up a Pawn home">
 			<span class="brand-mark"><AppLogo size={33} /></span>
-			<span>
-				Up
-				<span class="brand-amp">a</span>
-				Pawn
-			</span>
+			<span>Up <span class="brand-amp">a</span> Pawn</span>
 		</a>
-
 		<nav class="main-nav" aria-label="Main navigation">
-			{#each links as link}<a
+			{#each links as link}
+				<a
 					href={link.href}
 					aria-label={link.label}
-					class:active={pathname === link.href}
-					aria-current={pathname === link.href ? 'page' : undefined}
-					><link.icon size={19} strokeWidth={1.7} /><span>{link.label}</span
-					>{#if link.href === '/' && pathname === '/'}<span class="nav-dot"></span>{/if}</a
-				>{/each}
+					class:active={link.active}
+					aria-current={link.active ? 'page' : undefined}
+				>
+					<link.icon size={19} strokeWidth={1.7} /><span>{link.label}</span>
+				</a>
+			{/each}
 		</nav>
-		<Button class="sidebar-import" aria-label="Import game" onclick={() => (app.importOpen = true)}
-			><Plus size={18} /> Import a game</Button
-		>
 		<div class="sidebar-bottom">
-			<a class="sidebar-utility" href="/settings"><Settings2 size={18} /> Preferences</a>
-			<button class="sidebar-utility" onclick={() => (app.helpOpen = true)}
-				><CircleQuestionMark size={18} /> A little help</button
+			<button onclick={() => (app.helpOpen = true)}
+				><CircleQuestionMark size={18} /><span>Help</span></button
 			>
-			<div class="profile">
-				<span class="profile-avatar">S</span>
-				<div>
-					<strong>Your chess reviews</strong>
-				</div>
-			</div>
+			<p>Saved on this device</p>
 		</div>
 	</aside>
 {:else}
 	<nav class="mobile-nav" class:review aria-label="Mobile navigation">
-		{#each links as link}<a
+		{#each links as link}
+			<a
 				href={link.href}
 				aria-label={link.label}
-				class:active={pathname === link.href}
-				aria-current={pathname === link.href ? 'page' : undefined}
-				><link.icon size={21} /><span
-					>{link.href === '/' ? 'Review' : link.href === '/games' ? 'Games' : 'Insights'}</span
-				></a
-			>{/each}
-		<button onclick={() => (app.importOpen = true)}><Plus size={22} /><span>Import</span></button>
+				class:active={link.active}
+				aria-current={link.active ? 'page' : undefined}
+			>
+				<link.icon size={21} /><span>{link.label}</span>
+			</a>
+		{/each}
 	</nav>
 {/if}
 
 <style>
 	.sidebar {
-		width: 226px;
+		width: var(--sidebar-width);
 		position: fixed;
 		inset: 0 auto 0 0;
-		padding: 39px 21px 0;
+		padding: 36px 21px 22px;
 		background: var(--paper);
 		border-right: 1px solid var(--line);
 		display: flex;
@@ -94,121 +90,81 @@
 		letter-spacing: -1.2px;
 		font-weight: 800;
 		line-height: 1.1;
+		white-space: nowrap;
 	}
 	.brand-mark {
 		width: 40px;
 		height: 43px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: linear-gradient(145deg, #ffe986, #ffd84d);
+		display: grid;
+		place-items: center;
+		background: #151412;
 		border-radius: 12px;
-		color: #32352a;
-		border: 1px solid #e4bf43;
-		box-shadow:
-			inset 0 1px #fff8,
-			0 3px 6px #4f420a0c;
+		border: 1px solid rgb(from var(--ink) r g b / 40%);
 	}
 	.brand-amp {
 		font-weight: 450;
 		font-size: 19px;
-		margin: 0 2px;
-		color: #8b9279;
+		color: var(--muted);
 	}
 	.main-nav {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
-		margin-top: 12px;
+		gap: 7px;
+		margin-top: 36px;
 	}
 	.main-nav a {
-		position: relative;
 		min-height: 45px;
-		border-radius: 11px;
+		border-radius: 10px;
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		padding: 0 13px;
-		color: #828776;
-		font-size: 12px;
+		color: var(--muted);
+		font-size: 13px;
 		font-weight: 550;
-		transition: background 0.18s;
 	}
 	.main-nav a.active {
-		background: #edeedc;
-		color: #4b6040;
-		font-weight: 700;
-		box-shadow: inset 0 0 0 1px #dce1ca;
+		background: var(--surface-green);
+		color: var(--ink);
+		font-weight: 650;
+		box-shadow: inset 0 0 0 1px var(--line);
 	}
 	.main-nav a.active :global(svg) {
-		color: #627551;
-	}
-	.nav-dot {
-		margin-left: auto;
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
-		background: #7e9a6c;
+		color: var(--sage);
 	}
 	.sidebar-bottom {
 		margin-top: auto;
+		padding-top: 24px;
 	}
-	.sidebar-utility {
-		width: 100%;
+	.sidebar-bottom button {
 		display: flex;
 		align-items: center;
-		gap: 11px;
-		min-height: 38px;
-		padding: 0 13px;
+		gap: 12px;
+		padding: 12px 13px;
+		width: 100%;
 		background: none;
 		color: var(--muted);
-		font-size: 11px;
-		border-radius: 8px;
-	}
-	.profile {
-		display: flex;
-		align-items: center;
-		gap: 9px;
-		padding: 22px 0 24px;
-		margin-top: 16px;
-		border-top: 1px solid var(--line);
-	}
-	.profile-avatar {
-		background: #f0e9da;
-		color: #7a765c;
-		display: grid;
-		place-items: center;
-		border: 1px solid #ded8c8;
 		font-size: 12px;
-		font-weight: 700;
+		border-radius: 9px;
 	}
-	.profile-avatar {
-		width: 33px;
-		height: 33px;
-		border-radius: 50%;
-	}
-	.profile strong {
-		display: block;
+	.sidebar-bottom p {
 		font-size: 10px;
-		font-weight: 650;
-	}
-	.profile > :global(svg) {
-		color: #929b7c;
-		margin-left: auto;
+		color: var(--muted);
+		border-top: 1px solid var(--line);
+		margin-top: 16px;
+		padding: 20px 13px 0;
 	}
 	.mobile-nav {
 		display: none;
 	}
 	@media (hover: hover) {
-		.main-nav a:not(.active):hover,
-		.sidebar-utility:hover {
-			background: var(--bg);
-			color: #778762;
+		.main-nav a:hover,
+		.sidebar-bottom button:hover {
+			background: var(--surface-green);
 		}
 	}
 	@media (max-width: 1200px) {
 		.sidebar {
-			width: 202px;
 			padding-left: 16px;
 			padding-right: 16px;
 		}
@@ -222,8 +178,7 @@
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
 		.sidebar {
-			width: 176px;
-			padding: 30px 12px 0;
+			padding: 30px 12px 20px;
 		}
 		.brand {
 			font-size: 19px;
@@ -237,18 +192,13 @@
 			width: 28px;
 		}
 		.main-nav a {
-			font-size: 10px;
+			font-size: 12px;
 			gap: 9px;
 			padding: 0 10px;
 		}
-		.profile strong {
-			font-size: 8px;
-		}
-		.profile > :global(svg) {
-			display: none;
-		}
-		.sidebar-utility {
-			font-size: 10px;
+		.sidebar-bottom p {
+			padding-left: 10px;
+			font-size: 9px;
 		}
 	}
 	@media (max-width: 760px) {
@@ -267,10 +217,8 @@
 			border-top: 1px solid var(--line);
 			backdrop-filter: blur(15px);
 			z-index: 40;
-			box-shadow: 0 -4px 20px #2d351a05;
 		}
-		.mobile-nav > a,
-		.mobile-nav > button {
+		.mobile-nav > a {
 			display: flex;
 			align-items: center;
 			flex-direction: column;
@@ -278,14 +226,12 @@
 			gap: 5px;
 			flex: 1;
 			min-height: 47px;
-			font-size: 9px;
-			color: #a5ad96;
-			background: none;
-			font-weight: 550;
+			font-size: 10px;
+			color: var(--muted);
 			position: relative;
 		}
 		.mobile-nav > .active {
-			color: #72895a;
+			color: var(--ink);
 		}
 		.mobile-nav > .active::before {
 			content: '';
@@ -293,39 +239,11 @@
 			top: -5px;
 			width: 28px;
 			height: 3px;
-			background: #b5c795;
+			background: var(--sage);
 			border-radius: 5px;
 		}
-		.mobile-nav > button > :global(svg) {
-			color: #7e8b67;
-			background: var(--yellow);
-			width: 25px;
-			height: 25px;
-			padding: 4px;
-			border-radius: 7px;
-			margin-top: -3px;
-		}
-		.mobile-nav > button > span {
-			margin-top: -1px;
-		}
-	}
-	:global(:root[data-theme='dark']) .main-nav a.active {
-		background: #39472f;
-		border-color: #4f6240;
-		color: #c1d2ab;
-		box-shadow: inset 0 0 0 1px #53664855;
-	}
-	:global(:root[data-theme='dark']) .profile-avatar {
-		background: #3b4233;
-		border-color: #505943;
-		color: #c6c9ab;
-	}
-	@media (min-width: 1001px) {
-		.main-nav a {
-			font-size: 13px;
-		}
-		.sidebar-utility {
-			font-size: 12px;
+		:global(.keyboard-open) .mobile-nav {
+			display: none;
 		}
 	}
 	@media (min-width: 761px) {
@@ -344,7 +262,9 @@
 			justify-content: center;
 		}
 		.sidebar.review .brand > span:last-child,
-		.sidebar.review .profile {
+		.sidebar.review .sidebar-bottom p,
+		.sidebar.review .sidebar-bottom button span,
+		.sidebar.review .main-nav a > span {
 			display: none;
 		}
 		.sidebar.review .main-nav {
@@ -355,19 +275,13 @@
 			padding: 0;
 			justify-content: center;
 		}
-		.sidebar.review .main-nav a > span {
-			display: none;
-		}
-		.sidebar.review .sidebar-utility {
-			font-size: 0;
+		.sidebar.review .sidebar-bottom button {
+			padding: 12px 0;
 			justify-content: center;
-			gap: 0;
-			padding: 0;
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) and (max-width: 760px) {
 		.mobile-nav.review {
-			position: fixed;
 			left: env(safe-area-inset-left, 0px);
 			top: env(safe-area-inset-top, 0px);
 			bottom: env(safe-area-inset-bottom, 0px);
@@ -380,46 +294,17 @@
 			border-top: 0;
 			border-right: 1px solid var(--line);
 		}
-		.mobile-nav.review > a,
-		.mobile-nav.review > button {
+		.mobile-nav.review > a {
 			flex: 0;
 			min-height: 48px;
 			width: 48px;
+			font-size: 8px;
 		}
 		.mobile-nav.review > .active::before {
 			top: auto;
 			left: -4px;
 			height: 24px;
 			width: 3px;
-		}
-	}
-	@media (max-width: 760px) {
-		:global(.keyboard-open) .mobile-nav {
-			display: none;
-		}
-	}
-
-	.sidebar > :global(.sidebar-import) {
-		margin: 24px 5px 0;
-		--button-min-height: 42px;
-		--button-gap: 8px;
-	}
-	@media (max-width: 1000px) and (min-width: 761px) {
-		.sidebar > :global(.sidebar-import) {
-			--button-padding: 0 10px;
-			--button-font-size: 10px;
-			margin-left: 0;
-			margin-right: 0;
-		}
-	}
-	@media (max-height: 520px) and (min-width: 761px) {
-		.sidebar.review > :global(.sidebar-import) {
-			--button-font-size: 0px;
-			--button-width: 40px;
-			--button-padding: 0;
-			--button-gap: 0px;
-			min-width: 0;
-			margin: 14px 0 0;
 		}
 	}
 </style>
