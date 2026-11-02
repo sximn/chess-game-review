@@ -16,6 +16,7 @@
 	import GameActions from './GameActions.svelte';
 	import MoveRating from './MoveRating.svelte';
 	import BestMoveCard from './BestMoveCard.svelte';
+	import VariationMoves from './VariationMoves.svelte';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
 
@@ -26,10 +27,12 @@
 		compact,
 		quality,
 		reviewPhase,
-		exploring,
 		analysisDetail,
 		suggestion,
-		expanded,
+		previewing,
+		alternative,
+		lineMoves,
+		linePly,
 		onToggleReveal,
 		onExplore,
 		onNavigate,
@@ -44,12 +47,14 @@
 		compact: boolean;
 		quality?: MoveQuality;
 		reviewPhase: ReviewState['phase'];
-		exploring: boolean;
 		analysisDetail: boolean;
 		suggestion?: Move;
-		expanded: boolean;
+		previewing: boolean;
+		alternative: boolean;
+		lineMoves: Move[];
+		linePly?: number;
 		onToggleReveal: () => void;
-		onExplore: () => void;
+		onExplore: (ply: number) => void;
 		onNavigate: (ply: number) => void;
 		onPlay: () => void;
 		onFlip: () => void;
@@ -57,6 +62,14 @@
 		onExport: () => void;
 	} = $props();
 
+	// Keep the outgoing moves mounted so returning to a move without an alternative
+	// can finish the same collapse animation.
+	let displayedLineMoves = $state<Move[]>([]);
+	$effect(() => {
+		if (lineMoves.length) displayedLineMoves = lineMoves;
+	});
+	const linePanelId = $props.id();
+	let lineOpen = $derived(lineMoves.length > 0 && (previewing || linePly !== undefined));
 	let carousel = $state<HTMLDivElement>();
 
 	function center(animate: boolean) {
@@ -101,11 +114,18 @@
 				move={moveLabel(ply, moves)}
 				{ply}
 				phase={reviewPhase}
-				{exploring}
+				exploring={false}
 				{analysisDetail}
 			/>
 			{#if suggestion}
-				<BestMoveCard {suggestion} {expanded} onToggle={onToggleReveal} {onExplore} />
+				<BestMoveCard
+					{suggestion}
+					{previewing}
+					{alternative}
+					expanded={lineOpen}
+					controls={linePanelId}
+					onToggle={onToggleReveal}
+				/>
 			{/if}
 		</div>
 		<div class="replay-actions">
@@ -116,7 +136,7 @@
 					class="replay-icon"
 					aria-label="First move"
 					title="First move"
-					disabled={ply === 0}
+					disabled={ply === 0 && linePly === undefined && !previewing}
 					onclick={() => onNavigate(0)}
 				>
 					<SkipBack size={16} />
@@ -141,7 +161,7 @@
 					class="replay-icon"
 					aria-label="Last move"
 					title="Last move"
-					disabled={ply === moves.length}
+					disabled={ply === moves.length && linePly === undefined && !previewing}
 					onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
 				>
 			</div>
@@ -175,6 +195,27 @@
 		</div>
 	</div>
 
+	<div
+		id={linePanelId}
+		class="variation-slot"
+		class:open={lineOpen}
+		inert={!lineOpen}
+		aria-hidden={!lineOpen}
+	>
+		<div class="variation-content">
+			<div class="variation-padding">
+				{#if displayedLineMoves.length}
+					<VariationMoves
+						moves={displayedLineMoves}
+						ply={linePly}
+						{alternative}
+						onNavigate={onExplore}
+					/>
+				{/if}
+			</div>
+		</div>
+	</div>
+
 	<div class="step-controls">
 		<Button
 			variant="outline"
@@ -182,7 +223,7 @@
 			class="previous-move"
 			aria-label="Previous move"
 			title="Previous move"
-			disabled={ply === 0}
+			disabled={ply === 0 && linePly === undefined && !previewing}
 			onclick={() => onNavigate(ply - 1)}><ChevronLeft size={24} /></Button
 		>
 		<div class="move-carousel" bind:this={carousel} role="group" aria-label="Move timeline">
@@ -210,7 +251,7 @@
 			size="md"
 			class="next-move"
 			aria-label="Next move"
-			disabled={ply === moves.length}
+			disabled={ply === moves.length && linePly === undefined && !previewing}
 			onclick={() => onNavigate(ply + 1)}
 		>
 			<span class="next-label">Next</span>
@@ -229,7 +270,31 @@
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 8px;
+	}
+	.variation-slot {
+		display: grid;
+		grid-template-rows: 0fr;
+		min-width: 0;
+		opacity: 0;
+		transition:
+			grid-template-rows 280ms var(--ease),
+			opacity 180ms ease;
+	}
+	.variation-slot.open {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+	.variation-content {
+		min-height: 0;
+		overflow: hidden;
+	}
+	.variation-padding {
+		padding-top: 8px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.variation-slot {
+			transition: none;
+		}
 	}
 	.move-review-cards {
 		/* Keep both tracks reserved even when there is no alternative. */
@@ -237,7 +302,8 @@
 		min-width: min(100%, 320px);
 		max-width: 100%;
 		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+		/* grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); */
+		grid-template-columns: 1fr 1fr;
 		align-items: start;
 		gap: 8px;
 	}
@@ -245,6 +311,7 @@
 		min-width: 0;
 	}
 	.step-controls {
+		margin-top: 8px;
 		height: 60px;
 		flex-shrink: 0;
 		display: grid;

@@ -6,7 +6,8 @@
 	import MoveControls from './MoveControls.svelte';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
-	import { continuation } from '#lib/engine/presentation.js';
+	import { GitBranch } from 'lucide-svelte';
+	import { continuation, type Exploration } from '#lib/engine/presentation.js';
 
 	let {
 		timeline,
@@ -19,7 +20,7 @@
 		marker,
 		quality,
 		reviewPhase,
-		exploring,
+		branch,
 		analysisDetail,
 		beforeEvaluation,
 		beforeEvaluationLabel,
@@ -41,7 +42,7 @@
 		marker: string;
 		quality?: MoveQuality;
 		reviewPhase: ReviewState['phase'];
-		exploring: boolean;
+		branch: Exploration | null;
 		analysisDetail: boolean;
 		beforeEvaluation: number | null;
 		beforeEvaluationLabel: string;
@@ -50,7 +51,7 @@
 		onFlip: () => void;
 		onAnalysis: () => void;
 		onExport: () => void;
-		onExplore: (ply: number, pv: string[]) => void;
+		onExplore: (ply: number, pv: string[], step?: number) => void;
 		onReveal: () => void;
 	} = $props();
 
@@ -58,69 +59,91 @@
 	let black = $derived(timeline.headers.Black || 'Black');
 	let result = $derived(timeline.headers.Result || '*');
 	let currentMove = $derived(timeline.moves[ply - 1]);
-	let expanded = $state(false);
-	let suggestion = $derived.by(() => {
-		if (
-			exploring ||
-			quality?.name === 'Best' ||
-			quality?.rootPly !== ply - 1 ||
-			!quality.alternative.length
-		) return undefined;
-		const bestMove = continuation(timeline.fens[quality.rootPly], [quality.alternative[0]]).moves[0];
-		return bestMove.lan !== currentMove?.lan ? bestMove : undefined;
+	let showingPreview = $state(false);
+	let bestLine = $derived.by(() => {
+		if (quality?.name === 'Best' || quality?.rootPly !== ply - 1 || !quality.alternative.length)
+			return undefined;
+		const line = continuation(timeline.fens[quality.rootPly], quality.alternative);
+		return line.moves[0]?.lan !== currentMove?.lan ? line : undefined;
 	});
-	let previewing = $derived(expanded && !!suggestion);
+	let line = $derived(branch?.timeline ?? bestLine);
+	let suggestion = $derived(line?.moves[0]);
+	let previewing = $derived(showingPreview && !!suggestion);
+	let alternative = $derived(
+		!!branch && (branch.rootPly !== quality?.rootPly || suggestion?.lan !== bestLine?.moves[0]?.lan)
+	);
+	let boardTimeline = $derived(branch?.timeline ?? timeline);
+	let boardPly = $derived(branch?.ply ?? ply);
 	$effect.pre(() => {
 		timeline;
 		ply;
-		exploring;
-		expanded = false;
+		branch;
+		showingPreview = false;
 	});
 	$effect.pre(() => {
-		if (!suggestion) expanded = false;
+		if (!suggestion) showingPreview = false;
 	});
 	function toggleReveal() {
 		if (!suggestion) return;
-		if (!expanded) onReveal();
-		expanded = !expanded;
+		if (!showingPreview) {
+			onReveal();
+			showingPreview = true;
+		} else showingPreview = false;
 	}
-
-	let fen = $state('4k3/P7/8/8/8/8/8/4K3 w - - 0 1');
+	function exploreStep(step: number) {
+		if (!line) return;
+		showingPreview = false;
+		onExplore(
+			branch?.rootPly ?? quality!.rootPly,
+			line.moves.map((move) => move.lan),
+			step
+		);
+	}
 </script>
 
 <svelte:window
 	onkeydown={(event) => {
-		if (event.key === 'Escape') expanded = false;
+		if (event.key === 'Escape') showingPreview = false;
 	}}
 />
 
 <section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
 	<div class="position-area">
-		<div class="position-frame" class:showing-suggestion={previewing}>
+		<div
+			class="position-frame"
+			class:exploring={!!branch || previewing}
+		>
 			<PlayerRow
 				position="opponent"
 				name={flipped ? white : black}
 				whitePiece={flipped}
 				showEvaluation={app.showEvaluation}
 				winner={result === (flipped ? '1-0' : '0-1')}
-			/>
-			<Board
-				fen={previewing ? suggestion!.before : (timeline.fens[ply] ?? timeline.fens[0])}
-				{flipped}
-				lastMove={previewing ? undefined : currentMove}
-				evaluation={previewing ? beforeEvaluation : evaluation}
-				evaluationLabel={previewing ? beforeEvaluationLabel : evaluationLabel}
-				marker={previewing ? '' : marker}
-				suggestedMove={previewing ? suggestion : undefined}
-				// movable="w"
-				// onMove={(move) => {
-				// 	fen = move.after;
-				// 	currentMove = move;
-				// }}
-			/>
-			{#if previewing}<div class="board-preview-note" role="status">
-					Position before {moveLabel(ply, timeline.moves)}
-				</div>{/if}
+			>
+				{#snippet context()}
+					{#if branch}
+						<div class="variation-badge" role="status">
+							<GitBranch size={12} /> Alternative line
+							<span>{previewing ? 0 : branch.ply} / {branch.timeline.moves.length}</span>
+						</div>
+					{/if}
+				{/snippet}
+			</PlayerRow>
+
+			<div class="board-stage">
+				<Board
+					fen={previewing
+						? suggestion!.before
+						: (boardTimeline.fens[boardPly] ?? boardTimeline.fens[0])}
+					{flipped}
+					lastMove={previewing ? undefined : boardTimeline.moves[boardPly - 1]}
+					evaluation={branch ? null : previewing ? beforeEvaluation : evaluation}
+					evaluationLabel={branch ? '—' : previewing ? beforeEvaluationLabel : evaluationLabel}
+					marker={previewing || branch ? '' : marker}
+					suggestedMove={previewing ? suggestion : undefined}
+				/>
+			</div>
+
 			<PlayerRow
 				position="self"
 				name={flipped ? black : white}
@@ -137,22 +160,25 @@
 		{compact}
 		{quality}
 		{reviewPhase}
-		{exploring}
 		{analysisDetail}
 		{suggestion}
-		{expanded}
+		{previewing}
+		{alternative}
+		lineMoves={line?.moves ?? []}
+		linePly={branch ? (previewing ? 0 : branch.ply) : undefined}
 		onToggleReveal={toggleReveal}
-		onExplore={() => {
-			if (quality) onExplore(quality.rootPly, quality.alternative);
+		onExplore={exploreStep}
+		onNavigate={(value) => {
+			showingPreview = false;
+			onNavigate(value);
 		}}
-		{onNavigate}
 		onPlay={() => {
-			expanded = false;
+			showingPreview = false;
 			onPlay();
 		}}
 		{onFlip}
 		onAnalysis={() => {
-			expanded = false;
+			showingPreview = false;
 			onAnalysis();
 		}}
 		{onExport}
@@ -190,20 +216,47 @@
 		);
 		flex-shrink: 0;
 	}
-	.position-frame.showing-suggestion {
-		--preview-height: 22px;
+	.board-stage {
+		position: relative;
+		isolation: isolate;
 	}
-	.board-preview-note {
-		height: 22px;
+	.board-stage :global(.chessboard) {
+		transition:
+			filter 220ms,
+			box-shadow 220ms;
+	}
+	.variation-badge {
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		margin-left: var(--eval-gutter);
-		color: var(--muted);
+		gap: 6px;
+		padding: 4px 8px;
+		border: 1px solid color-mix(in srgb, var(--violet) 45%, var(--paper));
+		border-radius: 20px;
+		background: var(--paper);
+		color: var(--violet);
+
 		font-size: 10px;
-		background: var(--surface-green);
-		border-radius: 0 0 6px 6px;
+		font-weight: 650;
+		white-space: nowrap;
+		pointer-events: none;
 	}
+	.variation-badge span {
+		color: var(--muted);
+		font-size: 9px;
+	}
+	.exploring .board-stage :global(.chessboard) {
+		filter: brightness(0.78) saturate(0.65);
+		box-shadow:
+			0 0 0 3px var(--violet),
+			0 0 0 7px color-mix(in srgb, var(--violet) 12%, transparent);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.board-stage :global(.chessboard) {
+			transition: none;
+		}
+	}
+
 	@media (max-width: 760px) {
 		.board-panel {
 			gap: 10px;

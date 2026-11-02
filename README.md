@@ -119,6 +119,10 @@ See [the components guide](src/lib/components/README.md) for folder responsibili
 
 Runtime diagnostics are available at `/diagnostics`. Verification reports are generated in `artifacts/app-verification/`.
 
+The Best move card previews the suggested move with an arrow and smoothly reveals its move list below it. The controls lift to make room only while the line is open; click any step to explore it. The game timeline stays anchored to the reviewed move. Next, Previous, playback, or a game move chip returns to the original game; Escape returns without advancing.
+
+While exploring an alternative line, the board is softly dimmed and outlined in violet. The effect clears when returning to the game.
+
 Compare packaged native web assets with `build/`:
 
 ```sh

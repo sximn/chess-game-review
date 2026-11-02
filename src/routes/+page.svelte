@@ -5,16 +5,16 @@
 	import AnalysisPanel from '#lib/components/analysis/AnalysisPanel.svelte';
 	import AnalysisSheet from '#lib/components/analysis/AnalysisSheet.svelte';
 	import { app, notify } from '#lib/state.svelte.js';
-	import { parseGame, type Timeline } from '#lib/chess.js';
+	import { parseGame } from '#lib/chess.js';
 	import { ReviewController, emptyReview, type ReviewState } from '#lib/engine/review.js';
 	import { visualValue, formatScore } from '#lib/engine/classification.js';
-	import { branchTimeline } from '#lib/engine/presentation.js';
+	import { branchTimeline, type Exploration } from '#lib/engine/presentation.js';
 	import { Capacitor } from '@capacitor/core';
 	import { App } from '@capacitor/app';
 
 	let controller = $state<ReviewController | null>(null);
 	let review = $state<ReviewState>(emptyReview());
-	let branch = $state<{ timeline: Timeline; ply: number } | null>(null);
+	let branch = $state<Exploration | null>(null);
 	let game = $derived(
 		app.games.find((g) => g.id === (page.url.searchParams.get('game') || app.currentId)) ??
 			app.games[0]
@@ -42,8 +42,6 @@
 			currentResult?.winner
 		)
 	);
-	let displayTimeline = $derived(branch?.timeline ?? timeline);
-	let displayPly = $derived(branch?.ply ?? ply);
 	let analysisDetail = $derived(page.url.searchParams.get('analysis') === 'detail');
 	let beforeResult = $derived(review.positions[ply - 1]);
 
@@ -105,21 +103,16 @@
 	$effect(() => {
 		if (!playing) return;
 		const interval = setInterval(() => {
-			if (displayPly < displayTimeline.moves.length) {
-				if (branch) branch = { ...branch, ply: branch.ply + 1 };
-				else ply++;
-			} else playing = false;
+			if (ply < timeline.moves.length) ply++;
+			else playing = false;
 		}, 1200);
 		return () => clearInterval(interval);
 	});
 
 	function go(value: number) {
 		playing = false;
-		if (branch) {
-			branch = { ...branch, ply: Math.max(0, Math.min(branch.timeline.moves.length, value)) };
-		} else {
-			ply = Math.max(0, Math.min(timeline.moves.length, value));
-		}
+		branch = null;
+		ply = Math.max(0, Math.min(timeline.moves.length, value));
 	}
 
 	function goFromAnalysis(value: number) {
@@ -132,24 +125,19 @@
 	}
 
 	function togglePlayback() {
-		if (displayPly === displayTimeline.moves.length) {
-			if (branch) {
-				branch = { ...branch, ply: 0 };
-			} else {
-				ply = 0;
-			}
-		}
+		branch = null;
+		if (ply === timeline.moves.length) ply = 0;
 		playing = !playing;
 	}
 
-	function explore(rootPly: number, pv: string[]) {
+	function explore(rootPly: number, pv: string[], step = 1) {
 		playing = false;
-		ply = rootPly;
-		branch = { timeline: branchTimeline(timeline, rootPly, pv), ply: Math.min(1, pv.length) };
+		// Keep the review cursor anchored while the variation has its own cursor.
+		const line = branchTimeline(timeline, rootPly, pv);
+		if (!line.moves.length) return;
+		branch = { timeline: line, rootPly, ply: Math.max(0, Math.min(step, line.moves.length)) };
 
-		if (compact) {
-			app.analysisOpen = false;
-		}
+		if (compact) app.analysisOpen = false;
 	}
 
 	function openAnalysis() {
@@ -174,15 +162,18 @@
 
 		if (event.key === 'ArrowLeft') {
 			event.preventDefault();
-			go(displayPly - 1);
+			go(ply - 1);
 		}
 		if (event.key === 'ArrowRight') {
 			event.preventDefault();
-			go(displayPly + 1);
+			go(ply + 1);
 		}
 		if (event.key === ' ' && target === document.body) {
 			event.preventDefault();
 			togglePlayback();
+		}
+		if (event.key === 'Escape') {
+			branch = null;
 		}
 		if (event.key === 'Home') {
 			event.preventDefault();
@@ -190,7 +181,7 @@
 		}
 		if (event.key === 'End') {
 			event.preventDefault();
-			go(displayTimeline.moves.length);
+			go(timeline.moves.length);
 		}
 	}
 
@@ -218,30 +209,17 @@
 
 <div class="review-layout" class:compact-review={compact}>
 	<div class="board-workspace">
-		{#if branch}
-			<div class="branch-banner">
-				<span>Exploring an alternative</span>
-				<button
-					onclick={() => {
-						branch = null;
-						playing = false;
-					}}
-				>
-					Return to game
-				</button>
-			</div>
-		{/if}
 		<GameReplay
-			timeline={displayTimeline}
-			ply={displayPly}
+			{timeline}
+			{ply}
+			{branch}
 			{flipped}
 			{playing}
 			{compact}
 			{evaluation}
 			{evaluationLabel}
-			quality={branch ? undefined : classification}
+			quality={classification}
 			reviewPhase={review.phase}
-			exploring={!!branch}
 			{analysisDetail}
 			beforeEvaluation={visualValue(beforeResult)}
 			beforeEvaluationLabel={formatScore(
@@ -313,25 +291,6 @@
 		flex: 1;
 		min-height: 0;
 	}
-	.branch-banner {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-		border: 1px solid var(--line);
-		background: var(--paper);
-		border-radius: 8px;
-		padding: 6px 10px;
-		font-size: 11px;
-	}
-	.branch-banner button {
-		border-radius: 6px;
-		background: var(--surface-green);
-		padding: 8px;
-		min-height: 32px;
-		font-size: 11px;
-	}
-
 	.review-layout {
 		display: grid;
 		flex: 1;

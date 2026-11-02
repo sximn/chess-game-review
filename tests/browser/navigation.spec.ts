@@ -23,10 +23,14 @@ test('mobile timeline stays aligned after importing a game and exploring an alte
 	await expect(current).toHaveText('Start');
 	await page.getByRole('button', { name: /analysis/i }).click();
 	await page.getByRole('button', { name: 'Explore alternative 1', exact: true }).click();
-	await expect(page.getByText('Exploring an alternative', { exact: true })).toBeVisible();
-	await expect(current).toBeInViewport();
-	await page.getByRole('button', { name: 'Return to game', exact: true }).click();
+	await expect(page.locator('.variation-badge')).toBeVisible();
 	await expect(current).toHaveText('Start');
+	await expect(current).toBeInViewport();
+	await page.locator('.variation-step').nth(2).click();
+	await expect(current).toHaveText('Start');
+	await page.getByRole('button', { name: 'Next move', exact: true }).click();
+	await expect(page.locator('.variation-badge')).toHaveCount(0);
+	await expect(current).toContainText('d4');
 	await expect(current).toBeInViewport();
 });
 
