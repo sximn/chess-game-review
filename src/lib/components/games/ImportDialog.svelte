@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Field from './Field.svelte';
-	import Textarea from './Textarea.svelte';
-	import FieldMessage from './FieldMessage.svelte';
+	import Field from '#lib/components/ui/Field.svelte';
+	import Textarea from '#lib/components/ui/Textarea.svelte';
+	import FieldMessage from '#lib/components/ui/FieldMessage.svelte';
 	import { Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { app, addGame } from '#lib/state.svelte.js';
-	import DialogFrame from './DialogFrame.svelte';
-	import Button from './Button.svelte';
-	import TabList from './TabList.svelte';
-	import type { TabItem } from './tabs.types';
+	import DialogFrame from '#lib/components/ui/DialogFrame.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
+	import TabList from '#lib/components/ui/TabList.svelte';
+	import type { TabItem } from '#lib/components/ui/tabs.types.js';
 	const importTabs: TabItem[] = [
 		{ value: 'paste', label: 'Paste PGN', icon: FileText },
 		{ value: 'file', label: 'Upload file', icon: FolderOpen }

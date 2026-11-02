@@ -5,7 +5,7 @@
 	import '@fontsource/dm-serif-display';
 	import '#lib/styles.css';
 	import { initializeBreakpoints } from '#lib/breakpoints.js';
-	import AppShell from '#lib/components/AppShell.svelte';
+	import AppShell from '#lib/components/app/AppShell.svelte';
 
 	let { children } = $props();
 

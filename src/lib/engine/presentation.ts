@@ -1,6 +1,8 @@
 import { Chess } from 'chess.js';
 import type { Timeline } from '../chess.ts';
 
+export type Exploration = { timeline: Timeline; rootPly: number; ply: number };
+
 export function continuation(fen: string, pv: string[]) {
 	const game = new Chess(fen);
 	const moves = pv.map((move) =>

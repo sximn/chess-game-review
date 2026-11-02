@@ -3,7 +3,7 @@ import { MediaQuery } from 'svelte/reactivity';
 
 function createBreakpoints() {
 	return {
-		mobile: new MediaQuery('(max-width: 760px)', true),
+		mobile: new MediaQuery('(max-width: 760px)', true)
 	};
 }
 

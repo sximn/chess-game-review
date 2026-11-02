@@ -5,15 +5,22 @@
 	import type { Snippet } from 'svelte';
 	import AppLogo from './AppLogo.svelte';
 	import AppNavigation from './AppNavigation.svelte';
-	import ImportDialog from './ImportDialog.svelte';
+	import ImportDialog from '#lib/components/games/ImportDialog.svelte';
 	import HelpDialog from './HelpDialog.svelte';
 	import NoticeToast from './NoticeToast.svelte';
 	import { app, hydrate, persistSettings } from '#lib/state.svelte.js';
 	import { initializeNative, setNativeTheme } from '#lib/native.js';
-	let { children }: { children: Snippet } = $props();
-	let isReview = $derived(
+
+	let {
+		children
+	}: {
+		children: Snippet;
+	} = $props();
+
+	const isReview = $derived(
 		page.url.pathname === '' || page.url.pathname === '/' || page.url.pathname === '/index.html'
 	);
+
 	onMount(() => {
 		hydrate();
 		let disposed = false;
@@ -166,7 +173,7 @@
 	main {
 		max-width: 1220px;
 		margin: 0 auto;
-		padding: 34px 40px 0;
+		padding: 12px 40px;
 	}
 	.app-footer {
 		max-width: 1220px;
@@ -201,10 +208,10 @@
 		.main-area {
 			padding-left: 202px;
 		}
-		main {
+		/* main {
 			padding-left: 28px;
 			padding-right: 28px;
-		}
+		} */
 		.topbar {
 			padding: 0 28px;
 		}
@@ -218,7 +225,7 @@
 			padding-left: 176px;
 		}
 		main {
-			padding: 28px 21px 0;
+			padding: 8px 21px;
 		}
 		.topbar {
 			padding: 0 21px;
@@ -265,8 +272,8 @@
 			gap: 0;
 		}
 		main {
-			padding: 27px max(20px, env(safe-area-inset-right, 0px)) 0
-				max(20px, env(safe-area-inset-left, 0px));
+			/* padding: 27px max(20px, env(safe-area-inset-right, 0px)) 0
+				max(20px, env(safe-area-inset-left, 0px)); */
 			max-width: 640px;
 		}
 		.app-footer {
@@ -276,12 +283,6 @@
 		}
 		.app-footer > span:last-child {
 			display: none;
-		}
-	}
-	@media (max-width: 360px) {
-		main {
-			padding-left: 15px;
-			padding-right: 15px;
 		}
 	}
 	:global(:root[data-theme='dark']) .topbar-avatar {
@@ -335,7 +336,7 @@
 		min-height: 0;
 		width: 100%;
 		max-width: 1320px;
-		padding: 16px 24px 12px;
+		/* padding: 16px 24px 12px; */
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -345,8 +346,8 @@
 			height: calc(100dvh - 66px - env(safe-area-inset-bottom, 0px));
 		}
 		.review-route main {
-			padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
-				10px max(16px, env(safe-area-inset-left, 0px));
+			padding: calc(8px + env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px))
+				4px max(4px, env(safe-area-inset-left, 0px));
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) {

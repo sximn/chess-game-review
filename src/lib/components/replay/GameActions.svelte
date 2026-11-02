@@ -1,14 +1,16 @@
 <script lang="ts">
-	import Button from '#lib/components/Button.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
 	import { DropdownMenu } from 'bits-ui';
-	import { Download, Ellipsis, Lightbulb, Settings2 } from 'lucide-svelte';
+	import { ArrowDownUp, Download, Ellipsis, Lightbulb, Settings2 } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
 	import { app } from '#lib/state.svelte.js';
 
 	let {
-		onExport
+		onExport,
+		onFlip
 	}: {
 		onExport: () => void;
+		onFlip?: () => void;
 	} = $props();
 </script>
 
@@ -31,6 +33,13 @@
 			{#snippet child({ props, wrapperProps })}
 				<div {...wrapperProps}>
 					<div {...props} class="dropdown-menu">
+						{#if onFlip}
+							<DropdownMenu.Item onclick={onFlip}>
+								{#snippet child({ props })}
+									<div {...props}><ArrowDownUp size={15} /> Flip board</div>
+								{/snippet}
+							</DropdownMenu.Item>
+						{/if}
 						<DropdownMenu.Item onclick={onExport}>
 							{#snippet child({ props })}
 								<div {...props}><Download size={15} /> Export PGN</div>

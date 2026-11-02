@@ -1,16 +1,19 @@
 <script lang="ts">
-	import AppLogo from './AppLogo.svelte';
+	import type { Snippet } from 'svelte';
+	import AppLogo from '#lib/components/app/AppLogo.svelte';
 	let {
 		name,
 		position,
 		whitePiece,
 		showEvaluation,
+		context,
 		winner = false
 	}: {
 		name: string;
 		position: 'opponent' | 'self';
 		whitePiece: boolean;
 		showEvaluation: boolean;
+		context?: Snippet;
 		winner?: boolean;
 	} = $props();
 </script>
@@ -33,6 +36,7 @@
 			>{name}{#if winner}<span class="player-winner">WINNER</span>{/if}</strong
 		>
 	</div>
+	{#if context}{@render context()}{/if}
 	<span class="piece-color" class:white-piece={whitePiece}></span>
 </div>
 

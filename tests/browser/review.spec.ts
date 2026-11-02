@@ -36,9 +36,11 @@ test('game review displays real alternatives, replays a branch, and keeps score 
 	await page.getByRole('button', { name: /Flip board/i }).click();
 	expect(await rail.getAttribute('aria-label')).toBe(before);
 	await page.getByRole('button', { name: 'Explore alternative 1' }).click();
-	await expect(page.getByText('Exploring an alternative')).toBeVisible();
-	await page.getByRole('button', { name: 'Return to game' }).click();
-	await expect(page.getByText('Exploring an alternative')).not.toBeVisible();
+	await expect(page.locator('.variation-badge')).toBeVisible();
+	await expect(page.locator('.move-chip[aria-current="step"]')).toContainText('Nxb5');
+	await page.getByRole('button', { name: 'Next move', exact: true }).click();
+	await expect(page.locator('.variation-badge')).toHaveCount(0);
+	await expect(page.locator('.move-chip[aria-current="step"]')).toContainText('cxb5');
 	await page.getByRole('tab', { name: 'Moves', exact: true }).click();
 	await expect(page.locator('.move-pair')).toHaveCount(17);
 	await page.getByRole('tab', { name: 'Evaluation', exact: true }).click();

@@ -11,6 +11,7 @@
 		qualities,
 		ply,
 		presentation,
+		analysisDetail = false,
 		onNavigate
 	}: {
 		contentProps: HTMLAttributes<HTMLDivElement>;
@@ -18,6 +19,7 @@
 		qualities: (MoveQuality | undefined)[];
 		ply: number;
 		presentation: AnalysisPresentation;
+		analysisDetail?: boolean;
 		onNavigate: (ply: number) => void;
 	} = $props();
 	let white = $derived(timeline.headers.White || 'White');
@@ -67,7 +69,7 @@
 							{move.san}
 							{#if quality}
 								<span
-									title={`${quality.preliminary ? 'Preliminary' : 'Refined'} ${quality.name}`}
+									title={`${analysisDetail ? `${quality.preliminary ? 'Preliminary' : 'Refined'} ` : ''}${quality.name}`}
 									style={`color:${quality.color}`}>{quality.symbol}</span
 								>
 							{/if}

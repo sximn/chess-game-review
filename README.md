@@ -23,6 +23,8 @@ Import a PGN or explore the Opera Game, review move classifications and legal al
 
 Keyboard shortcuts work while the page body has focus: Left/Right to navigate, Home/End to jump to the first/last move, and Space to toggle autoplay.
 
+The move rating stays visible in a paper card below the board. When the played move was not best, a soft card beside it shows the best move. Tap that card to preview its board arrow and reveal the option to explore the line. The Analysis button opens the full review on smaller screens. Technical engine details (preliminary/refined labels, depths, nodes, and measured loss) are visible only with `?analysis=detail`.
+
 ## Run locally
 
 Requires Node.js 22.12+ and Bun 1.4+.
@@ -98,7 +100,7 @@ Native integration lives in `src/lib/native.ts`:
 ## Project structure
 
 ```text
-src/lib/components/      UI components, dialogs, shell, and navigation
+src/lib/components/      ui/, app/, replay/, analysis/, and games/ components
 src/lib/chess.ts         PGN parsing and legal position timeline
 src/lib/state.svelte.ts  Shared state and local persistence
 src/lib/native.ts        Capacitor integration
@@ -111,9 +113,15 @@ android/                 Native Android project
 ios/                     Native iOS project
 ```
 
+See [the components guide](src/lib/components/README.md) for folder responsibilities and import conventions.
+
 ## Diagnostics and verification
 
 Runtime diagnostics are available at `/diagnostics`. Verification reports are generated in `artifacts/app-verification/`.
+
+The Best move card previews the suggested move with an arrow and smoothly reveals its move list below it. The controls lift to make room only while the line is open; click any step to explore it. The game timeline stays anchored to the reviewed move. Next, Previous, playback, or a game move chip returns to the original game; Escape returns without advancing.
+
+While exploring an alternative line, the board is softly dimmed and outlined in violet. The effect clears when returning to the game.
 
 Compare packaged native web assets with `build/`:
 

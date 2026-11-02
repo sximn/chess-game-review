@@ -21,6 +21,14 @@ const styles = {
 	Uncertain: ['…', '#858c77']
 } as const;
 
+export function getSymbolByQuality(quality: MoveQuality['name']) {
+	return styles[quality][0];
+}
+
+export function getColorByQuality(quality: MoveQuality['name']) {
+	return styles[quality][1];
+}
+
 export function classify(
 	best: AnalysisResult,
 	played: AnalysisResult,

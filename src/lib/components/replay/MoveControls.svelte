@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from './Button.svelte';
+	import Button from '#lib/components/ui/Button.svelte';
 	import { onMount, tick } from 'svelte';
 	import type { Move } from 'chess.js';
 	import {
@@ -14,12 +14,27 @@
 	} from 'lucide-svelte';
 	import { moveLabel } from '#lib/chess.js';
 	import GameActions from './GameActions.svelte';
+	import MoveRating from './MoveRating.svelte';
+	import BestMoveCard from './BestMoveCard.svelte';
+	import VariationMoves from './VariationMoves.svelte';
+	import type { MoveQuality } from '#lib/engine/classification.js';
+	import type { ReviewState } from '#lib/engine/review.js';
 
 	let {
 		moves,
 		ply,
 		playing,
 		compact,
+		quality,
+		reviewPhase,
+		analysisDetail,
+		suggestion,
+		previewing,
+		alternative,
+		lineMoves,
+		linePly,
+		onToggleReveal,
+		onExplore,
 		onNavigate,
 		onPlay,
 		onFlip,
@@ -30,6 +45,16 @@
 		ply: number;
 		playing: boolean;
 		compact: boolean;
+		quality?: MoveQuality;
+		reviewPhase: ReviewState['phase'];
+		analysisDetail: boolean;
+		suggestion?: Move;
+		previewing: boolean;
+		alternative: boolean;
+		lineMoves: Move[];
+		linePly?: number;
+		onToggleReveal: () => void;
+		onExplore: (ply: number) => void;
 		onNavigate: (ply: number) => void;
 		onPlay: () => void;
 		onFlip: () => void;
@@ -37,6 +62,14 @@
 		onExport: () => void;
 	} = $props();
 
+	// Keep the outgoing moves mounted so returning to a move without an alternative
+	// can finish the same collapse animation.
+	let displayedLineMoves = $state<Move[]>([]);
+	$effect(() => {
+		if (lineMoves.length) displayedLineMoves = lineMoves;
+	});
+	const linePanelId = $props.id();
+	let lineOpen = $derived(lineMoves.length > 0 && (previewing || linePly !== undefined));
 	let carousel = $state<HTMLDivElement>();
 
 	function center(animate: boolean) {
@@ -74,6 +107,115 @@
 </script>
 
 <div class="move-controls" aria-label="Replay controls">
+	<div class="replay-utilities">
+		<div class="move-review-cards">
+			<MoveRating
+				{quality}
+				move={moveLabel(ply, moves)}
+				{ply}
+				phase={reviewPhase}
+				exploring={false}
+				{analysisDetail}
+			/>
+			{#if suggestion}
+				<BestMoveCard
+					{suggestion}
+					{previewing}
+					{alternative}
+					expanded={lineOpen}
+					controls={linePanelId}
+					onToggle={onToggleReveal}
+				/>
+			{/if}
+		</div>
+		<div class="replay-actions">
+			<div class="playback-controls" role="group" aria-label="Automatic playback">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon"
+					aria-label="First move"
+					title="First move"
+					disabled={ply === 0 && linePly === undefined && !previewing}
+					onclick={() => onNavigate(0)}
+				>
+					<SkipBack size={16} />
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon autoplay-button"
+					aria-label={playing ? 'Pause replay' : 'Play replay'}
+					title={playing ? 'Pause replay' : 'Play replay'}
+					onclick={onPlay}
+				>
+					{#if playing}
+						<Pause size={16} />
+					{:else}
+						<Play size={16} />
+					{/if}
+				</Button>
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					class="replay-icon"
+					aria-label="Last move"
+					title="Last move"
+					disabled={ply === moves.length && linePly === undefined && !previewing}
+					onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
+				>
+			</div>
+
+			{#if compact}
+				<GameActions {onExport} {onFlip} />
+
+				<Button
+					variant="secondary"
+					size="sm"
+					class="analysis-trigger"
+					onclick={onAnalysis}
+					aria-haspopup="dialog"
+				>
+					<ChartNoAxesCombined
+						size={16}
+						style="width:var(--analysis-icon-width);display:var(--analysis-icon-display)"
+					/>
+					<span>Analysis</span>
+				</Button>
+			{:else}
+				<Button
+					variant="ghost"
+					size="icon"
+					class="flip-button"
+					aria-label="Flip board"
+					title="Flip board"
+					onclick={onFlip}><ArrowDownUp size={17} /></Button
+				>
+			{/if}
+		</div>
+	</div>
+
+	<div
+		id={linePanelId}
+		class="variation-slot"
+		class:open={lineOpen}
+		inert={!lineOpen}
+		aria-hidden={!lineOpen}
+	>
+		<div class="variation-content">
+			<div class="variation-padding">
+				{#if displayedLineMoves.length}
+					<VariationMoves
+						moves={displayedLineMoves}
+						ply={linePly}
+						{alternative}
+						onNavigate={onExplore}
+					/>
+				{/if}
+			</div>
+		</div>
+	</div>
+
 	<div class="step-controls">
 		<Button
 			variant="outline"
@@ -81,7 +223,7 @@
 			class="previous-move"
 			aria-label="Previous move"
 			title="Previous move"
-			disabled={ply === 0}
+			disabled={ply === 0 && linePly === undefined && !previewing}
 			onclick={() => onNavigate(ply - 1)}><ChevronLeft size={24} /></Button
 		>
 		<div class="move-carousel" bind:this={carousel} role="group" aria-label="Move timeline">
@@ -107,73 +249,14 @@
 		<Button
 			variant="primary"
 			size="md"
-			class="replay-action next-move"
+			class="next-move"
 			aria-label="Next move"
-			disabled={ply === moves.length}
+			disabled={ply === moves.length && linePly === undefined && !previewing}
 			onclick={() => onNavigate(ply + 1)}
 		>
 			<span class="next-label">Next</span>
 			<ChevronRight size={22} style="width:var(--next-icon-width)" />
 		</Button>
-	</div>
-	<div class="replay-utilities">
-		<div class="playback-controls" role="group" aria-label="Automatic playback">
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon"
-				aria-label="First move"
-				title="First move"
-				disabled={ply === 0}
-				onclick={() => onNavigate(0)}><SkipBack size={16} /></Button
-			>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon autoplay-button"
-				aria-label={playing ? 'Pause replay' : 'Play replay'}
-				title={playing ? 'Pause replay' : 'Play replay'}
-				onclick={onPlay}
-				>{#if playing}<Pause size={16} />{:else}<Play size={16} />{/if}</Button
-			>
-			<Button
-				variant="ghost"
-				size="icon-sm"
-				class="replay-icon"
-				aria-label="Last move"
-				title="Last move"
-				disabled={ply === moves.length}
-				onclick={() => onNavigate(moves.length)}><SkipForward size={16} /></Button
-			>
-		</div>
-		<span class="replay-counter">{ply}<span> / {moves.length}</span></span>
-		<Button
-			variant="ghost"
-			size="icon"
-			class="replay-icon flip-button"
-			aria-label="Flip board"
-			title="Flip board"
-			onclick={onFlip}
-		>
-			<ArrowDownUp size={17} />
-		</Button>
-		{#if compact}
-			<GameActions {onExport} />
-
-			<Button
-				variant="secondary"
-				size="sm"
-				class="replay-action analysis-trigger"
-				onclick={onAnalysis}
-				aria-haspopup="dialog"
-			>
-				<ChartNoAxesCombined
-					size={16}
-					style="width:var(--analysis-icon-width);display:var(--analysis-icon-display)"
-				/>
-				<span>Analysis</span>
-			</Button>
-		{/if}
 	</div>
 </div>
 
@@ -183,19 +266,56 @@
 		--analysis-icon-display: inline;
 	}
 	.move-controls {
-		flex: 0 0 108px;
-		height: 108px;
+		flex: 0 0 auto;
 		min-width: 0;
 		display: flex;
 		flex-direction: column;
+	}
+	.variation-slot {
+		display: grid;
+		grid-template-rows: 0fr;
+		min-width: 0;
+		opacity: 0;
+		transition:
+			grid-template-rows 280ms var(--ease),
+			opacity 180ms ease;
+	}
+	.variation-slot.open {
+		grid-template-rows: 1fr;
+		opacity: 1;
+	}
+	.variation-content {
+		min-height: 0;
+		overflow: hidden;
+	}
+	.variation-padding {
+		padding-top: 8px;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.variation-slot {
+			transition: none;
+		}
+	}
+	.move-review-cards {
+		/* Keep both tracks reserved even when there is no alternative. */
+		flex: 0 1 340px;
+		min-width: min(100%, 320px);
+		max-width: 100%;
+		display: grid;
+		/* grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); */
+		grid-template-columns: 1fr 1fr;
+		align-items: start;
 		gap: 8px;
 	}
+	.move-review-cards > :global(.card) {
+		min-width: 0;
+	}
 	.step-controls {
+		margin-top: 8px;
 		height: 60px;
 		flex-shrink: 0;
 		display: grid;
-		grid-template-columns: 44px minmax(0, 1fr) 90px /*105px*/;
-		/* gap: 8px; */
+		grid-template-columns: 44px minmax(0, 1fr) 90px;
 		padding: 5px;
 		border: 1px solid var(--line);
 		border-radius: 13px;
@@ -270,11 +390,20 @@
 	.replay-utilities {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		height: 40px;
-		padding: 0 2px;
+		flex-wrap: wrap;
+		gap: 6px;
+		min-height: 40px;
+		padding: 0;
+	}
+	.replay-actions {
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 6px;
+		margin-left: auto;
 	}
 	.playback-controls {
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		gap: 1px;
@@ -294,20 +423,11 @@
 		--button-color: #71845c;
 		--button-hover-color: #71845c;
 	}
-	.replay-counter {
-		margin-left: 2px;
-		font-size: 10px;
-		color: var(--muted);
-	}
-	.replay-counter > span {
-		color: #a6af96;
-	}
-	.replay-utilities > :global(.flip-button) {
+	.replay-actions > :global(.flip-button) {
 		--button-width: 34px;
 		--button-height: 36px;
-		margin-left: auto;
 	}
-	.replay-utilities > :global(.analysis-trigger) {
+	.replay-actions > :global(.analysis-trigger) {
 		--button-height: 36px;
 		--button-min-height: 36px;
 		--button-padding: 0 11px;
@@ -334,9 +454,6 @@
 		.step-controls {
 			grid-template-columns: 40px minmax(0, 1fr) 76px;
 			gap: 6px;
-		}
-		.replay-counter {
-			display: none;
 		}
 		.move-chip {
 			font-size: 12px;
@@ -372,13 +489,10 @@
 			--button-width: 26px;
 			--button-height: 30px;
 		}
-		.replay-counter {
-			display: none;
-		}
-		.replay-utilities > :global(.flip-button) {
+		.replay-actions > :global(.flip-button) {
 			--button-width: 26px;
 		}
-		.replay-utilities > :global(.analysis-trigger) {
+		.replay-actions > :global(.analysis-trigger) {
 			--button-padding: 0 7px;
 			--button-font-size: 10px;
 		}
@@ -387,7 +501,7 @@
 		}
 	}
 	@media (max-height: 400px) and (min-width: 480px) and (max-width: 620px) {
-		.replay-utilities > :global(.analysis-trigger) {
+		.replay-actions > :global(.analysis-trigger) {
 			--analysis-icon-display: none;
 		}
 		.move-controls :global(.next-move) {
@@ -395,6 +509,63 @@
 		}
 		.step-controls {
 			grid-template-columns: 30px minmax(0, 1fr) 54px;
+		}
+	}
+
+	/* EPERIMENTS */
+	.move-controls {
+		/* Main UX sizing control */
+		--step-controls-height: 48px;
+
+		--step-controls-padding: 5px;
+		--step-controls-border: 1px;
+
+		/* Available height inside the step-controls */
+		--step-inner-height: calc(
+			var(--step-controls-height) - var(--step-controls-padding) * 2 - var(--step-controls-border) *
+				2
+		);
+
+		/* Preserve the current 39px chip / 48px button proportions */
+		--move-chip-height: calc(var(--step-inner-height) * 0.8125);
+	}
+
+	.step-controls {
+		box-sizing: border-box;
+		height: var(--step-controls-height);
+		padding: var(--step-controls-padding);
+		border-width: var(--step-controls-border);
+		align-items: center;
+	}
+
+	.step-controls > :global(.previous-move),
+	.step-controls > :global(.next-move) {
+		--button-height: var(--step-inner-height);
+		--button-min-height: var(--step-inner-height);
+	}
+
+	.move-carousel {
+		box-sizing: border-box;
+		height: var(--step-inner-height);
+		min-height: 0;
+	}
+
+	.move-chip {
+		box-sizing: border-box;
+		height: var(--move-chip-height);
+		min-height: 0;
+	}
+	.replay-actions > :global(.analysis-trigger) {
+		flex-shrink: 0;
+	}
+	.replay-utilities :global(.game-actions) {
+		--button-width: 30px;
+		--button-height: 36px;
+	}
+	@media (max-height: 520px) and (min-width: 480px) {
+		.replay-utilities {
+			flex-wrap: wrap;
+			row-gap: 4px;
 		}
 	}
 </style>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Tabs } from 'bits-ui';
-	import Card from './Card.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
 	import AnalysisTabs from './AnalysisTabs.svelte';
 	import AnalysisMoves from './AnalysisMoves.svelte';
 	import EvaluationTimeline from './EvaluationTimeline.svelte';
@@ -15,6 +15,7 @@
 		review,
 		ply,
 		presentation,
+		analysisDetail = false,
 		activeTab = $bindable('overview'),
 		onNavigate,
 		onExplore,
@@ -26,6 +27,7 @@
 		review: ReviewState;
 		ply: number;
 		presentation: AnalysisPresentation;
+		analysisDetail?: boolean;
 		activeTab?: string;
 		onNavigate: (ply: number) => void;
 		onExplore: (ply: number, pv: string[]) => void;
@@ -64,101 +66,135 @@
 
 <div class="engine-status" aria-live="polite">
 	<div>
-		<strong
-			>{review.phase === 'complete'
+		<strong>
+			{review.phase === 'complete'
 				? 'Review ready'
 				: review.phase === 'loading'
 					? 'Preparing Frozenight'
 					: review.phase === 'refining'
-						? 'Refining key moments'
+						? analysisDetail
+							? 'Refining key moments'
+							: 'Reviewing key moments'
 						: review.phase === 'paused'
 							? 'Review paused'
 							: review.phase === 'error'
 								? 'Analysis unavailable'
-								: 'Reviewing on this device'}</strong
-		><span>{review.scored} / {review.total} positions</span>
+								: 'Reviewing on this device'}
+		</strong>
+		<span>{review.scored} / {review.total} positions</span>
 	</div>
+
 	<progress max={review.total || 1} value={review.scored} aria-label="Game review progress"
 	></progress>
-	{#if review.error}<p role="alert">{review.error.message} <small>({review.error.code})</small></p>
+
+	{#if review.error}
+		<p role="alert">{review.error.message} <small>({review.error.code})</small></p>
 		<button class="review-action" onclick={onRetry}>Retry analysis</button>
-	{:else if review.phase === 'paused'}<button class="review-action" onclick={onResume}
-			>Resume review</button
-		>
-	{:else if review.phase !== 'complete'}<button class="review-action" onclick={onPause}
-			>Pause review</button
-		>{/if}
+	{:else if review.phase === 'paused'}
+		<button class="review-action" onclick={onResume}> Resume review </button>
+	{:else if review.phase !== 'complete'}
+		<button class="review-action" onclick={onPause}> Pause review </button>
+	{/if}
+
 	{#if review.warning}<p>{review.warning}</p>{/if}
 </div>
+
 <Tabs.Root bind:value={activeTab}>
 	{#snippet child({ props })}
 		<Card {...props} class="review-tabs" shadow clip>
 			<AnalysisTabs {presentation} />
 			<Tabs.Content value="overview">
 				<div class="engine-overview">
-					<p class="review-caption">Frozenight · local analysis · preliminary estimates</p>
+					<p class="review-caption">
+						Frozenight · local analysis{#if analysisDetail}
+							· preliminary estimates{/if}
+					</p>
+
 					<div class="quality-head">
 						<span>Move quality</span><span>White</span><span>Black</span>
 					</div>
-					{#each summary as item}<button
+
+					{#each summary as item}
+						<button
 							class="quality-row"
 							disabled={item.ply < 1}
 							onclick={() => onNavigate(item.ply)}
-							><span>{item.name}</span><b>{item.white}</b><b>{item.black}</b></button
-						>{/each}
-					<p class="review-caption">
-						Labels compare the best and played moves from the same position. Near-threshold and
-						large changes receive a deeper comparison.
-					</p>
-					{#if quality}<div class="played-quality">
-							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong><span
-								>{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
-									.map((depth) => depth ?? '—')
-									.join(' / ')}</span
-							>{#if quality.lossCp !== null}<span>{quality.lossCp} cp measured loss</span
-								>{/if}{#if quality.noise}<span
-									>These moves were too close to distinguish reliably.</span
-								>{/if}
+						>
+							<span>{item.name}</span>
+							<b>{item.white}</b>
+							<b>{item.black}</b>
+						</button>
+					{/each}
+
+					{#if analysisDetail}<p class="review-caption analysis-detail">
+							Labels compare the best and played moves from the same position. Near-threshold and
+							large changes receive a deeper comparison.
+						</p>{/if}
+
+					{#if quality}
+						<div class="played-quality">
+							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong>
+							{#if analysisDetail}<span class="analysis-detail">
+									{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
+										.map((depth) => depth ?? '—')
+										.join(' / ')}
+								</span>
+
+								{#if quality.lossCp !== null}
+									<span>{quality.lossCp} cp measured loss</span>
+								{/if}
+
+								{#if quality.noise}
+									<span>These moves were too close to distinguish reliably.</span>
+								{/if}
+							{/if}
 						</div>
-						{#if quality.alternative.length && quality.name !== 'Best'}<button
+
+						{#if quality.alternative.length && quality.name !== 'Best'}
+							<button
 								class="review-action"
 								onclick={() => onExplore(quality.rootPly, quality.alternative)}
-								>Explore the alternative before this move</button
-							>{/if}
+							>
+								Explore the alternative before this move
+							</button>
+						{/if}
 					{/if}
 				</div>
 			</Tabs.Content>
-			<Tabs.Content value="moves"
-				>{#snippet child({ props })}<AnalysisMoves
+			<Tabs.Content value="moves">
+				{#snippet child({ props })}
+					<AnalysisMoves
 						contentProps={props}
 						{timeline}
 						qualities={review.qualities}
 						{ply}
 						{presentation}
+						{analysisDetail}
 						{onNavigate}
-					/>{/snippet}</Tabs.Content
-			>
-			<Tabs.Content value="evaluation"
-				><EvaluationTimeline
+					/>
+				{/snippet}
+			</Tabs.Content>
+			<Tabs.Content value="evaluation">
+				<EvaluationTimeline
 					{presentation}
 					{values}
 					qualities={review.qualities}
 					moves={timeline.moves}
 					{ply}
 					{onNavigate}
-				/></Tabs.Content
-			>
+				/>
+			</Tabs.Content>
 		</Card>
 	{/snippet}
 </Tabs.Root>
+
 <section class="engine-lines" aria-label="Engine alternatives">
 	<div class="lines-heading">
-		<strong>{result?.outcome ? outcomes[result.outcome] : 'Best continuations'}</strong><b
-			>{formatScore(result?.terminalScore ?? result?.lines[0]?.score, result?.winner)}</b
-		>
+		<strong>{result?.outcome ? outcomes[result.outcome] : 'Best continuations'}</strong>
+		<b>{formatScore(result?.terminalScore ?? result?.lines[0]?.score, result?.winner)}</b>
 	</div>
 	<p class="review-caption">
-		White’s perspective{#if result}
+		White’s perspective{#if analysisDetail && result}
 			· depth {result.depth ?? '—'} · {result.nodes?.toLocaleString() ?? '—'} nodes{/if}
 	</p>
 	{#if result?.lines.length}
@@ -167,19 +203,21 @@
 				class="engine-line"
 				onclick={() => onExplore(ply, line.pv)}
 				aria-label={`Explore alternative ${line.rank}`}
-				><b>{line.rank}. {formatScore(line.score)}</b><span
-					>{continuation(timeline.fens[ply], line.pv).sans.join(' ')}</span
-				></button
 			>
+				<b>{line.rank}. {formatScore(line.score)}</b>
+				<span>{continuation(timeline.fens[ply], line.pv).sans.join(' ')}</span>
+			</button>
 		{/each}
-		{#if result.reason === 'time' || result.reason === 'nodes'}<p class="review-caption">
-				Budget reached. Showing the last completed iteration.
-			</p>{/if}
-	{:else if !result?.outcome}<p class="review-caption">
+		{#if analysisDetail && (result.reason === 'time' || result.reason === 'nodes')}
+			<p class="review-caption">Budget reached. Showing the last completed iteration.</p>
+		{/if}
+	{:else if !result?.outcome}
+		<p class="review-caption">
 			{review.phase === 'paused'
 				? 'Resume review to analyze this position.'
 				: 'Waiting for a completed search iteration…'}
-		</p>{/if}
+		</p>
+	{/if}
 </section>
 
 <style>

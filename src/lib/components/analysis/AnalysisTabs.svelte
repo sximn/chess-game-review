@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Sparkles, BookOpen, ChartNoAxesCombined } from 'lucide-svelte';
-	import TabList from './TabList.svelte';
-	import type { TabItem } from './tabs.types';
+	import TabList from '#lib/components/ui/TabList.svelte';
+	import type { TabItem } from '#lib/components/ui/tabs.types.js';
 	import type { AnalysisPresentation } from './analysis.types';
 	let { presentation }: { presentation: AnalysisPresentation } = $props();
 	const tabs: TabItem[] = [

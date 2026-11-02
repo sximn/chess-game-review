@@ -1,10 +1,11 @@
 <script lang="ts">
-	import Card from '#lib/components/Card.svelte';
-	import Field from '#lib/components/Field.svelte';
-	import PageHeading from '#lib/components/PageHeading.svelte';
-	import PreferenceSwitch from '#lib/components/PreferenceSwitch.svelte';
+	import Card from '#lib/components/ui/Card.svelte';
+	import Field from '#lib/components/ui/Field.svelte';
+	import PageHeading from '#lib/components/app/PageHeading.svelte';
+	import PreferenceSwitch from '#lib/components/ui/PreferenceSwitch.svelte';
 	import { Check, Moon, Sun } from 'lucide-svelte';
 	import { app } from '#lib/state.svelte.js';
+	import { pieceSets, pieceSrc } from '#lib/pieces.js';
 </script>
 
 <svelte:head><title>Preferences · Up a Pawn</title></svelte:head>
@@ -56,6 +57,31 @@
 
 			<div class="settings-divider"></div>
 			<h2>Board</h2>
+			<h3 id="piece-set-label">Piece set</h3>
+			<p class="piece-set-description">Choose the pieces for your boards.</p>
+			<div class="theme-options piece-options" role="group" aria-labelledby="piece-set-label">
+				{#each pieceSets as set}
+					<button
+						class:selected={app.pieceSet === set.id}
+						aria-pressed={app.pieceSet === set.id}
+						onclick={() => (app.pieceSet = set.id)}
+					>
+						<div class="piece-preview" aria-hidden="true">
+							{#each ['w', 'b'] as const as color}
+								{#each ['k', 'n', 'p'] as const as type}
+									<div class="preview-square" class:dark={color === 'b'}>
+										<img src={pieceSrc(set.id, color, type)} alt="" draggable="false" />
+									</div>
+								{/each}
+							{/each}
+						</div>
+						<span>
+							{set.label}
+							{#if app.pieceSet === set.id}<Check size={17} />{/if}
+						</span>
+					</button>
+				{/each}
+			</div>
 			<Field
 				controlId="coordinates"
 				label="Board coordinates"
@@ -183,6 +209,39 @@
 		height: 1px;
 		background: var(--line);
 		margin: 30px 0;
+	}
+	.settings-content h3 {
+		font-size: 13px;
+		font-weight: 600;
+		margin: 22px 0 6px;
+	}
+	.piece-set-description {
+		font-size: 12px;
+		line-height: 1.6;
+		color: var(--muted);
+	}
+	.piece-options {
+		margin-top: 14px;
+	}
+	.piece-preview {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.preview-square {
+		display: grid;
+		place-items: center;
+		background: var(--board-light);
+		aspect-ratio: 1;
+	}
+	.preview-square.dark {
+		background: var(--board-dark);
+	}
+	.preview-square img {
+		width: 85%;
+		height: 85%;
+		object-fit: contain;
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
 		.settings-layout {
