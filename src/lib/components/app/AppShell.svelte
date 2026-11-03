@@ -96,6 +96,7 @@
 		display: flex;
 		min-height: 100dvh;
 	}
+	/* Brand artwork keeps its own corner and type proportions. */
 	.brand-mark {
 		width: 40px;
 		height: 43px;
@@ -116,8 +117,8 @@
 		display: grid;
 		place-items: center;
 		border: 1px solid var(--avatar-border);
-		font-size: 12px;
-		font-weight: 700;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-bold);
 	}
 	.main-area {
 		padding-left: 226px;
@@ -136,14 +137,14 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--text-secondary);
 	}
 	.breadcrumb > :global(svg) {
 		color: var(--icon-muted);
 	}
 	.breadcrumb strong {
-		font-weight: 550;
+		font-weight: var(--weight-medium);
 		color: var(--ink);
 	}
 	.breadcrumb-slash {
@@ -159,19 +160,19 @@
 		display: flex;
 		align-items: center;
 		gap: 7px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--text-secondary);
 	}
 	.local-status > span {
 		height: 5px;
 		width: 5px;
 		background: var(--text-action);
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 	}
 	.topbar-avatar {
 		width: 30px;
 		height: 30px;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 	}
 	.mobile-brand {
 		display: none;
@@ -188,7 +189,7 @@
 		display: flex;
 		justify-content: space-between;
 		gap: 15px;
-		font-size: 7px;
+		font-size: var(--text-caption);
 		color: var(--text-secondary);
 	}
 	.app-footer > span {
@@ -284,7 +285,7 @@
 		}
 		.app-footer {
 			padding: 23px 20px calc(103px + env(safe-area-inset-bottom, 0px));
-			font-size: 7px;
+			font-size: var(--text-caption);
 			justify-content: center;
 		}
 		.app-footer > span:last-child {
@@ -297,10 +298,10 @@
 			max-width: 1120px;
 		}
 		.breadcrumb {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 		.local-status {
-			font-size: 10px;
+			font-size: var(--text-caption);
 		}
 	}
 	@media (min-width: 761px) {

@@ -20,9 +20,9 @@
 		color: var(--notice-text);
 		border: 1px solid var(--notice-border);
 		box-shadow: var(--shadow-notice);
-		border-radius: 12px;
+		border-radius: var(--radius-md);
 		padding: 14px 20px;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		animation: toast-in 0.3s var(--ease);
 	}
 	.toast > :global(svg) {
@@ -37,7 +37,7 @@
 		.toast {
 			left: 50%;
 			bottom: calc(92px + env(safe-area-inset-bottom, 0px));
-			font-size: 10px;
+			font-size: var(--text-caption);
 			padding: 13px 16px;
 			width: max-content;
 		}

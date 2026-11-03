@@ -36,17 +36,17 @@
 
 <style>
 	.sample-notice {
-		font-size: 10px;
-		line-height: 1.8;
+		font-size: var(--text-caption);
+		line-height: var(--leading-relaxed);
 		padding: 12px;
-		border-radius: 9px;
+		border-radius: var(--radius-sm);
 		background: var(--bg);
 		color: var(--muted);
 		margin-top: 20px;
 	}
 	@media (max-width: 760px) {
 		.sample-notice {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 	}
 	.help-item {
@@ -61,20 +61,20 @@
 		background: var(--paper-deep);
 		border: 1px solid var(--line);
 		border-bottom-width: 3px;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		padding: 9px;
 		text-align: center;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		color: var(--text-secondary);
 	}
 	.help-item p {
-		font-size: 11px;
-		line-height: 1.8;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
 		color: var(--muted);
 	}
 	.help-item strong {
 		display: block;
 		color: var(--ink);
-		font-weight: 600;
+		font-weight: var(--weight-semibold);
 	}
 </style>

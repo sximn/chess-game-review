@@ -25,7 +25,7 @@
 
 <Card
 	class="best-move-card"
-	style={`--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')};--rating-text:${qualityTextColor('Best')}`}
+	style={`--card-radius:var(--radius-md);--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')};--rating-text:${qualityTextColor('Best')}`}
 >
 	<button
 		class="best-move-trigger"
@@ -56,7 +56,7 @@
 		min-width: 0;
 		height: 48px;
 		padding: 10px;
-		border-radius: 11px;
+		border-radius: inherit;
 		background: transparent;
 		text-align: left;
 	}
@@ -71,9 +71,9 @@
 		place-items: center;
 		flex: 0 0 24px;
 		height: 24px;
-		border-radius: 8px;
-		font-size: 15px;
-		font-weight: 750;
+		border-radius: var(--radius-sm);
+		font-size: var(--text-lg);
+		font-weight: var(--weight-bold);
 	}
 	.best-move-copy {
 		display: flex;
@@ -84,14 +84,14 @@
 	}
 	.best-move-copy strong {
 		display: block;
-		font-size: 12px;
-		line-height: 1.2;
+		font-size: var(--text-sm);
+		line-height: var(--leading-tight);
 		color: var(--rating-text);
 	}
 	.best-move-copy > span {
-		font-size: 12px;
+		font-size: var(--text-sm);
 		color: var(--muted);
-		line-height: 1.3;
+		line-height: var(--leading-compact);
 	}
 	.best-move-copy > strong,
 	.best-move-copy > span {
@@ -109,12 +109,6 @@
 		}
 		.best-move-trigger > :global(svg) {
 			display: none;
-		}
-		.best-move-copy strong {
-			font-size: 11px;
-		}
-		.best-move-copy > span {
-			font-size: 11px;
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) {

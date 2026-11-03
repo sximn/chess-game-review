@@ -58,29 +58,29 @@
 		background: var(--paper);
 		border: 1px solid var(--line);
 		padding: 24px;
-		border-radius: 14px;
+		border-radius: var(--radius-lg);
 		overflow: auto;
 		min-height: 0;
 	}
 	.diagnostics h1 {
-		font-size: 24px;
+		font-size: var(--text-title);
 		margin-bottom: 12px;
 	}
 	.diagnostics p {
-		font-size: 13px;
-		line-height: 1.7;
+		font-size: var(--text-md);
+		line-height: var(--leading-relaxed);
 		margin: 10px 0;
 		color: var(--muted);
 	}
 	pre {
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
-		font-size: 11px;
-		line-height: 1.5;
+		font-size: var(--text-sm);
+		line-height: var(--leading-body);
 		margin: 16px 0;
 	}
 	a {
 		text-decoration: underline;
-		font-size: 13px;
+		font-size: var(--text-md);
 	}
 </style>

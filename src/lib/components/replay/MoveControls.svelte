@@ -318,7 +318,7 @@
 		grid-template-columns: 44px minmax(0, 1fr) 90px;
 		padding: 5px;
 		border: 1px solid var(--line);
-		border-radius: 13px;
+		border-radius: var(--radius-lg);
 		background: var(--paper);
 		box-shadow: var(--shadow);
 	}
@@ -352,22 +352,22 @@
 		height: 39px;
 		flex-shrink: 0;
 		padding: 0 9px;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		border: 1px solid transparent;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 5px;
-		font-size: 13px;
-		font-weight: 650;
+		font-size: var(--text-md);
+		font-weight: var(--weight-semibold);
 		background: none;
 		color: var(--muted);
 		scroll-snap-align: center;
 	}
 	.move-chip > span {
 		color: var(--text-secondary);
-		font-size: 9px;
-		font-weight: 450;
+		font-size: var(--text-caption);
+		font-weight: var(--weight-regular);
 	}
 	.move-chip.current {
 		background: var(--active-bg);
@@ -384,8 +384,8 @@
 		--button-min-height: 48px;
 		--button-padding: 0 10px;
 		--button-gap: 5px;
-		--button-font-size: 12px;
-		--button-radius: 10px;
+		--button-font-size: var(--text-sm);
+		--button-radius: var(--radius-md);
 	}
 	.next-label {
 		white-space: nowrap;
@@ -412,7 +412,7 @@
 		gap: 1px;
 		padding: 2px;
 		border: 1px solid var(--line);
-		border-radius: 9px;
+		border-radius: var(--radius-sm);
 		background: var(--paper);
 	}
 	.playback-controls > :global(.replay-icon) {
@@ -434,7 +434,7 @@
 		--button-height: 36px;
 		--button-min-height: 36px;
 		--button-padding: 0 11px;
-		--button-font-size: 11px;
+		--button-font-size: var(--text-sm);
 		--button-gap: 6px;
 	}
 	@media (hover: hover) {
@@ -454,7 +454,7 @@
 			gap: 6px;
 		}
 		.move-chip {
-			font-size: 12px;
+			font-size: var(--text-sm);
 			min-width: 64px;
 			padding: 0 7px;
 		}
@@ -471,7 +471,7 @@
 		.move-controls :global(.next-move) {
 			--button-padding: 0 4px;
 			--button-gap: 1px;
-			--button-font-size: 11px;
+			--button-font-size: var(--text-sm);
 			--next-icon-width: 18px;
 		}
 		.step-controls > :global(.previous-move) {
@@ -492,7 +492,7 @@
 		}
 		.replay-actions > :global(.analysis-trigger) {
 			--button-padding: 0 7px;
-			--button-font-size: 10px;
+			--button-font-size: var(--text-caption);
 		}
 		.move-controls :global(.analysis-trigger) {
 			--analysis-icon-width: 13px;
@@ -503,7 +503,7 @@
 			--analysis-icon-display: none;
 		}
 		.move-controls :global(.next-move) {
-			--button-font-size: 10px;
+			--button-font-size: var(--text-caption);
 		}
 		.step-controls {
 			grid-template-columns: 30px minmax(0, 1fr) 54px;

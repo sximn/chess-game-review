@@ -37,17 +37,18 @@
 		padding: 32px 0;
 	}
 	h1 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-size: clamp(30px, 3.3vw, 43px);
-		font-weight: 400;
+		font-family: var(--font-display);
+		font-size: var(--text-display);
+		font-weight: var(--weight-regular);
+		line-height: var(--leading-display);
 	}
 	p {
 		color: var(--muted);
-		font-size: 14px;
+		font-size: var(--text-md);
 	}
 	.empty-review :global(.button) {
 		--button-min-height: 52px;
-		--button-font-size: 15px;
+		--button-font-size: var(--text-lg);
 		--button-padding: 0 28px;
 	}
 	@media (max-width: 760px) {

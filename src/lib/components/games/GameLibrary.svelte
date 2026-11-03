@@ -89,17 +89,17 @@
 		text-align: center;
 	}
 	h1 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-weight: 400;
+		font-family: var(--font-display);
+		font-weight: var(--weight-regular);
 	}
 	.welcome h1 {
-		font-size: clamp(30px, 3.3vw, 43px);
-		line-height: 1.15;
+		font-size: var(--text-display);
+		line-height: var(--leading-display);
 	}
 	p {
 		color: var(--muted);
-		font-size: 14px;
-		line-height: 1.6;
+		font-size: var(--text-md);
+		line-height: var(--leading-body);
 	}
 	.welcome p {
 		margin-top: 12px;
@@ -108,7 +108,7 @@
 		margin-top: 27px;
 		--button-min-height: 52px;
 		--button-padding: 0 28px;
-		--button-font-size: 15px;
+		--button-font-size: var(--text-lg);
 	}
 	.library {
 		padding: 20px 0;
@@ -120,15 +120,15 @@
 		gap: 24px;
 		padding: 28px 30px;
 		border: 1px solid var(--line);
-		border-radius: 16px;
+		border-radius: var(--radius-lg);
 		background: var(--paper);
 	}
 	.import-area h1 {
-		font-size: 30px;
+		font-size: var(--text-heading);
 		margin-bottom: 5px;
 	}
 	.import-area p {
-		font-size: 13px;
+		font-size: var(--text-md);
 	}
 	.library-heading {
 		display: flex;
@@ -142,16 +142,16 @@
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		font-size: 18px;
-		font-weight: 650;
+		font-size: var(--text-xl);
+		font-weight: var(--weight-semibold);
 	}
 	.library-heading h2 span {
-		font-size: 12px;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
 		color: var(--muted);
 		background: var(--paper-deep);
 		padding: 3px 8px;
-		border-radius: 6px;
+		border-radius: var(--radius-xs);
 	}
 	.game-library {
 		display: grid;
@@ -159,7 +159,7 @@
 	}
 	.library-heading :global(.input-shell) {
 		max-width: 260px;
-		--input-font-size: 13px;
+		--input-font-size: var(--text-md);
 	}
 	.empty-search {
 		text-align: center;
@@ -171,7 +171,7 @@
 	.missing-game {
 		padding: 12px 16px;
 		background: var(--paper-deep);
-		border-radius: 9px;
+		border-radius: var(--radius-sm);
 	}
 	@media (max-width: 760px) {
 		.welcome {
@@ -183,9 +183,6 @@
 			max-width: 320px;
 			margin: auto;
 		}
-		.welcome p {
-			font-size: 13px;
-		}
 		.library {
 			padding: 0;
 		}
@@ -195,9 +192,6 @@
 			gap: 20px;
 			padding: 24px;
 		}
-		.import-area h1 {
-			font-size: 29px;
-		}
 		.library-heading {
 			flex-wrap: wrap;
 			margin-top: 28px;
@@ -205,7 +199,7 @@
 		.library-heading :global(.input-shell) {
 			width: 100%;
 			max-width: none;
-			--input-font-size: 16px;
+			--input-font-size: var(--text-input-mobile);
 		}
 	}
 	@media (max-width: 760px) and (max-height: 700px) {
@@ -214,7 +208,7 @@
 			padding: 10px 0;
 		}
 		.welcome h1 {
-			font-size: 28px;
+			font-size: var(--text-heading);
 		}
 		.welcome-copy :global(.welcome-import) {
 			margin-top: 20px;

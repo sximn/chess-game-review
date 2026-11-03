@@ -43,11 +43,11 @@
 		min-height: var(--button-min-height, var(--_button-min-height, 43px));
 		padding: var(--button-padding, var(--_button-padding, 0 17px));
 		gap: var(--button-gap, var(--_button-gap, 9px));
-		border-radius: var(--button-radius, var(--_button-radius, 11px));
-		font-size: var(--button-font-size, var(--_button-font-size, 12px));
-		font-weight: var(--button-font-weight, var(--_button-font-weight, 700));
+		border-radius: var(--button-radius, var(--_button-radius, var(--radius-md)));
+		font-size: var(--button-font-size, var(--_button-font-size, var(--text-sm)));
+		font-weight: var(--button-font-weight, var(--_button-font-weight, var(--weight-bold)));
 		white-space: var(--_button-white-space, nowrap);
-		letter-spacing: var(--_button-letter-spacing, -0.01em);
+		letter-spacing: var(--_button-letter-spacing, var(--tracking-ui));
 		border: var(--button-border, 1px solid var(--line));
 		background: var(--button-background, var(--_button-background));
 		color: var(--button-color, var(--_button-color, inherit));
@@ -81,19 +81,19 @@
 	.button[data-size='sm'] {
 		--_button-min-height: 36px;
 		--_button-padding: 0 11px;
-		--_button-font-size: 11px;
+		--_button-font-size: var(--text-sm);
 		--_button-gap: 6px;
 	}
 	.button[data-size='lg'] {
 		--_button-min-height: 47px;
 		--_button-padding: 0 20px;
-		--_button-font-size: 13px;
+		--_button-font-size: var(--text-md);
 	}
 	.button[data-size='icon'],
 	.button[data-size='icon-sm'] {
 		--_button-min-height: 0px;
 		--_button-padding: 0;
-		--_button-radius: 9px;
+		--_button-radius: var(--radius-sm);
 		font-size: var(--button-font-size, inherit);
 		font-weight: var(--button-font-weight, inherit);
 		--_button-letter-spacing: normal;

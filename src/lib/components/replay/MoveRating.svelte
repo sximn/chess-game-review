@@ -47,7 +47,7 @@
 	class="move-rating"
 	variant="paper"
 	aria-label="Current move rating"
-	style={`--card-radius:11px;--rating-color:${!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'};--rating-text:${!exploring && ply > 0 && quality ? qualityTextColor(quality.name) : 'var(--muted)'}`}
+	style={`--card-radius:var(--radius-md);--rating-color:${!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'};--rating-text:${!exploring && ply > 0 && quality ? qualityTextColor(quality.name) : 'var(--muted)'}`}
 >
 	<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
 		{label}. {detail}
@@ -78,18 +78,18 @@
 		padding: 10px 12px;
 		background: transparent;
 		text-align: left;
-		border-radius: 8px;
+		border-radius: inherit;
 	}
 	.rating-symbol {
 		display: grid;
 		place-items: center;
 		flex: 0 0 28px;
 		height: 28px;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		background: color-mix(in srgb, var(--rating-color) 12%, var(--paper));
 		color: var(--rating-text);
-		font-size: 15px;
-		font-weight: 750;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-bold);
 	}
 	.rating-copy {
 		display: flex;
@@ -99,14 +99,14 @@
 	}
 	.rating-copy strong {
 		display: block;
-		font-size: 12px;
-		line-height: 1.2;
+		font-size: var(--text-sm);
+		line-height: var(--leading-tight);
 		color: var(--rating-text);
 	}
 	.rating-copy > span {
-		font-size: 12px;
+		font-size: var(--text-sm);
 		color: var(--muted);
-		line-height: 1.3;
+		line-height: var(--leading-compact);
 	}
 	.rating-copy > strong,
 	.rating-copy > span {
@@ -117,12 +117,6 @@
 	@media (max-width: 360px) {
 		.rating-symbol {
 			display: none;
-		}
-		.rating-copy strong {
-			font-size: 11px;
-		}
-		.rating-copy > span {
-			font-size: 11px;
 		}
 	}
 </style>

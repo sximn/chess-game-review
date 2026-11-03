@@ -229,18 +229,18 @@
 		gap: 6px;
 		padding: 4px 8px;
 		border: 1px solid var(--selection-border);
-		border-radius: 20px;
+		border-radius: var(--radius-pill);
 		background: var(--paper);
 		color: var(--text-accent);
 
-		font-size: 10px;
-		font-weight: 650;
+		font-size: var(--text-caption);
+		font-weight: var(--weight-semibold);
 		white-space: nowrap;
 		pointer-events: none;
 	}
 	.variation-badge span {
 		color: var(--muted);
-		font-size: 9px;
+		font-size: var(--text-caption);
 	}
 	.exploring .board-stage :global(.chessboard) {
 		filter: brightness(0.78) saturate(0.65);

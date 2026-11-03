@@ -80,14 +80,14 @@
 		justify-content: space-between;
 		gap: 8px;
 		margin-bottom: 3px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.line-heading > span:first-child {
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-weight: 650;
+		font-weight: var(--weight-semibold);
 	}
 	.active .line-heading > span:first-child {
 		color: var(--text-accent);
@@ -112,16 +112,16 @@
 		min-height: 36px;
 		padding: 0 9px;
 		border: 1px solid var(--line);
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		background: var(--paper);
 		color: var(--ink);
-		font-size: 12px;
-		font-weight: 600;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 	.variation-step > span {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
-		font-weight: 450;
+		font-weight: var(--weight-regular);
 	}
 	.variation-step[aria-current='step'] {
 		background: var(--selection-bg);

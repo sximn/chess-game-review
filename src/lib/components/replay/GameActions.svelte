@@ -69,7 +69,7 @@
 		padding: 5px;
 		background: var(--paper);
 		border: 1px solid var(--line);
-		border-radius: 11px;
+		border-radius: var(--radius-md);
 		box-shadow: var(--shadow-popover);
 	}
 	.dropdown-menu [role='menuitem'] {
@@ -77,9 +77,9 @@
 		align-items: center;
 		gap: 9px;
 		padding: 12px;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		color: var(--muted);
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		cursor: pointer;
 		outline: 0;
 	}

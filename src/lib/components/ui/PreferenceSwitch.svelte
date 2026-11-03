@@ -19,7 +19,7 @@
 	.switch {
 		width: 41px;
 		height: 25px;
-		border-radius: 20px;
+		border-radius: var(--radius-pill);
 		flex-shrink: 0;
 		background: var(--control-bg);
 		border: 1px solid var(--control-border);
@@ -34,7 +34,7 @@
 		display: block;
 		width: 19px;
 		height: 19px;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		background: var(--control-thumb);
 		box-shadow: var(--shadow-thumb);
 		transition: transform 0.2s var(--ease);

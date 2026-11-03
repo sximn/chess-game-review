@@ -13,7 +13,7 @@
 <PageHeading title="Just your style" />
 
 <div class="settings-layout">
-	<Card as="section" class="settings-card" style="--card-radius:16px">
+	<Card as="section" class="settings-card">
 		<div class="settings-content">
 			<h2>Theme</h2>
 			<div class="theme-options">
@@ -107,12 +107,12 @@
 		display: block;
 		min-height: 36px;
 		padding: 8px 0;
-		font-size: 13px;
+		font-size: var(--text-md);
 		text-decoration: underline;
 	}
 	.analysis-notice {
-		font-size: 12px;
-		line-height: 1.7;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
 		color: var(--muted);
 	}
 
@@ -126,9 +126,9 @@
 		padding: 31px;
 	}
 	.settings-content h2 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-size: 29px;
-		font-weight: 400;
+		font-family: var(--font-display);
+		font-size: var(--text-heading);
+		font-weight: var(--weight-regular);
 		margin: 11px 0 10px;
 	}
 	.theme-options {
@@ -141,7 +141,7 @@
 		min-width: 0;
 		background: none;
 		border: 1px solid var(--line);
-		border-radius: 12px;
+		border-radius: var(--radius-md);
 		padding: 5px;
 	}
 	.theme-options > button.selected {
@@ -151,7 +151,7 @@
 	.theme-preview {
 		height: 110px;
 		position: relative;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		padding: 17px;
 		display: flex;
 		flex-direction: column;
@@ -196,7 +196,7 @@
 		color: #a79c68;
 	}
 	.theme-options > button > span {
-		font-size: 11px;
+		font-size: var(--text-sm);
 		padding: 12px 7px 8px;
 		display: flex;
 		align-items: center;
@@ -211,13 +211,13 @@
 		margin: 30px 0;
 	}
 	.settings-content h3 {
-		font-size: 13px;
-		font-weight: 600;
+		font-size: var(--text-md);
+		font-weight: var(--weight-semibold);
 		margin: 22px 0 6px;
 	}
 	.piece-set-description {
-		font-size: 12px;
-		line-height: 1.6;
+		font-size: var(--text-sm);
+		line-height: var(--leading-body);
 		color: var(--muted);
 	}
 	.piece-options {
@@ -226,7 +226,7 @@
 	.piece-preview {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		overflow: hidden;
 	}
 	.preview-square {
@@ -252,7 +252,7 @@
 			padding: 23px;
 		}
 		.settings-content h2 {
-			font-size: 25px;
+			font-size: var(--text-title);
 		}
 		.theme-options {
 			gap: 9px;
@@ -269,9 +269,6 @@
 		.settings-content {
 			padding: 25px 22px;
 		}
-		.settings-content h2 {
-			font-size: 28px;
-		}
 		.theme-options {
 			gap: 12px;
 		}
@@ -279,7 +276,7 @@
 			height: 115px;
 		}
 		.theme-options > button > span {
-			font-size: 12px;
+			font-size: var(--text-sm);
 		}
 	}
 	.settings-content > :global(.setting-row) {

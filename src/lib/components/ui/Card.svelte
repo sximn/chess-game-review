@@ -44,7 +44,7 @@
 		display: block;
 		background: var(--card-background, var(--_card-background));
 		border: var(--card-border, 1px solid var(--line));
-		border-radius: var(--card-radius, 14px);
+		border-radius: var(--card-radius, var(--radius-lg));
 		padding: var(--card-padding, 0);
 		box-shadow: var(--card-shadow, var(--_card-shadow, none));
 		overflow: var(--card-overflow, var(--_card-overflow, visible));

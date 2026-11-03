@@ -74,7 +74,7 @@
 		background: var(--bg);
 		color: var(--ink);
 		border: 1px solid var(--line);
-		border-radius: 24px 24px 0 0;
+		border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 		box-shadow: var(--shadow-sheet);
 		animation: sheet-in 0.3s var(--ease);
 	}
@@ -82,7 +82,7 @@
 		display: block;
 		width: 36px;
 		height: 4px;
-		border-radius: 10px;
+		border-radius: var(--radius-pill);
 		background: var(--line);
 		margin: 0 auto 12px;
 		flex-shrink: 0;

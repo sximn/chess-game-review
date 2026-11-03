@@ -135,21 +135,21 @@
 		gap: 6px;
 		background: none;
 		color: var(--text-secondary);
-		border-radius: 8px;
-		font-size: 10px;
+		border-radius: var(--radius-sm);
+		font-size: var(--text-caption);
 		white-space: nowrap;
 	}
 	.tab-trigger[data-state='active'] {
 		background: transparent;
 		color: var(--tabs-active-color, var(--active-text));
-		font-weight: 700;
+		font-weight: var(--weight-bold);
 		box-shadow: none;
 	}
 	.tab-indicator {
 		position: absolute;
 		top: 0;
 		left: 0;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		background: var(--tabs-indicator-background, var(--paper-deep));
 		border: 1px solid var(--active-border);
 		box-shadow: var(--shadow-tab);
@@ -159,7 +159,7 @@
 	}
 	@media (min-width: 1001px) {
 		.tab-trigger {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
@@ -169,7 +169,7 @@
 			gap: 1px;
 		}
 		.tab-trigger {
-			font-size: 8px;
+			font-size: var(--text-caption);
 			gap: 4px;
 		}
 	}
@@ -178,14 +178,14 @@
 			--tabs-icon-size: 15px;
 		}
 		.tab-trigger {
-			font-size: 11px;
+			font-size: var(--text-sm);
 			min-height: 44px;
 			gap: 7px;
 		}
 	}
 	.tab-list[data-size='comfortable'] .tab-trigger {
 		min-height: 42px;
-		font-size: 11px;
+		font-size: var(--text-sm);
 	}
 	.tab-list[data-variant='segmented'] {
 		--tabs-icon-size: 16px;
@@ -195,26 +195,26 @@
 		padding: 4px;
 		gap: 4px;
 		border: 1px solid var(--line);
-		border-radius: 11px;
+		border-radius: var(--radius-md);
 	}
 	.tab-list[data-variant='segmented'] .tab-trigger {
 		min-height: 36px;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		gap: 7px;
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		color: var(--muted);
 	}
 	.tab-list[data-variant='segmented'] .tab-trigger[data-state='active'] {
 		color: var(--ink);
-		font-weight: 650;
+		font-weight: var(--weight-semibold);
 	}
 	.tab-list[data-variant='segmented'] .tab-indicator {
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 	}
 	@media (max-width: 760px) {
 		.tab-list[data-variant='segmented'] .tab-trigger {
 			min-height: 40px;
-			font-size: 12px;
+			font-size: var(--text-sm);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {

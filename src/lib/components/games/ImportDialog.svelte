@@ -104,13 +104,13 @@
 		justify-content: center;
 		align-items: center;
 		gap: 5px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--text-secondary);
 		margin-top: 16px;
 	}
 	@media (max-width: 760px) {
 		.private-note {
-			font-size: 10px;
+			font-size: var(--text-caption);
 		}
 	}
 	.file-drop {
@@ -121,18 +121,18 @@
 		justify-content: center;
 		background: var(--bg);
 		border: 1px dashed var(--border-strong);
-		border-radius: 12px;
+		border-radius: var(--radius-md);
 		padding: 38px 12px;
 		min-height: 230px;
 		width: 100%;
 		color: var(--icon-muted);
 	}
 	.file-drop strong {
-		font-size: 12px;
+		font-size: var(--text-sm);
 		color: var(--ink);
 	}
 	.file-drop span {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.import-form > :global(.segmented) {
@@ -144,17 +144,19 @@
 	@media (max-width: 760px) {
 		.import-form > :global(.import-submit) {
 			--button-min-height: 47px;
-			--button-font-size: 13px;
+			--button-font-size: var(--text-md);
 		}
 	}
 	.import-form {
 		--textarea-min-height: 180px;
-		--textarea-font-size: 11px;
+		--textarea-font-size: var(--text-sm);
 	}
 	@media (max-width: 760px) {
 		.import-form {
 			--textarea-min-height: 170px;
-			--textarea-font-size: 16px; /* Avoid iOS focusing zoom, which persists after closing the sheet. */
+			--textarea-font-size: var(
+				--text-input-mobile
+			); /* Avoid iOS focusing zoom, which persists after closing the sheet. */
 		}
 	}
 </style>

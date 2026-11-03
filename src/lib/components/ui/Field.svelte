@@ -61,15 +61,15 @@
 	}
 	.field-label {
 		display: block;
-		font-size: 11px;
-		font-weight: 600;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 		margin-bottom: 9px;
 	}
 	.field[data-layout='inline'] {
-		--field-message-font-size: 10px;
-		--field-message-line-height: 1.7;
+		--field-message-font-size: var(--text-caption);
+		--field-message-line-height: var(--leading-relaxed);
 		--field-message-margin: 7px 0 0;
-		--field-message-mobile-font-size: 11px;
+		--field-message-mobile-font-size: var(--text-sm);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -77,24 +77,21 @@
 	}
 	.field[data-layout='inline'] .field-label {
 		display: inline;
-		font-size: 12px;
-		font-weight: 550;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-medium);
 		margin-bottom: 0;
 	}
 	@media (max-width: 760px) {
-		.field-label {
-			font-size: 12px;
-		}
 		.field[data-layout='inline'] .field-label {
-			font-size: 13px;
+			font-size: var(--text-md);
 		}
 	}
 	@media (min-width: 1001px) {
 		.field[data-layout='inline'] {
-			--field-message-font-size: 11px;
+			--field-message-font-size: var(--text-sm);
 		}
 		.field[data-layout='inline'] .field-label {
-			font-size: 13px;
+			font-size: var(--text-md);
 		}
 	}
 </style>

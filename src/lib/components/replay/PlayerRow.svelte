@@ -57,7 +57,7 @@
 		place-items: center;
 		height: 23px;
 		width: 23px;
-		border-radius: 6px;
+		border-radius: var(--radius-xs);
 		border: 1px solid #394337;
 		box-shadow:
 			inset 0 1px #fff1,
@@ -80,27 +80,27 @@
 		display: block;
 		align-items: center;
 		gap: 7px;
-		font-size: 12px;
-		font-weight: 650;
-		letter-spacing: -0.1px;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-ui);
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 	.player-winner {
-		font-size: 6px;
-		letter-spacing: 0.8px;
-		font-weight: 700;
+		font-size: var(--text-caption);
+		letter-spacing: var(--tracking-label);
+		font-weight: var(--weight-bold);
 		color: var(--success-text);
 		background: var(--success-bg);
-		border-radius: 3px;
+		border-radius: var(--radius-xs);
 		padding: 3px 4px;
 		margin-left: 6px;
 	}
 	.piece-color {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		background: #4c5145;
 		border: 1px solid #313d32;
 		margin: 0 6px 0 10px;
@@ -116,7 +116,7 @@
 	}
 	@media (max-width: 760px) {
 		.player-details strong {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 	}
 </style>

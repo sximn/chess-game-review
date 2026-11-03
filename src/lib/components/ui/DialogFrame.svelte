@@ -85,7 +85,7 @@
 		background: var(--paper);
 		border: 1px solid var(--line);
 		padding: 28px;
-		border-radius: 22px;
+		border-radius: var(--radius-xl);
 		box-shadow: var(--shadow-dialog);
 		animation: dialog-in 0.25s var(--ease);
 	}
@@ -101,20 +101,20 @@
 		display: grid;
 		place-items: center;
 		background: var(--paper-deep);
-		border-radius: 13px;
+		border-radius: var(--radius-lg);
 		color: var(--icon-muted);
 		border: 1px solid var(--line);
 	}
 	.dialog-title {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-weight: 400;
-		font-size: 29px;
-		letter-spacing: -0.7px;
-		line-height: 1.2;
+		font-family: var(--font-display);
+		font-weight: var(--weight-regular);
+		font-size: var(--text-heading);
+		letter-spacing: var(--tracking-display);
+		line-height: var(--leading-tight);
 	}
 	.dialog-description {
-		font-size: 12px;
-		line-height: 1.8;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
 		color: var(--muted);
 		margin: 12px 0 24px;
 	}
@@ -131,25 +131,19 @@
 			max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 15px);
 			padding: 12px max(24px, env(safe-area-inset-right, 0px))
 				calc(27px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
-			border-radius: 24px 24px 0 0;
+			border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 			animation: sheet-in 0.3s var(--ease);
 		}
 		.dialog-handle {
 			display: block;
 			height: 4px;
 			width: 35px;
-			border-radius: 10px;
+			border-radius: var(--radius-md);
 			background: var(--border-strong);
 			margin: 0 auto 21px;
 		}
 		.dialog-top {
 			margin-bottom: 17px;
-		}
-		.dialog-title {
-			font-size: 30px;
-		}
-		.dialog-description {
-			font-size: 12px;
 		}
 		:global(.keyboard-open) .dialog-content {
 			max-height: calc(100dvh - 15px);

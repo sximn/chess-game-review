@@ -64,6 +64,35 @@ changing classification data or graph marker colors. Add a semantic role when a
 new shared state needs one, rather than reusing a similarly colored token with a
 different meaning.
 
+## Radiuses and typography
+
+Use the scales in `src/lib/styles/foundation.css` through component properties
+and scoped styles. Select a step by purpose, rather than adding a nearby value:
+
+- Corners: `--radius-xs` (4px) for compact rows/badges, `--radius-sm` (8px) for
+  small controls and nested elements, `--radius-md` (12px) for ordinary controls
+  and compact review cards, `--radius-lg` (16px) for cards/panels, and
+  `--radius-xl` (24px) for dialogs/sheets. Use `--radius-pill` for capsules and
+  handles, and `--radius-round` for circles. Sheets keep square bottom corners.
+- Families: `--font-body` for the interface, `--font-display` for editorial/serif
+  headings, and `--font-mono` for editable chess notation.
+- Sizes: `--text-caption` (10px at the default root), `--text-sm/md/lg/xl`
+  (12/14/16/18px), `--text-title/heading/page` (24/30/34px), and the fluid
+  `--text-display` for welcome/empty-state headings. Sizes use rem so browser
+  font preferences carry through. Mobile inputs use `--text-input-mobile` to
+  keep a 16px minimum and prevent iOS focus zoom.
+- Weights: `--weight-regular/medium/semibold/bold/heavy` (400/500/600/700/800).
+  Use `--leading-*` for line height and `--tracking-*` for repeated text spacing.
+
+Keep intentional optical exceptions local and explain them: the wordmark has
+its own responsive proportions; board coordinates, evaluation labels, markers,
+and its frame retain their spatial sizing; theme preview artwork keeps its tiny
+corners; the narrow landscape navigation rail keeps 8px labels. Zero radius and
+zero text size for an icon-only control are behaviors, not additional scale steps.
+Nested clickable review cards inherit their parent's radius so their selected
+background fits the container. Preserve public `--button-*`, `--input-*`,
+`--textarea-*`, and `--card-*` overrides, choosing scale tokens as their values.
+
 ## Removing components
 
 Before deleting a component, search the repository for imports, template usage, and dynamic loading. Check whether its children still have other callers. After moving or removing files, run `bun run check`, `bun run build`, and the relevant existing tests.

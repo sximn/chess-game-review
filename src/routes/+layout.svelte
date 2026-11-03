@@ -29,7 +29,7 @@
 		background: var(--yellow);
 		color: var(--text-on-primary);
 		padding: 12px 20px;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		z-index: 100;
 		transform: translateY(-150%);
 	}

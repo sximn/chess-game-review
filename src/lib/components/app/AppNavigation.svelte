@@ -82,6 +82,7 @@
 		flex-direction: column;
 		z-index: 30;
 	}
+	/* The wordmark keeps its optical sizing and proportions at each breakpoint. */
 	.brand {
 		display: flex;
 		gap: 10px;
@@ -114,19 +115,19 @@
 	}
 	.main-nav a {
 		min-height: 45px;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		padding: 0 13px;
 		color: var(--muted);
-		font-size: 13px;
-		font-weight: 550;
+		font-size: var(--text-md);
+		font-weight: var(--weight-medium);
 	}
 	.main-nav a.active {
 		background: var(--active-bg);
 		color: var(--active-text);
-		font-weight: 650;
+		font-weight: var(--weight-semibold);
 		box-shadow: inset 0 0 0 1px var(--line);
 	}
 	.main-nav a.active :global(svg) {
@@ -144,11 +145,11 @@
 		width: 100%;
 		background: none;
 		color: var(--muted);
-		font-size: 12px;
-		border-radius: 9px;
+		font-size: var(--text-sm);
+		border-radius: var(--radius-sm);
 	}
 	.sidebar-bottom p {
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		border-top: 1px solid var(--line);
 		margin-top: 16px;
@@ -192,13 +193,13 @@
 			width: 28px;
 		}
 		.main-nav a {
-			font-size: 12px;
+			font-size: var(--text-sm);
 			gap: 9px;
 			padding: 0 10px;
 		}
 		.sidebar-bottom p {
 			padding-left: 10px;
-			font-size: 9px;
+			font-size: var(--text-caption);
 		}
 	}
 	@media (max-width: 760px) {
@@ -226,7 +227,7 @@
 			gap: 5px;
 			flex: 1;
 			min-height: 47px;
-			font-size: 10px;
+			font-size: var(--text-caption);
 			color: var(--muted);
 			position: relative;
 		}
@@ -240,7 +241,7 @@
 			width: 28px;
 			height: 3px;
 			background: var(--sage);
-			border-radius: 5px;
+			border-radius: var(--radius-xs);
 		}
 		:global(.keyboard-open) .mobile-nav {
 			display: none;
@@ -298,7 +299,7 @@
 			flex: 0;
 			min-height: 48px;
 			width: 48px;
-			font-size: 8px;
+			font-size: 8px; /* Fit labels in the narrow landscape rail. */
 		}
 		.mobile-nav.review > .active::before {
 			top: auto;

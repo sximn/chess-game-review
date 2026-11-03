@@ -45,7 +45,7 @@
 		gap: 8px;
 		background: var(--input-background, var(--_input-background, var(--field)));
 		border: 1px solid var(--input-border-color, var(--line));
-		border-radius: var(--input-radius, var(--_input-radius, 10px));
+		border-radius: var(--input-radius, var(--_input-radius, var(--radius-md)));
 		padding: 0 var(--input-padding, var(--_input-padding, 14px));
 		width: var(--input-shell-width, 100%);
 		color: var(--input-icon-color, var(--icon-muted));
@@ -55,17 +55,17 @@
 	}
 	.input-shell[data-size='sm'] {
 		--_input-height: 36px;
-		--_input-font-size: 10px;
+		--_input-font-size: var(--text-caption);
 		--_input-padding: 11px;
-		--_input-radius: 9px;
+		--_input-radius: var(--radius-sm);
 	}
 	.input-shell[data-size='lg'] {
 		--_input-height: 47px;
-		--_input-font-size: 13px;
+		--_input-font-size: var(--text-md);
 		--_input-padding: 16px;
 	}
 	.input-control {
-		font-size: var(--input-font-size, var(--_input-font-size, 12px));
+		font-size: var(--input-font-size, var(--_input-font-size, var(--text-sm)));
 		height: var(--input-height, var(--_input-height, 43px));
 		width: var(--input-width, 100%);
 		min-width: 0;

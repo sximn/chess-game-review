@@ -10,28 +10,28 @@
 
 <style>
 	h1 {
-		font-weight: 650;
-		font-size: 34px;
-		line-height: 1.2;
-		letter-spacing: -1.5px;
+		font-weight: var(--weight-semibold);
+		font-size: var(--text-page);
+		line-height: var(--leading-tight);
+		letter-spacing: var(--tracking-heading);
 	}
 	@media (max-width: 1000px) {
 		h1 {
-			font-size: 30px;
+			font-size: var(--text-heading);
 		}
 	}
 	h1.review-error {
-		font-size: 25px;
-		letter-spacing: -0.9px;
+		font-size: var(--text-title);
+		letter-spacing: var(--tracking-heading);
 	}
 	@media (max-width: 760px) {
 		h1.review-error {
-			font-size: 24px;
+			font-size: var(--text-title);
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) {
 		h1.review-error {
-			font-size: 20px;
+			font-size: var(--text-xl);
 		}
 	}
 </style>

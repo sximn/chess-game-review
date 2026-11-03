@@ -139,7 +139,7 @@
 
 <style>
 	.evaluation-card {
-		border-radius: 13px;
+		border-radius: var(--radius-lg);
 		background: var(--paper);
 		margin: 0;
 		padding: 16px 20px 14px;
@@ -158,13 +158,13 @@
 		gap: 8px;
 	}
 	.evaluation-title h3 {
-		font-size: 10px;
-		font-weight: 650;
-		letter-spacing: -0.2px;
+		font-size: var(--text-caption);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-ui);
 	}
 	.evaluation-title > div > span {
 		color: var(--text-secondary);
-		font-size: 8px;
+		font-size: var(--text-caption);
 		margin-left: 4px;
 	}
 	.chart-axis {
@@ -172,7 +172,7 @@
 		justify-content: space-between;
 		padding-top: 7px;
 		color: var(--text-secondary);
-		font-size: 7px;
+		font-size: var(--text-caption);
 	}
 	.replay-progress {
 		height: 100%;
@@ -181,27 +181,27 @@
 	}
 	@media (max-width: 760px) {
 		.evaluation-title h3 {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 		.evaluation-title > div > span {
-			font-size: 7px;
+			font-size: var(--text-caption);
 		}
 		.evaluation-title > div {
 			gap: 6px;
 		}
 		.chart-axis {
-			font-size: 8px;
+			font-size: var(--text-caption);
 		}
 	}
 	@media (min-width: 1001px) {
 		.evaluation-title h3 {
-			font-size: 12px;
+			font-size: var(--text-sm);
 		}
 		.evaluation-title > div > span {
-			font-size: 9px;
+			font-size: var(--text-caption);
 		}
 		.chart-axis {
-			font-size: 9px;
+			font-size: var(--text-caption);
 		}
 	}
 	.evaluation-sides {
@@ -213,13 +213,13 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.evaluation-sides i {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		background: #fffbee;
 		border: 1px solid #abae9c;
 		flex-shrink: 0;
@@ -227,7 +227,7 @@
 	.critical-moves i {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		background: #fffbee;
 		border: 1px solid #abae9c;
 		flex-shrink: 0;
@@ -272,7 +272,7 @@
 	.advantage-zone > span {
 		position: absolute;
 		left: 4px;
-		font-size: 8px;
+		font-size: var(--text-caption);
 		color: var(--text-secondary);
 	}
 	.white-zone > span {
@@ -293,7 +293,7 @@
 		position: absolute;
 		right: calc(100% + 6px);
 		top: -5px;
-		font-size: 8px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.evaluation-plot > input {
@@ -309,7 +309,7 @@
 	.evaluation-plot:has(> input:focus-visible) {
 		outline: 2px solid var(--focus-color);
 		outline-offset: 4px;
-		border-radius: 4px;
+		border-radius: var(--radius-xs);
 	}
 	.evaluation-cursor {
 		position: absolute;
@@ -329,7 +329,7 @@
 		height: 5px;
 		background: var(--yellow);
 		border: 1px solid var(--chart-cursor);
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 	}
 	.graph-moment {
 		position: absolute;
@@ -341,7 +341,7 @@
 		background: none;
 		transform: translate(-50%, -50%);
 		z-index: 3;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 	}
 	.graph-moment > span {
 		display: block;
@@ -349,7 +349,7 @@
 		height: 10px;
 		background: #fffbee;
 		border: 2px solid var(--moment-color);
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		box-shadow: 0 1px 2px #0002;
 		transition:
 			transform 0.2s,
@@ -373,7 +373,7 @@
 	}
 	.evaluation-timeline .chart-axis {
 		margin: 3px 12px 0;
-		font-size: 9px;
+		font-size: var(--text-caption);
 	}
 	.critical-moves {
 		display: flex;
@@ -385,7 +385,7 @@
 		border-top: 1px solid var(--line);
 	}
 	.critical-moves > span {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		margin-right: 4px;
 		width: 100%;
@@ -394,9 +394,9 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		min-height: 30px;
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		padding: 0 8px;
 		background: var(--bg);
 		border: 1px solid var(--line);
@@ -406,7 +406,7 @@
 		background: var(--selection-bg);
 	}
 	.critical-moves b {
-		font-size: 9px;
+		font-size: var(--text-caption);
 	}
 	.evaluation-card[data-presentation='sheet'] .evaluation-plot {
 		height: 170px;
