@@ -243,11 +243,20 @@
 		font-size: var(--text-caption);
 	}
 	.exploring .board-stage :global(.chessboard) {
-		filter: brightness(0.78) saturate(0.65);
+		filter: brightness(0.92) saturate(0.92);
 		box-shadow:
 			0 0 0 3px var(--violet),
 			0 0 0 7px color-mix(in srgb, var(--violet) 12%, transparent);
 	}
+
+	:global(:root[data-theme='dark']) .exploring .board-stage :global(.chessboard) {
+		filter: brightness(0.85) saturate(0.90);
+	}
+	/* @media (prefers-color-scheme: dark) {
+		.exploring .board-stage :global(.chessboard) {
+			filter: brightness(0.95) saturate(0.88);
+		}
+	} */
 	@media (prefers-reduced-motion: reduce) {
 		.board-stage :global(.chessboard) {
 			transition: none;
