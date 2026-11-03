@@ -205,7 +205,7 @@ for (const viewport of [
 	{ width: 1440, height: 1000 },
 	{ width: 390, height: 844 }
 ]) {
-	test(`switching tabs restores each game's review move at ${viewport.width}px`, async ({
+	test(`tabs preserve the review move and library cards restart at ${viewport.width}px`, async ({
 		page
 	}) => {
 		await page.setViewportSize(viewport);
@@ -251,8 +251,12 @@ for (const viewport of [
 		await page.locator('.move-chip').nth(2).click();
 		await expect(current).toContainText('d5');
 		await openLibrary();
+		await returnToReview();
+		await expect(current).toContainText('d5');
+		await expect(current).toBeInViewport();
+		await openLibrary();
 		await page.locator('.library-game').filter({ hasText: 'Paul Morphy' }).click();
-		await expect(current).toContainText('Bxd7+');
+		await expect(current).toHaveText('Start');
 		await page.getByRole('button', { name: 'Last move', exact: true }).click();
 		await openLibrary();
 		await returnToReview();
@@ -263,7 +267,7 @@ for (const viewport of [
 		await expect(current).toHaveText('Start');
 		await openLibrary();
 		await page.locator('.library-game').filter({ hasText: 'Other' }).click();
-		await expect(current).toContainText('d5');
+		await expect(current).toHaveText('Start');
 		expect(errors).toEqual([]);
 	});
 }

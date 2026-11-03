@@ -25,7 +25,6 @@ export function getReviewPosition(gameId: string) {
 }
 
 export function rememberReviewPosition(gameId: string, ply: number) {
-	console.log({ gameId, ply });
 	reviewPositions.set(gameId, ply);
 }
 
