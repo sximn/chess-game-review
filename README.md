@@ -27,7 +27,7 @@ The move rating stays visible in a paper card below the board. When the played m
 
 ## Run locally
 
-Requires Node.js 22.12+ and Bun 1.4+.
+Requires Node.js 22.23+, 24.22+, or 26.12+ (on the corresponding major release), and Bun 1.4+.
 
 ```sh
 bun install
@@ -56,6 +56,46 @@ bun run build         # Static SPA in build/
 - **chess-engine-kit.** Prebuilt Frozenight WASM engine and module worker (version pinned in `package.json`).
 
 Fonts, icons, and chess pieces are bundled locally. For static web hosting, rewrite unknown application paths to `/index.html`.
+
+### Deploy to Cloudflare
+
+The app uses Workers Static Assets with typed `cloudflare.config.ts` configuration.
+`wrangler.config.ts` points the packaging tool at the completed `build/` directory.
+SvelteKit keeps `adapter-static`; no Cloudflare Vite plugin or server Worker is needed.
+The Cloudflare CLI and Wrangler are pinned because the typed configuration toolchain is in beta.
+
+```sh
+bun run build       # SvelteKit static output, then the offline service worker
+bun run cf:package  # Package build/ into .cloudflare/output/v0/
+bun run cf:check    # Validate that deployment artifact without uploading
+bun run cf:deploy   # Deploy the packaged artifact without rebuilding
+```
+
+Cloudflare commands explicitly run under Node, since the typed configuration loader
+does not support the Bun runtime. Packaging uses Wrangler's experimental Build Output
+command directly: `cf build` detects SvelteKit and runs Vite, which would skip our offline
+build step and does not package the existing static output. Run the steps above in order;
+`cf:deploy` publishes the last packaged artifact.
+
+For local deployment, sign in with `node node_modules/cf/bin/cf auth login`, or set
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` in your shell.
+
+For automatic deployment, create a GitHub environment named `production` under
+**Settings → Environments** and configure:
+
+- Secret `CLOUDFLARE_API_TOKEN`: a Cloudflare **Edit Cloudflare Workers** API token scoped to the target account.
+- Secret `CLOUDFLARE_ACCOUNT_ID`: the target Cloudflare account ID.
+- Variable `PRODUCTION_URL`: the full site URL, such as `https://up-a-pawn.<your-workers-subdomain>.workers.dev`, or your custom domain.
+
+The existing verification workflow packages and dry-runs the Cloudflare artifact on
+pull requests and pushes to `main`. After the web checks and all browser tests pass,
+pushes to `main` deploy that same artifact. The deployment job references `production`,
+so GitHub shows its status and the configured URL under the repository's **Deployments**.
+Pull requests do not deploy or receive the Cloudflare credentials.
+
+Cloudflare's first deployment may require configuring your account's `workers.dev`
+subdomain in the dashboard. Change `worker.name` in `cloudflare.config.ts` if you want
+a different Worker name, and update `PRODUCTION_URL` to match.
 
 ### Analysis and storage
 

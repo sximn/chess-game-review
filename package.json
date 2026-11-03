@@ -7,6 +7,9 @@
 	"scripts": {
 		"dev": "vite --host 0.0.0.0",
 		"build": "vite build && node scripts/build-offline.mjs",
+		"cf:package": "wrangler build --experimental-new-config --experimental-cf-build-output --env production",
+		"cf:check": "cf deploy --prebuilt --mode production --dry-run",
+		"cf:deploy": "cf deploy --prebuilt --mode production",
 		"preview": "bun scripts/serve-build.mjs",
 		"prepare": "svelte-kit sync",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -37,15 +40,17 @@
 		"@sveltejs/adapter-static": "4.0.0",
 		"@sveltejs/kit": "3.1.0",
 		"@sveltejs/vite-plugin-svelte": "7.3.1",
+		"cf": "1.0.0-beta.27",
 		"prettier": "3.9.10",
 		"prettier-plugin-svelte": "4.1.1",
 		"svelte": "5.57.2",
 		"svelte-check": "4.7.7",
 		"typescript": "6.0.3",
-		"vite": "8.3.5"
+		"vite": "8.3.5",
+		"wrangler": "4.156.2"
 	},
 	"engines": {
-		"node": ">=22.12.0"
+		"node": "^22.23.0 || ^24.22.0 || ^26.12.0"
 	},
 	"packageManager": "bun@1.4.3",
 	"imports": {

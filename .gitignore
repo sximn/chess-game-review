@@ -1,5 +1,8 @@
 node_modules
 .svelte-kit
+.cloudflare/
+.wrangler/
+.dev.vars*
 build
 .DS_Store
 .env
