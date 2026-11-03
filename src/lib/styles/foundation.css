@@ -90,9 +90,9 @@
 	--avatar-text: #525252;
 	--avatar-border: #d4d4d4;
 	--control-bg: #dedede;
-	--control-border: #858585;
+	--control-border: #c2c2c2;
 	--control-checked-bg: var(--accent);
-	--control-checked-border: #947500;
+	--control-checked-border: #dbcba1;
 	--control-thumb: linear-gradient(#fff, #f4f4f4);
 	--border-strong: #929292;
 	--scrollbar-thumb: #929292;
@@ -167,7 +167,7 @@
 	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line)); 
 	--active-shadow: var(--shadow-tab);
 
-	--active-ring: 0 0 0 2px #ffd84d59;
+	--active-ring: 0 0 0 1px #ffd84d59;
 	--error-bg: #3b2520;
 	--error-text: #f2b7a5;
 	--error-border: #a66755;
@@ -176,6 +176,7 @@
 	--avatar-border: #4a4a4a;
 	--control-bg: #444444;
 	--control-border: #797979;
+	--control-checked-bg: hsl(from var(--accent) h s calc(0.65 * l));
 	--control-checked-border: #dfb52a;
 	--border-strong: #737373;
 	--scrollbar-thumb: #737373;
