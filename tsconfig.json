@@ -5,5 +5,12 @@
 		"strict": true,
 		"rewriteRelativeImportExtensions": true
 	},
-	"include": ["src", "tests", "vite.config.ts", "playwright.config.ts"]
+	"include": [
+		"src",
+		"tests",
+		"vite.config.ts",
+		"playwright.config.ts",
+		"cloudflare.config.ts",
+		"wrangler.config.ts"
+	]
 }
