@@ -72,7 +72,7 @@
 		min-width: 0;
 	}
 	.variation-line.active {
-		border-color: var(--violet);
+		border-color: var(--selection-border);
 	}
 	.line-heading {
 		display: flex;
@@ -90,7 +90,7 @@
 		font-weight: 650;
 	}
 	.active .line-heading > span:first-child {
-		color: var(--violet);
+		color: var(--text-accent);
 	}
 	.variation-steps {
 		position: relative;
@@ -124,12 +124,15 @@
 		font-weight: 450;
 	}
 	.variation-step[aria-current='step'] {
-		background: color-mix(in srgb, var(--violet) 12%, var(--paper));
-		border-color: var(--violet);
-		color: var(--violet);
+		background: var(--selection-bg);
+		border-color: var(--selection-border);
+		color: var(--selection-text);
+	}
+	.variation-step[aria-current='step'] > span {
+		color: inherit;
 	}
 	@media (hover: hover) {
-		.variation-step:hover {
+		.variation-step:hover:not([aria-current='step']) {
 			background: var(--surface-green);
 		}
 	}

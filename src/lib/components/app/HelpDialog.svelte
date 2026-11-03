@@ -65,7 +65,7 @@
 		padding: 9px;
 		text-align: center;
 		font-size: 11px;
-		color: #8b9677;
+		color: var(--text-secondary);
 	}
 	.help-item p {
 		font-size: 11px;

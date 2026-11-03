@@ -34,7 +34,7 @@
 	/* Public --button-* properties let the owner adjust geometry without copying skins. */
 	.button {
 		--_button-background: var(--paper);
-		--_button-shadow: inset 0 1px #ffffff85, 0 2px 3px #42370a0a;
+		--_button-shadow: var(--shadow-control);
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -55,9 +55,8 @@
 	}
 	.button[data-variant='primary'] {
 		--_button-background: linear-gradient(180deg, var(--yellow-hi), var(--yellow));
-		--_button-color: #353422;
-		--_button-shadow:
-			inset 0 1px #ffffffa0, inset 0 -1px #0000000c, 0 2px 3px #42370a1a, 0 4px 8px -4px #42370a38;
+		--_button-color: var(--text-on-primary);
+		--_button-shadow: var(--shadow-primary);
 		border-color: var(--button-border-color, var(--yellow-lo));
 	}
 	.button[data-variant='secondary'] {
@@ -77,7 +76,7 @@
 		--_button-min-height: 0px;
 		--_button-padding: 0;
 		--_button-radius: 0;
-		--_button-color: #82956d;
+		--_button-color: var(--text-action);
 	}
 	.button[data-size='sm'] {
 		--_button-min-height: 36px;
@@ -121,16 +120,14 @@
 		.button[data-variant='primary']:hover,
 		.button[data-variant='secondary']:hover {
 			filter: brightness(1.015);
-			box-shadow:
-				0 3px 9px #42370a17,
-				inset 0 1px #fff8;
+			box-shadow: var(--shadow-control-hover);
 		}
 		.button[data-variant='ghost']:hover,
 		.button[data-variant='outline']:hover {
 			background: var(--button-hover-background, var(--paper-deep));
 		}
 		.button[data-variant='ghost']:hover {
-			color: var(--button-hover-color, #7c8b65);
+			color: var(--button-hover-color, var(--text-action));
 		}
 		.button[data-variant='link']:hover {
 			text-decoration: underline;
@@ -138,6 +135,6 @@
 		}
 	}
 	.button:active:not(:disabled) {
-		box-shadow: inset 0 1px 2px #0003;
+		box-shadow: var(--shadow-pressed);
 	}
 </style>

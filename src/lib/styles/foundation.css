@@ -1,8 +1,8 @@
 /* Design tokens, theme values, resets and accessibility. */
 :root {
 	font-family: 'DM Sans Variable', system-ui, sans-serif;
-	color: #2c302b;
-	background: #f5f3ed;
+	color: var(--ink);
+	background: var(--bg);
 	font-synthesis: none;
 	--bg: #f5f3ed;
 	--paper: #fffcf4;
@@ -19,9 +19,76 @@
 	--surface-green: #edf1e5;
 	--board-light: #ede9d3;
 	--board-dark: #8da57b;
+
+	/* Semantic roles: use these for UI states, rather than palette hues. */
+	--text-secondary: var(--muted);
+	--text-placeholder: var(--muted);
+	--icon-muted: var(--muted);
+	--text-action: #4f693b;
+	--text-accent: #5745bf;
+	--text-on-primary: #353422;
+	--focus-color: var(--violet);
+	--selection-bg: #ece8ff;
+	--selection-text: var(--text-accent);
+	--selection-border: #b2a3e9;
+	--active-bg: var(--surface-green);
+	--active-text: var(--text-action);
+	--active-border: #9cae7d;
+	--active-ring: 0 0 0 2px #a7b88940;
+	--success-bg: #eaf0df;
+	--success-text: var(--text-action);
+	--error-bg: #fff0e7;
+	--error-text: #974530;
+	--error-border: #d6a396;
+	--notice-bg: #37432e;
+	--notice-text: #f9f8e9;
+	--notice-border: #506444;
+	--notice-icon: #d6e4ae;
+	--avatar-bg: #f0e9da;
+	--avatar-text: #665f46;
+	--avatar-border: #ded8c8;
+	--control-bg: #dddccc;
+	--control-border: #888773;
+	--control-checked-bg: #9cb885;
+	--control-checked-border: #637a4f;
+	--control-thumb: linear-gradient(#fff, #f5f1e7);
+	--border-strong: #9a9e89;
+	--scrollbar-thumb: #9a9e89;
+	--overlay-bg: #252b2059;
+	--chart-grid: #aeb69c;
+	--chart-progress: linear-gradient(180deg, #a9bb8c44, #a9bb8c11);
+	--chart-progress-edge: #738653;
+	--chart-cursor: #8c751f;
+
+	/* Chess-side identity stays fixed; only the surrounding chart wash adapts. */
+	--evaluation-white-zone: #f7f3e82e;
+	--evaluation-black-zone: #454c4010;
+	/* Text variants keep the original move-quality hues legible on UI surfaces.
+	   Marker colors and classification data retain the chess palette. */
+	--quality-best-text: #466532;
+	--quality-good-text: var(--quality-best-text);
+	--quality-inaccuracy-text: #796000;
+	--quality-mistake-text: #99500d;
+	--quality-blunder-text: #b62c2a;
+	--quality-uncertain-text: var(--muted);
+
+	/* Shared UI lighting; branding and board artwork own their fixed shadows. */
+	--highlight: inset 0 1px #ffffff80;
+	--shadow-control: inset 0 1px #ffffff85, 0 2px 3px #42370a0a;
+	--shadow-primary:
+		inset 0 1px #ffffffa0, inset 0 -1px #0000000c, 0 2px 3px #42370a1a, 0 4px 8px -4px #42370a38;
+	--shadow-control-hover: 0 3px 9px #42370a17, inset 0 1px #fff8;
+	--shadow-pressed: inset 0 1px 2px #0003;
+	--shadow-inset: inset 0 1px 3px #0001;
+	--shadow-thumb: 0 1px 3px #0003;
+	--shadow-tab: inset 0 1px #ffffff80, 0 1px 3px #42370a0a;
+	--shadow-card-hover: 0 8px 20px #424d2410;
+	--shadow-popover: 0 8px 32px #2b331626;
+	--shadow-dialog: 0 15px 70px #27321e33;
+	--shadow-sheet: 0 -12px 70px #27321e26;
+	--shadow-notice: 0 8px 24px #26332030;
 	--shadow: 0 2px 3px #42370a04, 0 7px 20px -12px #42370a18;
 	--ease: cubic-bezier(0.22, 0.8, 0.3, 1);
-	--sc: 70 55 10;
 	--ring: 0 0 0 3px #7062ee40;
 	color-scheme: light;
 }
@@ -38,9 +105,50 @@
 	--sage: #8fae7c;
 	--board-light: #d2ccb0;
 	--board-dark: #718862e7;
+	--text-action: #bed4a7;
+	--text-accent: #c2b8ff;
+	--selection-bg: #45405b;
+	--selection-border: #8e80c7;
+	--active-bg: #3b4a2f;
+	--active-text: #c0d0a9;
+	--active-border: #71895a;
+	--active-ring: 0 0 0 2px #a7b88959;
+	--success-bg: #3b4e2c;
+	--success-text: #b1c99b;
+	--error-bg: #3b2520;
+	--error-text: #f2b7a5;
+	--error-border: #a66755;
+	--avatar-bg: #3b4233;
+	--avatar-text: #c6c9ab;
+	--avatar-border: #505943;
+	--control-bg: #454237;
+	--control-border: #797564;
+	--control-checked-bg: #8fae7c;
+	--control-checked-border: #a9c995;
+	--border-strong: #797e6c;
+	--scrollbar-thumb: #797e6c;
+	--overlay-bg: #080b08a6;
+	--chart-grid: #687159;
+	--chart-progress-edge: #a9bb8c;
+	--chart-cursor: #d5bd61;
+	--evaluation-white-zone: #e9efda0b;
+	--evaluation-black-zone: #10140d36;
+	--quality-best-text: #b0ce99;
+	--quality-inaccuracy-text: #e1c35e;
+	--quality-mistake-text: #efb17a;
+	--quality-blunder-text: #f39c98;
+	--quality-uncertain-text: #c5bfb1;
+	--highlight: inset 0 1px #ffffff0d;
+	--shadow-control: inset 0 1px #ffffff0d, 0 2px 3px #0003;
+	--shadow-control-hover: 0 3px 9px #0005, inset 0 1px #ffffff14;
+	--shadow-tab: inset 0 1px #ffffff0d, 0 1px 3px #0003;
+	--shadow-card-hover: 0 8px 20px #0005;
+	--shadow-popover: 0 8px 32px #0006;
+	--shadow-dialog: 0 15px 70px #0008;
+	--shadow-sheet: 0 -12px 70px #0006;
+	--shadow-notice: 0 8px 24px #0005;
 	--shadow: 0 6px 20px -10px #000a;
 	--ring: 0 0 0 3px #8173f35c;
-	color: var(--ink);
 	color-scheme: dark;
 }
 *,
@@ -100,7 +208,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-	outline: 2px solid var(--violet);
+	outline: 2px solid var(--focus-color);
 	outline-offset: 4px;
 }
 svg {

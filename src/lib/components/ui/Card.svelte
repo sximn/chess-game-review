@@ -66,7 +66,7 @@
 	@media (hover: hover) {
 		.card.interactive:hover {
 			transform: translateY(var(--card-hover-lift, -3px));
-			box-shadow: var(--card-hover-shadow, 0 8px 20px #424d2410);
+			box-shadow: var(--card-hover-shadow, var(--shadow-card-hover));
 		}
 	}
 </style>

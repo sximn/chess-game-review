@@ -4,6 +4,7 @@
 	import Card from '#lib/components/ui/Card.svelte';
 	import { moveLabel } from '#lib/chess.js';
 	import { getColorByQuality, getSymbolByQuality } from '#lib/engine/classification.js';
+	import { qualityTextColor } from '#lib/components/analysis/quality-colors.js';
 
 	let {
 		suggestion,
@@ -24,7 +25,7 @@
 
 <Card
 	class="best-move-card"
-	style={`--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')}`}
+	style={`--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')};--rating-text:${qualityTextColor('Best')}`}
 >
 	<button
 		class="best-move-trigger"
@@ -60,12 +61,12 @@
 		text-align: left;
 	}
 	.best-move-trigger[aria-pressed='true'] {
-		background: var(--surface-green);
+		background: var(--active-bg);
 	}
 	.rating-symbol {
 		flex-shrink: 0;
 		background: color-mix(in srgb, var(--rating-color) 20%, var(--paper));
-		color: var(--rating-color);
+		color: var(--rating-text);
 		display: grid;
 		place-items: center;
 		flex: 0 0 24px;
@@ -85,7 +86,7 @@
 		display: block;
 		font-size: 12px;
 		line-height: 1.2;
-		color: var(--rating-color);
+		color: var(--rating-text);
 	}
 	.best-move-copy > span {
 		font-size: 12px;

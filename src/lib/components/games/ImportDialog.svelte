@@ -105,7 +105,7 @@
 		align-items: center;
 		gap: 5px;
 		font-size: 9px;
-		color: #9ba58a;
+		color: var(--text-secondary);
 		margin-top: 16px;
 	}
 	@media (max-width: 760px) {
@@ -120,12 +120,12 @@
 		align-items: center;
 		justify-content: center;
 		background: var(--bg);
-		border: 1px dashed #b7c0a0;
+		border: 1px dashed var(--border-strong);
 		border-radius: 12px;
 		padding: 38px 12px;
 		min-height: 230px;
 		width: 100%;
-		color: #95a17f;
+		color: var(--icon-muted);
 	}
 	.file-drop strong {
 		font-size: 12px;

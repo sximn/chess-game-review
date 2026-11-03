@@ -124,13 +124,13 @@
 		font-weight: 550;
 	}
 	.main-nav a.active {
-		background: var(--surface-green);
-		color: var(--ink);
+		background: var(--active-bg);
+		color: var(--active-text);
 		font-weight: 650;
 		box-shadow: inset 0 0 0 1px var(--line);
 	}
 	.main-nav a.active :global(svg) {
-		color: var(--sage);
+		color: var(--active-text);
 	}
 	.sidebar-bottom {
 		margin-top: auto;
@@ -158,7 +158,7 @@
 		display: none;
 	}
 	@media (hover: hover) {
-		.main-nav a:hover,
+		.main-nav a:hover:not(.active),
 		.sidebar-bottom button:hover {
 			background: var(--surface-green);
 		}

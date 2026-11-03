@@ -33,9 +33,9 @@
 		font-size: 11px;
 		line-height: 1.7;
 		padding: 12px;
-		border: 1px solid #e3bbb0;
-		background: #fff0e7;
-		color: #a1543f;
+		border: 1px solid var(--error-border);
+		background: var(--error-bg);
+		color: var(--error-text);
 		border-radius: 9px;
 		margin: 14px 0 0;
 	}

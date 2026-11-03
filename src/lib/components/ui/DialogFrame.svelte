@@ -68,7 +68,7 @@
 	.dialog-overlay {
 		position: fixed;
 		inset: 0;
-		background: #252b2059;
+		background: var(--overlay-bg);
 		backdrop-filter: blur(6px);
 		z-index: 60;
 		animation: fade-in 0.2s;
@@ -86,7 +86,7 @@
 		border: 1px solid var(--line);
 		padding: 28px;
 		border-radius: 22px;
-		box-shadow: 0 15px 70px #27321e33;
+		box-shadow: var(--shadow-dialog);
 		animation: dialog-in 0.25s var(--ease);
 	}
 	.dialog-top {
@@ -102,7 +102,7 @@
 		place-items: center;
 		background: var(--paper-deep);
 		border-radius: 13px;
-		color: #89966e;
+		color: var(--icon-muted);
 		border: 1px solid var(--line);
 	}
 	.dialog-title {
@@ -139,7 +139,7 @@
 			height: 4px;
 			width: 35px;
 			border-radius: 10px;
-			background: #d5dac6;
+			background: var(--border-strong);
 			margin: 0 auto 21px;
 		}
 		.dialog-top {

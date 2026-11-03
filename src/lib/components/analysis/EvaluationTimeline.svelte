@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AnalysisPresentation } from './analysis.types';
+	import { qualityTextColor } from './quality-colors';
 	import type { Move } from 'chess.js';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import { moveLabel } from '#lib/chess.js';
@@ -130,7 +131,7 @@
 					aria-pressed={ply === moment.ply}
 					onclick={() => onNavigate(moment.ply)}
 					><i class:black-side={moment.color === 'b'}></i>{moment.label}<b
-						style:color={moment.quality?.color}>{moment.quality?.symbol}</b
+						style:color={qualityTextColor(moment.quality.name)}>{moment.quality.symbol}</b
 					></button
 				>{/each}
 		</div>{/if}
@@ -162,7 +163,7 @@
 		letter-spacing: -0.2px;
 	}
 	.evaluation-title > div > span {
-		color: #aab09b;
+		color: var(--text-secondary);
 		font-size: 8px;
 		margin-left: 4px;
 	}
@@ -170,13 +171,13 @@
 		display: flex;
 		justify-content: space-between;
 		padding-top: 7px;
-		color: #b4b9a5;
+		color: var(--text-secondary);
 		font-size: 7px;
 	}
 	.replay-progress {
 		height: 100%;
-		background: linear-gradient(180deg, #a9bb8c44, #a9bb8c11);
-		border-right: 2px solid #97ab7b;
+		background: var(--chart-progress);
+		border-right: 2px solid var(--chart-progress-edge);
 	}
 	@media (max-width: 760px) {
 		.evaluation-title h3 {
@@ -262,30 +263,30 @@
 	}
 	.white-zone {
 		top: 0;
-		background: #f7f3e82e;
+		background: var(--evaluation-white-zone);
 	}
 	.black-zone {
 		bottom: 0;
-		background: #454c4010;
+		background: var(--evaluation-black-zone);
 	}
 	.advantage-zone > span {
 		position: absolute;
 		left: 4px;
 		font-size: 8px;
-		color: #8c9680;
+		color: var(--text-secondary);
 	}
 	.white-zone > span {
 		top: 3px;
 	}
 	.black-zone > span {
 		bottom: 3px;
-		color: #737b69;
+		color: var(--text-secondary);
 	}
 	.evaluation-zero {
 		position: absolute;
 		top: 50%;
 		width: 100%;
-		border-top: 1px dashed #aeb69c;
+		border-top: 1px dashed var(--chart-grid);
 		pointer-events: none;
 	}
 	.evaluation-zero > span {
@@ -306,7 +307,7 @@
 		cursor: ew-resize;
 	}
 	.evaluation-plot:has(> input:focus-visible) {
-		outline: 2px solid var(--violet);
+		outline: 2px solid var(--focus-color);
 		outline-offset: 4px;
 		border-radius: 4px;
 	}
@@ -315,7 +316,7 @@
 		top: 0;
 		bottom: 0;
 		width: 1px;
-		background: #c7ac43;
+		background: var(--chart-cursor);
 		pointer-events: none;
 		z-index: 1;
 		transition: left 0.15s;
@@ -327,7 +328,7 @@
 		width: 5px;
 		height: 5px;
 		background: var(--yellow);
-		border: 1px solid #bba33f;
+		border: 1px solid var(--chart-cursor);
 		border-radius: 50%;
 	}
 	.graph-moment {
@@ -401,17 +402,11 @@
 		border: 1px solid var(--line);
 	}
 	.critical-moves > button.current {
-		border-color: #c5b8ec;
-		background: color-mix(in srgb, var(--violet) 9%, var(--paper));
+		border-color: var(--selection-border);
+		background: var(--selection-bg);
 	}
 	.critical-moves b {
 		font-size: 9px;
-	}
-	:global(:root[data-theme='dark']) .black-zone {
-		background: #10140d36;
-	}
-	:global(:root[data-theme='dark']) .white-zone {
-		background: #e9efda0b;
 	}
 	.evaluation-card[data-presentation='sheet'] .evaluation-plot {
 		height: 170px;

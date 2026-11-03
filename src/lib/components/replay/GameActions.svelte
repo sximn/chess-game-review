@@ -70,7 +70,7 @@
 		background: var(--paper);
 		border: 1px solid var(--line);
 		border-radius: 11px;
-		box-shadow: 0 8px 32px #2b331626;
+		box-shadow: var(--shadow-popover);
 	}
 	.dropdown-menu [role='menuitem'] {
 		display: flex;

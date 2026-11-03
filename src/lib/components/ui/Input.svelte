@@ -48,7 +48,7 @@
 		border-radius: var(--input-radius, var(--_input-radius, 10px));
 		padding: 0 var(--input-padding, var(--_input-padding, 14px));
 		width: var(--input-shell-width, 100%);
-		color: var(--input-icon-color, #a1aa91);
+		color: var(--input-icon-color, var(--icon-muted));
 	}
 	.input-shell[data-variant='surface'] {
 		--_input-background: var(--paper);
@@ -75,7 +75,8 @@
 		color: var(--ink);
 	}
 	.input-control::placeholder {
-		color: #a6ad98;
+		color: var(--text-placeholder);
+		opacity: 1;
 	}
 	.input-shell:focus-within {
 		box-shadow: var(--ring);

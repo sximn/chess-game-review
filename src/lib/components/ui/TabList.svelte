@@ -134,14 +134,14 @@
 		padding: var(--tabs-trigger-padding, 2px 6px);
 		gap: 6px;
 		background: none;
-		color: #969b88;
+		color: var(--text-secondary);
 		border-radius: 8px;
 		font-size: 10px;
 		white-space: nowrap;
 	}
 	.tab-trigger[data-state='active'] {
 		background: transparent;
-		color: var(--tabs-active-color, #626b50);
+		color: var(--tabs-active-color, var(--active-text));
 		font-weight: 700;
 		box-shadow: none;
 	}
@@ -151,10 +151,8 @@
 		left: 0;
 		border-radius: 8px;
 		background: var(--tabs-indicator-background, var(--paper-deep));
-		border: 1px solid color-mix(in srgb, var(--sage) 26%, var(--line));
-		box-shadow:
-			inset 0 1px #ffffff80,
-			0 1px 3px #42370a0a;
+		border: 1px solid var(--active-border);
+		box-shadow: var(--shadow-tab);
 		transition: transform 0.3s var(--ease);
 		pointer-events: none;
 		z-index: -1;
@@ -218,14 +216,6 @@
 			min-height: 40px;
 			font-size: 12px;
 		}
-	}
-	:global(:root[data-theme='dark']) .tab-trigger[data-state='active'] {
-		color: var(--tabs-dark-active-color, #c6cdb5);
-	}
-	:global(:root[data-theme='dark'])
-		.tab-list[data-variant='segmented']
-		.tab-trigger[data-state='active'] {
-		color: var(--ink);
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.tab-indicator {

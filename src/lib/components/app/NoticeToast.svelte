@@ -16,17 +16,17 @@
 		align-items: center;
 		gap: 8px;
 		max-width: calc(100vw - 32px);
-		background: #37432e;
-		color: #f9f8e9;
-		border: 1px solid #506444;
-		box-shadow: 0 8px 24px #26332030;
+		background: var(--notice-bg);
+		color: var(--notice-text);
+		border: 1px solid var(--notice-border);
+		box-shadow: var(--shadow-notice);
 		border-radius: 12px;
 		padding: 14px 20px;
 		font-size: 11px;
 		animation: toast-in 0.3s var(--ease);
 	}
 	.toast > :global(svg) {
-		color: #d6e4ae;
+		color: var(--notice-icon);
 	}
 	@media (max-width: 1200px) {
 		.toast {

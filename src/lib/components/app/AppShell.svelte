@@ -111,11 +111,11 @@
 			0 3px 6px #4f420a0c;
 	}
 	.topbar-avatar {
-		background: #f0e9da;
-		color: #7a765c;
+		background: var(--avatar-bg);
+		color: var(--avatar-text);
 		display: grid;
 		place-items: center;
-		border: 1px solid #ded8c8;
+		border: 1px solid var(--avatar-border);
 		font-size: 12px;
 		font-weight: 700;
 	}
@@ -137,17 +137,17 @@
 		align-items: center;
 		gap: 12px;
 		font-size: 10px;
-		color: #9a9b8d;
+		color: var(--text-secondary);
 	}
 	.breadcrumb > :global(svg) {
-		color: #919b80;
+		color: var(--icon-muted);
 	}
 	.breadcrumb strong {
 		font-weight: 550;
-		color: #666d5c;
+		color: var(--ink);
 	}
 	.breadcrumb-slash {
-		color: #c6c6b7;
+		color: var(--icon-muted);
 		margin: 0 2px;
 	}
 	.topbar-right {
@@ -160,12 +160,12 @@
 		align-items: center;
 		gap: 7px;
 		font-size: 9px;
-		color: #999d8e;
+		color: var(--text-secondary);
 	}
 	.local-status > span {
 		height: 5px;
 		width: 5px;
-		background: #98ac80;
+		background: var(--text-action);
 		border-radius: 50%;
 	}
 	.topbar-avatar {
@@ -189,7 +189,7 @@
 		justify-content: space-between;
 		gap: 15px;
 		font-size: 7px;
-		color: #b2b6a3;
+		color: var(--text-secondary);
 	}
 	.app-footer > span {
 		display: flex;
@@ -198,7 +198,7 @@
 	}
 	@media (hover: hover) {
 		.topbar-avatar:hover {
-			box-shadow: 0 0 0 3px #d9dfcc70;
+			box-shadow: var(--active-ring);
 		}
 	}
 	@media (min-width: 1500px) {
@@ -290,11 +290,6 @@
 		.app-footer > span:last-child {
 			display: none;
 		}
-	}
-	:global(:root[data-theme='dark']) .topbar-avatar {
-		background: #3b4233;
-		border-color: #505943;
-		color: #c6c9ab;
 	}
 	@media (min-width: 1001px) {
 		main,

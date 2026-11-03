@@ -69,7 +69,7 @@
 	}
 	.light-player {
 		background: var(--paper);
-		color: #9b9f86;
+		color: var(--text-secondary);
 		border-color: var(--line);
 	}
 	.player-details {
@@ -91,8 +91,8 @@
 		font-size: 6px;
 		letter-spacing: 0.8px;
 		font-weight: 700;
-		color: #88a074;
-		background: #eaf0df;
+		color: var(--success-text);
+		background: var(--success-bg);
 		border-radius: 3px;
 		padding: 3px 4px;
 		margin-left: 6px;
@@ -118,12 +118,5 @@
 		.player-details strong {
 			font-size: 11px;
 		}
-	}
-	:global(:root[data-theme='dark']) .player-winner {
-		background: #3b4e2c;
-		color: #b1c99b;
-	}
-	:global(:root[data-theme='dark']) .light-player {
-		color: #c1caac;
 	}
 </style>

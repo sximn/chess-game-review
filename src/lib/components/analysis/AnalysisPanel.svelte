@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { qualityTextColor } from './quality-colors';
 	import { Tabs } from 'bits-ui';
 	import Card from '#lib/components/ui/Card.svelte';
 	import AnalysisTabs from './AnalysisTabs.svelte';
@@ -133,7 +134,9 @@
 
 					{#if quality}
 						<div class="played-quality">
-							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong>
+							<strong style:color={qualityTextColor(quality.name)}
+								>{quality.symbol} {quality.name}</strong
+							>
 							{#if analysisDetail}<span class="analysis-detail">
 									{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
 										.map((depth) => depth ?? '—')

@@ -21,22 +21,22 @@
 		height: 25px;
 		border-radius: 20px;
 		flex-shrink: 0;
-		background: #dddccc;
-		border: 1px solid #cfceb9;
+		background: var(--control-bg);
+		border: 1px solid var(--control-border);
 		padding: 2px;
-		box-shadow: inset 0 1px 3px #0001;
+		box-shadow: var(--shadow-inset);
 	}
 	.switch[data-state='checked'] {
-		background: #9cb885;
-		border-color: #8ca775;
+		background: var(--control-checked-bg);
+		border-color: var(--control-checked-border);
 	}
 	.switch-thumb {
 		display: block;
 		width: 19px;
 		height: 19px;
 		border-radius: 50%;
-		background: linear-gradient(#fff, #f5f1e7);
-		box-shadow: 0 1px 3px #0003;
+		background: var(--control-thumb);
+		box-shadow: var(--shadow-thumb);
 		transition: transform 0.2s var(--ease);
 	}
 	.switch-thumb[data-state='checked'] {

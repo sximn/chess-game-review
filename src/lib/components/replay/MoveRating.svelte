@@ -2,6 +2,7 @@
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
 	import Card from '#lib/components/ui/Card.svelte';
+	import { qualityTextColor } from '#lib/components/analysis/quality-colors.js';
 
 	let {
 		quality,
@@ -46,7 +47,7 @@
 	class="move-rating"
 	variant="paper"
 	aria-label="Current move rating"
-	style={`--card-radius:11px;--rating-color:${!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'}`}
+	style={`--card-radius:11px;--rating-color:${!exploring && ply > 0 && quality ? quality.color : 'var(--muted)'};--rating-text:${!exploring && ply > 0 && quality ? qualityTextColor(quality.name) : 'var(--muted)'}`}
 >
 	<div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
 		{label}. {detail}
@@ -86,7 +87,7 @@
 		height: 28px;
 		border-radius: 8px;
 		background: color-mix(in srgb, var(--rating-color) 12%, var(--paper));
-		color: var(--rating-color);
+		color: var(--rating-text);
 		font-size: 15px;
 		font-weight: 750;
 	}
@@ -100,7 +101,7 @@
 		display: block;
 		font-size: 12px;
 		line-height: 1.2;
-		color: var(--rating-color);
+		color: var(--rating-text);
 	}
 	.rating-copy > span {
 		font-size: 12px;

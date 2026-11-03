@@ -45,6 +45,7 @@
 		font-family: ui-monospace, monospace;
 	}
 	.textarea::placeholder {
-		color: #a6ad98;
+		color: var(--text-placeholder);
+		opacity: 1;
 	}
 </style>

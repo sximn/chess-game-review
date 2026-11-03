@@ -228,10 +228,10 @@
 		align-items: center;
 		gap: 6px;
 		padding: 4px 8px;
-		border: 1px solid color-mix(in srgb, var(--violet) 45%, var(--paper));
+		border: 1px solid var(--selection-border);
 		border-radius: 20px;
 		background: var(--paper);
-		color: var(--violet);
+		color: var(--text-accent);
 
 		font-size: 10px;
 		font-weight: 650;

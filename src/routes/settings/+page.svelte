@@ -145,8 +145,8 @@
 		padding: 5px;
 	}
 	.theme-options > button.selected {
-		border-color: #9cae7d;
-		box-shadow: 0 0 0 2px #a7b88926;
+		border-color: var(--active-border);
+		box-shadow: var(--active-ring);
 	}
 	.theme-preview {
 		height: 110px;
@@ -203,7 +203,7 @@
 		justify-content: space-between;
 	}
 	.theme-options > button > span > :global(svg) {
-		color: #8a9e6e;
+		color: var(--active-text);
 	}
 	.settings-divider {
 		height: 1px;

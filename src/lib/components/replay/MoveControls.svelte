@@ -326,7 +326,7 @@
 		--button-width: auto;
 		--button-height: 48px;
 		--button-background: var(--paper-deep);
-		--button-color: #7d8d69;
+		--button-color: var(--text-action);
 		--button-hover-background: var(--surface-green);
 	}
 	.move-carousel {
@@ -365,15 +365,18 @@
 		scroll-snap-align: center;
 	}
 	.move-chip > span {
-		color: #a1aa91;
+		color: var(--text-secondary);
 		font-size: 9px;
 		font-weight: 450;
 	}
 	.move-chip.current {
-		background: var(--surface-green);
-		color: #637a4f;
-		border-color: #cdd9bc;
-		box-shadow: inset 0 1px #fff7;
+		background: var(--active-bg);
+		color: var(--active-text);
+		border-color: var(--active-border);
+		box-shadow: var(--highlight);
+	}
+	.move-chip.current > span {
+		color: inherit;
 	}
 	.move-controls :global(.next-move) {
 		--next-icon-width: 22px;
@@ -415,13 +418,13 @@
 	.playback-controls > :global(.replay-icon) {
 		--button-width: 32px;
 		--button-height: 32px;
-		--button-color: #89957a;
-		--button-hover-color: #89957a;
+		--button-color: var(--icon-muted);
+		--button-hover-color: var(--icon-muted);
 	}
 	.playback-controls :global(.autoplay-button) {
 		--button-background: var(--paper-deep);
-		--button-color: #71845c;
-		--button-hover-color: #71845c;
+		--button-color: var(--text-action);
+		--button-hover-color: var(--text-action);
 	}
 	.replay-actions > :global(.flip-button) {
 		--button-width: 34px;
@@ -434,13 +437,8 @@
 		--button-font-size: 11px;
 		--button-gap: 6px;
 	}
-	:global(:root[data-theme='dark']) .move-chip.current {
-		background: #3b4a2f;
-		border-color: #546744;
-		color: #c0d0a9;
-	}
 	@media (hover: hover) {
-		.move-chip:hover {
+		.move-chip:hover:not(.current) {
 			background: var(--paper-deep);
 			color: var(--ink);
 		}
