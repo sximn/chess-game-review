@@ -83,7 +83,7 @@
 				<path
 					d={curve}
 					fill="none"
-					stroke="#6d8a58"
+					stroke="var(--chart-line-white)"
 					stroke-width="2.4"
 					vector-effect="non-scaling-stroke"
 					clip-path="url(#white-evaluation)"
@@ -91,7 +91,7 @@
 				<path
 					d={curve}
 					fill="none"
-					stroke="#454c40"
+					stroke="var(--chart-line-black)"
 					stroke-width="2.4"
 					vector-effect="non-scaling-stroke"
 					clip-path="url(#black-evaluation)"
@@ -220,25 +220,25 @@
 		width: 8px;
 		height: 8px;
 		border-radius: var(--radius-round);
-		background: #fffbee;
-		border: 1px solid #abae9c;
+		background: var(--chess-side-light);
+		border: 1px solid var(--chess-side-border);
 		flex-shrink: 0;
 	}
 	.critical-moves i {
 		width: 8px;
 		height: 8px;
 		border-radius: var(--radius-round);
-		background: #fffbee;
-		border: 1px solid #abae9c;
+		background: var(--chess-side-light);
+		border: 1px solid var(--chess-side-border);
 		flex-shrink: 0;
 	}
 	.evaluation-sides .black-side {
-		background: #454c40;
-		border-color: #454c40;
+		background: var(--chess-side-dark);
+		border-color: var(--chess-side-dark);
 	}
 	.critical-moves .black-side {
-		background: #454c40;
-		border-color: #454c40;
+		background: var(--chess-side-dark);
+		border-color: var(--chess-side-dark);
 	}
 	.evaluation-plot {
 		height: 125px;
@@ -347,7 +347,7 @@
 		display: block;
 		width: 10px;
 		height: 10px;
-		background: #fffbee;
+		background: var(--chess-side-light);
 		border: 2px solid var(--moment-color);
 		border-radius: var(--radius-round);
 		box-shadow: 0 1px 2px #0002;
@@ -356,7 +356,7 @@
 			box-shadow 0.2s;
 	}
 	.graph-moment.black-moment > span {
-		background: #454c40;
+		background: var(--chess-side-dark);
 	}
 	.graph-moment.selected > span {
 		transform: scale(1.35);

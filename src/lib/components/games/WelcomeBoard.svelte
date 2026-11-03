@@ -31,7 +31,7 @@
 		border: 1px solid var(--line);
 		border-radius: var(--radius-lg);
 		background: var(--paper);
-		box-shadow: 0 12px 32px -20px #26321d55;
+		box-shadow: 0 12px 32px -20px #00000033;
 		overflow: hidden;
 	}
 	.square {

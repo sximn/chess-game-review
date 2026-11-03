@@ -58,14 +58,14 @@
 		height: 23px;
 		width: 23px;
 		border-radius: var(--radius-xs);
-		border: 1px solid #394337;
+		border: 1px solid var(--chess-side-dark);
 		box-shadow:
 			inset 0 1px #fff1,
 			0 2px 3px #0000000a;
 	}
 	.dark-player {
-		background: #3b4436;
-		color: #e5e7d5;
+		background: var(--chess-side-dark);
+		color: var(--chess-side-light);
 	}
 	.light-player {
 		background: var(--paper);
@@ -101,13 +101,13 @@
 		width: 8px;
 		height: 8px;
 		border-radius: var(--radius-round);
-		background: #4c5145;
-		border: 1px solid #313d32;
+		background: var(--chess-side-dark);
+		border: 1px solid var(--chess-side-border);
 		margin: 0 6px 0 10px;
 	}
 	.piece-color.white-piece {
-		background: #fffcf0;
-		border-color: #cccdb9;
+		background: var(--chess-side-light);
+		border-color: var(--chess-side-border);
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
 		.player-winner {

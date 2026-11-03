@@ -158,14 +158,14 @@
 		gap: 8px;
 	}
 	.light-preview {
-		background: #f3efe2;
+		background: #f3f3f3;
 	}
 	.dark-preview {
-		background: #2a3025;
+		background: #242424;
 	}
 	.theme-preview > span {
 		height: 7px;
-		background: #dedfcb;
+		background: #d9d9d9;
 		border-radius: 3px;
 		width: 54%;
 		display: block;
@@ -173,27 +173,27 @@
 	.theme-preview > span:nth-child(2) {
 		width: 70%;
 		height: 25px;
-		background: #c1ceaa;
+		background: #c9c9c9;
 		margin-top: 3px;
 	}
 	.theme-preview > span:nth-child(3) {
 		width: 40%;
-		background: #e4cf80;
+		background: #e5cb70;
 	}
 	.dark-preview > span {
-		background: #414a35;
+		background: #454545;
 	}
 	.dark-preview > span:nth-child(2) {
-		background: #798b62;
+		background: #686868;
 	}
 	.dark-preview > span:nth-child(3) {
-		background: #ad9b58;
+		background: #a58e3b;
 	}
 	.theme-preview > :global(svg) {
 		position: absolute;
 		right: 15px;
 		bottom: 15px;
-		color: #a79c68;
+		color: #8a773d;
 	}
 	.theme-options > button > span {
 		font-size: var(--text-sm);

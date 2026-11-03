@@ -50,7 +50,7 @@
 		overflow: var(--card-overflow, var(--_card-overflow, visible));
 	}
 	.card[data-variant='soft'] {
-		--_card-background: var(--surface-green);
+		--_card-background: var(--surface-subtle);
 	}
 	.card.shadow {
 		--_card-shadow: var(--shadow);

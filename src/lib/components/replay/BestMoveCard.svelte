@@ -61,7 +61,7 @@
 		text-align: left;
 	}
 	.best-move-trigger[aria-pressed='true'] {
-		background: var(--active-bg);
+		background: rgb(from var(--muted) r g b / 5%);
 	}
 	.rating-symbol {
 		flex-shrink: 0;

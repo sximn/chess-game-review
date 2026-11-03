@@ -95,8 +95,8 @@
 	}
 	@media (hover: hover) {
 		.library-game:hover {
-			background: var(--surface-green);
-			border-color: var(--sage);
+			background: var(--surface-subtle);
+			border-color: var(--accent-strong);
 		}
 	}
 	@media (max-width: 760px) {

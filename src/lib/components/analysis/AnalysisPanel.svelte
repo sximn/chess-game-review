@@ -253,14 +253,14 @@
 		width: 100%;
 		height: 5px;
 		margin: 10px 0;
-		accent-color: var(--sage);
+		accent-color: var(--accent-strong);
 	}
 	.engine-status p {
 		line-height: var(--leading-body);
 		margin: 10px 0;
 	}
 	.review-action {
-		background: var(--surface-green);
+		background: var(--surface-subtle);
 		border: 1px solid var(--line);
 		padding: 9px 12px;
 		min-height: 36px;

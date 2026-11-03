@@ -2,6 +2,24 @@ import { test, expect, type Locator } from '@playwright/test';
 
 test.use({ reducedMotion: 'reduce' });
 
+async function expectNeutral(locator: Locator, property = 'background-color') {
+	await expect
+		.poll(
+			() =>
+				locator.evaluate((element, property) => {
+					const canvas = document.createElement('canvas');
+					canvas.width = canvas.height = 1;
+					const context = canvas.getContext('2d')!;
+					context.fillStyle = getComputedStyle(element).getPropertyValue(property);
+					context.fillRect(0, 0, 1, 1);
+					const channels = [...context.getImageData(0, 0, 1, 1).data].slice(0, 3);
+					return Math.max(...channels) - Math.min(...channels);
+				}, property),
+			`${property} should be neutral gray`
+		)
+		.toBe(0);
+}
+
 // Measure rendered colors, including translucent surfaces and browser color-mix()
 // serialization. A canvas normalizes those colors to sRGB in all three engines.
 async function textContrast(text: Locator, surface = text, pseudo?: string) {
@@ -65,14 +83,27 @@ for (const theme of ['light', 'dark'] as const) {
 		}, theme);
 		await page.goto('/settings');
 		await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
+		for (const selector of ['body', '.settings-card', '.topbar-avatar']) {
+			await expectNeutral(page.locator(selector));
+		}
+		await expectNeutral(page.locator('.app-footer'), 'color');
+		const toggle = page.getByRole('switch', { name: 'Board coordinates', exact: true });
+		await expect(toggle).toHaveCSS('background-color', 'rgb(255, 216, 77)');
+		await toggle.click();
+		await expectNeutral(toggle);
+		await toggle.click();
+		await expect(page.locator('.preview-square').first()).toHaveCSS(
+			'background-color',
+			theme === 'dark' ? 'rgb(210, 204, 176)' : 'rgb(237, 233, 211)'
+		);
 		const activeNav = page.locator('.main-nav a.active');
 		expect(await textContrast(activeNav)).toBeGreaterThanOrEqual(4.5);
 		expect(await textContrast(page.locator('.app-footer'))).toBeGreaterThanOrEqual(4.5);
 		await expect(page.locator('.light-preview')).toHaveCSS(
 			'background-color',
-			'rgb(243, 239, 226)'
+			'rgb(243, 243, 243)'
 		);
-		await expect(page.locator('.dark-preview')).toHaveCSS('background-color', 'rgb(42, 48, 37)');
+		await expect(page.locator('.dark-preview')).toHaveCSS('background-color', 'rgb(36, 36, 36)');
 		await expect(page.locator('.brand-mark').first()).toHaveCSS(
 			'background-color',
 			'rgb(21, 20, 18)'
@@ -143,12 +174,24 @@ for (const theme of ['light', 'dark'] as const) {
 		await page.screenshot({
 			path: `artifacts/app-verification/semantic-review-${theme}-${info.project.name}.png`
 		});
+		await page.getByRole('tab', { name: 'Evaluation', exact: true }).click();
+		const curves = page.locator('.evaluation-plot svg path');
+		await expect(curves).toHaveCount(2);
+		await expectNeutral(curves.nth(0), 'stroke');
+		await expectNeutral(curves.nth(1), 'stroke');
+		expect(
+			await textContrast(page.locator('.chart-axis'), page.locator('.evaluation-card'))
+		).toBeGreaterThanOrEqual(4.5);
+		await page.screenshot({
+			path: `artifacts/app-verification/semantic-evaluation-${theme}-${info.project.name}.png`
+		});
 		await page
 			.getByRole('navigation', { name: 'Main navigation' })
 			.getByRole('link', { name: 'My games', exact: true })
 			.click();
 		const search = page.getByRole('textbox', { name: 'Search games', exact: true });
 		await expect(search).toBeVisible();
+		await expectNeutral(page.locator('.input-shell'));
 		expect(
 			await textContrast(search, page.locator('.input-shell'), '::placeholder')
 		).toBeGreaterThanOrEqual(4.5);

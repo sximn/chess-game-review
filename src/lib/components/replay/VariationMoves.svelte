@@ -67,7 +67,7 @@
 
 <style>
 	.variation-line {
-		border-left: 2px solid var(--sage);
+		border-left: 2px solid var(--accent-strong);
 		padding: 0 0 0 10px;
 		min-width: 0;
 	}
@@ -133,7 +133,7 @@
 	}
 	@media (hover: hover) {
 		.variation-step:hover:not([aria-current='step']) {
-			background: var(--surface-green);
+			background: var(--surface-subtle);
 		}
 	}
 </style>

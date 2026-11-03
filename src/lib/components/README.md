@@ -45,10 +45,14 @@ Components should consume semantic roles instead of adding their own theme selec
 
 - Use `--ink` for primary text, `--text-secondary` for supporting text,
   `--text-placeholder` for placeholders, and `--icon-muted` for secondary icons.
-- Use `--text-action` and `--text-accent` for green and purple text. Palette hues
-  such as `--sage` and `--violet` are accents, not general text colors.
+- Use `--text-action` for ordinary actions and `--text-accent` for special purple
+  text. `--accent` is the primary yellow; `--accent-strong` is its higher-contrast
+  variant for thin indicators and progress. Palette hues are not general text colors.
 - Use `--selection-bg/text/border` for purple selections and
-  `--active-bg/text/border` for green active controls. Keep the state visible on hover.
+  `--active-bg/text/border` for primary active controls. Keep the state visible on hover.
+- Use `--surface-subtle` for neutral secondary surfaces and hover treatments.
+  App surfaces, secondary text, borders, and shadows are neutral grays in both
+  themes; yellow identifies primary actions and violet distinguishes special states.
 - Use the `--success-*`, `--error-*`, and `--notice-*` families for feedback.
 - Use `--overlay-bg` and the shared `--shadow-*` roles for floating UI.
 
@@ -56,9 +60,11 @@ Public component properties such as `--button-color` can override these defaults
 but their values should reference semantic tokens. Check text contrast against
 the actual surface in both themes, including selected and tinted backgrounds.
 
-Brand artwork, the light/dark preference preview illustrations, chess squares,
-piece-side indicators, and move-quality markers deliberately keep their own
-palette. Preserve those colors. For move-quality **text**, use
+Brand artwork, chess squares, and move-quality markers deliberately keep their
+own palette. Preserve those colors. Theme previews depict the current neutral
+light/dark palettes and remain fixed regardless of the selected theme. Neutral
+piece-side indicators use `--chess-side-*`; evaluation lines use `--chart-line-*`
+so each stays legible against its theme. For move-quality **text**, use
 `analysis/quality-colors.ts`; its semantic variants keep the hue readable without
 changing classification data or graph marker colors. Add a semantic role when a
 new shared state needs one, rather than reusing a similarly colored token with a

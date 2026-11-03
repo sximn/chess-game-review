@@ -105,7 +105,7 @@
 		justify-content: center;
 		background: linear-gradient(145deg, #ffe986, #ffd84d);
 		border-radius: 12px;
-		color: #32352a;
+		color: var(--text-on-primary);
 		border: 1px solid #e4bf43;
 		box-shadow:
 			inset 0 1px #fff8,

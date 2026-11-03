@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
 	appId: 'com.simonukus.upapawn',
 	appName: 'Up a Pawn',
 	webDir: 'build',
-	backgroundColor: '#f5f3ed',
+	backgroundColor: '#f5f5f5',
 	plugins: {
 		SystemBars: { insetsHandling: 'native' },
 		Keyboard: { resize: KeyboardResize.Native, resizeOnFullScreen: true }
