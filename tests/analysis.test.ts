@@ -39,7 +39,7 @@ function result(rootMove = 'e2e4', value = 30, depth: number | null = 6): Analys
 	};
 }
 test('classification compares played roots, preserves score perspective and rejects unknown horizons', () => {
-	assert.equal(classify(result(), result('d2d4', 25), 'w', 'd2d4', 0).name, 'Good');
+	assert.equal(classify(result(), result('d2d4', 25), 'w', 'd2d4', 0).name, 'Excellent');
 	assert.equal(classify(result('e7e5', -200), result('d7d5', 100), 'b', 'd7d5', 0).name, 'Blunder');
 	assert.equal(classify(result(), result('d2d4', 40), 'w', 'd2d4', 0).noise, true);
 	for (const depth of [12, null]) {

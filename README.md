@@ -4,7 +4,7 @@ A chess game review app for web, Android, and iOS, with on-device engine analysi
 
 Import a PGN, review move classifications and legal alternatives, and track evaluations throughout the game. Games and analysis stay on your device.
 
-> **Status: early / pre-release.** Review budgets and classification thresholds are preliminary, and native behavior has not been validated on physical devices. See [Known limitations](#known-limitations).
+> **Status: early / pre-release.** Review budgets and the expected-points model are preliminary, and native behavior has not been validated on physical devices. See [Known limitations](#known-limitations).
 
 <!-- TODO: screenshot or GIF of the review screen:
 ![Review screen](docs/screenshot-review.png)
@@ -103,6 +103,18 @@ Analysis prioritizes the selected position, then reviews the full game and refin
 
 The engine provider is configured in `src/lib/engine/provider.ts` through `createFrozenight()`. Vite handles the SDK's worker, WASM, notices, and metadata in development and production. App developers do not need Rust, Docker, or a separate asset-copy step.
 
+Move classifications follow [Chess.com's published expected-points bands](https://support.chess.com/en/articles/8572705-how-are-moves-classified-what-is-a-blunder-or-brilliant-etc): Best at zero loss, Excellent below 0.02, Good from 0.02, Inaccuracy from 0.05, Mistake from 0.10, and Blunder from 0.20. Lower bounds are inclusive. The engine's top move and exact score ties are Best; favorable search noise remains Excellent and triggers refinement.
+
+Chess.com does not specify its fitted expected-points formula in that article. Our local estimate is `1 / (1 + exp(-cp / scale))`, from the mover's perspective, with `scale = 400 - (rating - 400) / 13`. Ratings come from each player's `WhiteElo` / `BlackElo` PGN header, clamped to 400–3000, with 1200 for missing or invalid ratings. These coefficients are provisional, not calibrated to Chess.com's data. Forced winning/losing mates map to 1/0; an ambiguous mate-zero score remains Uncertain. Labels require completed, exact, same-position comparisons with depths within two plies.
+
+Special labels use conservative local heuristics:
+
+- **Great:** the best move is the only analyzed move that avoids a losing position or preserves a newly attainable win, based on the top two lines. Forced moves are excluded.
+- **Brilliant:** a best or nearly best non-pawn sacrifice is accepted in a legal continuation, leaves a net material investment after six plies (or an earlier game end), and keeps at least 0.45 expected points. The second-best move must not already be overwhelmingly winning. Pawn sacrifices and ordinary exchanges are excluded; shorter unfinished lines and sacrifices not accepted immediately may go unrecognized.
+- **Miss:** the preceding opponent error creates a winning opportunity and the reply drops to at most 0.55 expected points. A previously existing win does not qualify. Refining the opponent's move also updates the reply's label.
+
+Winning and overwhelmingly winning bands depend on rating (`0.75 + (rating - 400) / 26000` and `0.90 + (rating - 400) / 52000`); beginner sacrifices require one pawn of net investment, otherwise two. These definitions align with the published approach but cannot reproduce Chess.com's private model exactly. Technical review details show expected-points loss and the rating used alongside measured centipawn loss.
+
 Analysis results are cached in IndexedDB. Cache keys include position history, engine identity, settings, review budget, and classification policy. Cached results are validated before reuse.
 
 The web service worker caches the app shell and engine assets. Browser tests verify that another game can complete after an offline reload. Capacitor ships these assets inside the app.
@@ -134,7 +146,7 @@ Native integration lives in `src/lib/native.ts`:
 
 ## Known limitations
 
-- Review quality and device performance are still being validated. Review budgets and classification thresholds are preliminary.
+- Review quality and device performance are still being validated. Review budgets and the expected-points model are preliminary.
 - Physical-device latency, memory use, energy consumption, and thermal behavior need further testing.
 - iOS finger-following swipe-back is not implemented.
 - Keyboard behavior, cutouts, rotation, system back, and export/download behavior still need device validation.

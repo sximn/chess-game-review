@@ -74,7 +74,7 @@
 	--active-bg: var(--paper-deep);
 	--active-text: #453600;
 	--active-border-primitive: #ccad3f;
-	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line)); 
+	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line));
 	--active-shadow: var(--shadow-tab);
 	--active-ring: 0 0 0 2px #ffd84d59;
 	--success-bg: var(--surface-subtle);
@@ -114,6 +114,10 @@
 	   Marker colors and classification data retain the chess palette. */
 	--quality-best-text: #466532;
 	--quality-good-text: var(--quality-best-text);
+	--quality-excellent-text: var(--quality-best-text);
+	--quality-brilliant-text: #176060;
+	--quality-great-text: #315e88;
+	--quality-miss-text: var(--quality-mistake-text);
 	--quality-inaccuracy-text: #796000;
 	--quality-mistake-text: #99500d;
 	--quality-blunder-text: #b62c2a;
@@ -164,7 +168,7 @@
 	--active-bg: var(--paper-deep);
 	--active-text: var(--yellow-hi);
 	--active-border-primitive: #8c772a;
-	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line)); 
+	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line));
 	--active-shadow: var(--shadow-tab);
 
 	--active-ring: 0 0 0 1px #ffd84d59;
@@ -189,6 +193,8 @@
 	--evaluation-white-zone: #ffffff0b;
 	--evaluation-black-zone: #00000036;
 	--quality-best-text: #b0ce99;
+	--quality-brilliant-text: #7ad8d8;
+	--quality-great-text: #a4c8ee;
 	--quality-inaccuracy-text: #e1c35e;
 	--quality-mistake-text: #efb17a;
 	--quality-blunder-text: #f39c98;
