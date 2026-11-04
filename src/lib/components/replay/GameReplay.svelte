@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { moveLabel, type Timeline } from '#lib/chess.js';
+	import { type Timeline } from '#lib/chess.js';
 	import { app } from '#lib/state.svelte.js';
 	import Board from './Board.svelte';
 	import PlayerRow from './PlayerRow.svelte';
 	import MoveControls from './MoveControls.svelte';
-	import type { MoveQuality } from '#lib/engine/classification.js';
+	import type { ClassificationMarkerProps, MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
 	import { GitBranch } from 'lucide-svelte';
 	import { continuation, type Exploration } from '#lib/engine/presentation.js';
@@ -17,7 +17,7 @@
 		compact,
 		evaluation,
 		evaluationLabel,
-		marker,
+		markerProps,
 		quality,
 		reviewPhase,
 		branch,
@@ -39,7 +39,7 @@
 		compact: boolean;
 		evaluation: number | null;
 		evaluationLabel: string;
-		marker: string;
+		markerProps: ClassificationMarkerProps | null;
 		quality?: MoveQuality;
 		reviewPhase: ReviewState['phase'];
 		branch: Exploration | null;
@@ -136,7 +136,7 @@
 					lastMove={previewing ? undefined : boardTimeline.moves[boardPly - 1]}
 					evaluation={branch ? null : previewing ? beforeEvaluation : evaluation}
 					evaluationLabel={branch ? '—' : previewing ? beforeEvaluationLabel : evaluationLabel}
-					marker={previewing || branch ? '' : marker}
+					markerProps={previewing || branch ? null : markerProps}
 					suggestedMove={previewing ? suggestion : undefined}
 				/>
 			</div>

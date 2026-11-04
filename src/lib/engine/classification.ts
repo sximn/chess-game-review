@@ -34,6 +34,11 @@ export type MoveQuality = {
 	comparedDepths: [number | null, number | null];
 };
 
+export type ClassificationMarkerProps = {
+	marker: string;
+	background: string;
+}
+
 export type ClassificationContext = {
 	rating?: number | string;
 	fen?: string;

@@ -191,6 +191,7 @@
 	import type { TransitionConfig } from 'svelte/transition';
 	import { app } from '#lib/state.svelte.js';
 	import { pieceSrc } from '#lib/pieces.js';
+	import type { ClassificationMarkerProps } from '#lib/engine/classification.js';
 
 	let {
 		fen,
@@ -198,7 +199,7 @@
 		lastMove,
 		suggestedMove,
 		evaluation = null,
-		marker = '',
+		markerProps,
 		evaluationLabel = '—',
 		movable = 'none',
 		animationMs = 200,
@@ -209,7 +210,7 @@
 		lastMove?: Move;
 		suggestedMove?: Move;
 		evaluation?: number | null;
-		marker?: string;
+		markerProps: ClassificationMarkerProps | null;
 		evaluationLabel?: string;
 		/** Which side the user may move. 'none' (default) makes the board read-only. */
 		movable?: MovableColor;
@@ -869,8 +870,13 @@
 						/>
 					{/if}
 
-					{#if marker && s.square === lastMove?.to}
-						<span class="board-marker">{marker}</span>
+					{#if markerProps && s.square === lastMove?.to}
+						<span
+							class="board-marker"
+							style={`background:${markerProps.background}`}
+						>
+							{markerProps.marker}
+						</span>
 					{/if}
 				</div>
 			{/each}
@@ -1169,7 +1175,7 @@
 		top: 0;
 		z-index: 3;
 		border-radius: 50%;
-		background: var(--violet);
+		/* background: var(--violet); */
 		border: 1.5px solid #f9fae9;
 		color: #fff;
 		display: grid;
@@ -1182,7 +1188,7 @@
 		box-shadow: 0 2px 4px #0002;
 		pointer-events: none;
 		/* pops in once the piece has (almost) arrived */
-		animation: marker-in 160ms ease-out calc(var(--move-ms, 0ms) * 0.8) both;
+		animation: marker-in 90ms ease-out calc(var(--move-ms, 0ms) * 0.8) both;
 	}
 	@keyframes marker-in {
 		from {
