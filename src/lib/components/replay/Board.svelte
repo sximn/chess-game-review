@@ -50,6 +50,11 @@
 		p: 'pawn'
 	};
 
+	const EVAL_RAIL_STYLES = {
+		TOP: "top: 8px;color:white;",
+		BOTTOM: "bottom:8px;color:black;",
+	};
+
 	const DRAG_THRESHOLD_MOUSE = 0; //3 px
 	const DRAG_THRESHOLD_TOUCH = 0; //8 px - fingers jitter more than mice
 	/** On touch, the dragged piece floats this many squares above the fingertip so it stays visible. */
@@ -727,6 +732,23 @@
 		kbSquare = squareAt(Math.min(7, Math.max(0, col)), Math.min(7, Math.max(0, row)));
 	}
 
+	/**
+	 * Adjust height for readability.
+	 * Preserve tiny hieght on massive advantage but zero height on mate in X.
+	 */
+	function adjustEvalHeight(evaluation: number | null) {
+		if (evaluation === null) {
+			return 50;
+		}
+
+		// for mate in X, the eval is infinity or negative infinity
+		if (!Number.isFinite(evaluation)) {
+			return evaluation < 0 ? 0 : 100;
+		}
+
+		return 50 + 48 * Math.tanh(evaluation / 3);
+	}
+
 	// Keyboard users: move focus into the promotion picker when it opens
 	$effect(() => {
 		if (promotion && usingKeyboard) {
@@ -752,9 +774,13 @@
 		>
 			<div
 				class="eval-white"
-				style:height={`${evaluation === null ? 50 : 50 + 46 * Math.tanh(evaluation / 3)}%`}
+				style:height={`${adjustEvalHeight(evaluation)}%`}
 			></div>
-			<span>{evaluation === null ? '-' : evaluationLabel}</span>
+			<span
+				style={evaluation && evaluation > 0 ? EVAL_RAIL_STYLES.BOTTOM : EVAL_RAIL_STYLES.TOP}
+			>
+				{evaluation === null ? '-' : evaluationLabel}
+			</span>
 		</div>
 	{/if}
 
@@ -966,21 +992,25 @@
 	.board-with-eval {
 		display: flex;
 		align-items: stretch;
-		gap: 4px;
 		width: 100%;
 		position: relative;
 	}
+	@media (min-width: 760px) {
+		.board-with-eval {
+			gap: 4px;
+		}
+		
+	}
 	.evaluation-rail {
-		width: 12px;
+		width: 14px;
 		flex-shrink: 0;
-		border-radius: 4px;
-		background: #414b38;
+		background: #2e2e2e;
 		position: relative;
 		overflow: hidden;
 		border: 1px solid #626c502a;
 	}
 	.eval-white {
-		background: var(--board-light);
+		background: #f6f4eb;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
@@ -988,14 +1018,15 @@
 	}
 	.evaluation-rail > span {
 		position: absolute;
-		bottom: 8px;
+		/* bottom: 8px; */
+		/* top: 8px; */
 		left: 0;
 		right: 0;
 		text-align: center;
 		color: #4b5540;
 		font-size: 6px;
 		font-weight: 800;
-		writing-mode: vertical-rl;
+		/* writing-mode: vertical-rl; */
 		display: block;
 		margin: auto;
 	}
