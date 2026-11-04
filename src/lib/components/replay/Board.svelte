@@ -1001,12 +1001,6 @@
 		width: 100%;
 		position: relative;
 	}
-	@media (min-width: 760px) {
-		.board-with-eval {
-			gap: 4px;
-		}
-		
-	}
 	.evaluation-rail {
 		width: 14px;
 		flex-shrink: 0;
@@ -1024,15 +1018,12 @@
 	}
 	.evaluation-rail > span {
 		position: absolute;
-		/* bottom: 8px; */
-		/* top: 8px; */
 		left: 0;
 		right: 0;
 		text-align: center;
 		color: #4b5540;
 		font-size: 6px;
 		font-weight: 800;
-		/* writing-mode: vertical-rl; */
 		display: block;
 		margin: auto;
 	}
@@ -1041,6 +1032,18 @@
 	}
 	.evaluation-rail.flipped > span {
 		transform: rotate(180deg);
+	}
+
+	@media (min-width: 760px) {
+		.board-with-eval {
+			gap: 4px;
+		}
+		.evaluation-rail {
+			width: 20px;
+		}
+		.evaluation-rail > span {
+			font-size: 10px;
+		}
 	}
 
 	/* board */
@@ -1175,7 +1178,6 @@
 		top: 0;
 		z-index: 3;
 		border-radius: 50%;
-		/* background: var(--violet); */
 		border: 1.5px solid #f9fae9;
 		color: #fff;
 		display: grid;
