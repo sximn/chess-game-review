@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { qualityTextColor } from './quality-colors';
+	import { getColorByQuality } from '#lib/engine/classification.js';
 	import { Tabs } from 'bits-ui';
 	import Card from '#lib/components/ui/Card.svelte';
 	import AnalysisTabs from './AnalysisTabs.svelte';
@@ -55,6 +56,15 @@
 			ply: review.qualities.findIndex((q) => q?.name === name)
 		}))
 	);
+	let ratedMoves = $derived(summary.reduce((total, item) => total + item.white + item.black, 0));
+	let distributionLabel = $derived(
+		ratedMoves
+			? summary
+					.filter((item) => item.white + item.black > 0)
+					.map((item) => `${item.name}: ${item.white + item.black} of ${ratedMoves} moves`)
+					.join(', ')
+			: 'No moves rated yet'
+	);
 	let values = $derived(timeline.fens.map((_, i) => visualValue(review.positions[i])));
 	const outcomes: Record<string, string> = {
 		checkmate: 'Checkmate',
@@ -65,51 +75,64 @@
 	};
 </script>
 
-<div class="engine-status" aria-live="polite">
-	<div>
-		<strong>
-			{review.phase === 'complete'
-				? 'Review ready'
-				: review.phase === 'loading'
-					? 'Preparing Frozenight'
-					: review.phase === 'refining'
-						? analysisDetail
-							? 'Refining key moments'
-							: 'Reviewing key moments'
-						: review.phase === 'paused'
-							? 'Review paused'
-							: review.phase === 'error'
-								? 'Analysis unavailable'
-								: 'Reviewing on this device'}
-		</strong>
-		<span>{review.scored} / {review.total} positions</span>
-	</div>
-
-	<progress max={review.total || 1} value={review.scored} aria-label="Game review progress"
-	></progress>
-
-	{#if review.error}
-		<p role="alert">{review.error.message} <small>({review.error.code})</small></p>
-		<button class="review-action" onclick={onRetry}>Retry analysis</button>
-	{:else if review.phase === 'paused'}
-		<button class="review-action" onclick={onResume}> Resume review </button>
-	{:else if review.phase !== 'complete'}
-		<button class="review-action" onclick={onPause}> Pause review </button>
-	{/if}
-
-	{#if review.warning}<p>{review.warning}</p>{/if}
-</div>
-
 <Tabs.Root bind:value={activeTab}>
 	{#snippet child({ props })}
 		<Card {...props} class="review-tabs" shadow clip>
 			<AnalysisTabs {presentation} />
 			<Tabs.Content value="overview">
 				<div class="engine-overview">
-					<p class="review-caption">
-						Frozenight · local analysis{#if analysisDetail}
-							· preliminary estimates{/if}
-					</p>
+					<div class="engine-status" aria-live="polite">
+						<div class="review-status-heading">
+							<strong>
+								{review.phase === 'complete'
+									? 'Review ready'
+									: review.phase === 'loading'
+										? 'Preparing Frozenight'
+										: review.phase === 'refining'
+											? analysisDetail
+												? 'Refining key moments'
+												: 'Reviewing key moments'
+											: review.phase === 'paused'
+												? 'Review paused'
+												: review.phase === 'error'
+													? 'Analysis unavailable'
+													: 'Reviewing on this device'}
+							</strong>
+							<span>{review.scored} / {review.total} positions</span>
+						</div>
+
+						<div
+							class="quality-distribution"
+							role="img"
+							aria-label={`Move quality distribution. ${distributionLabel}`}
+						>
+							{#each summary as item (item.name)}
+								{@const count = item.white + item.black}
+								{#if count > 0}
+									<span
+										class="quality-segment"
+										class:uncertain={item.name === 'Uncertain'}
+										style:flex-grow={count}
+										style:background-color={item.name === 'Best'
+											? 'var(--quality-best-fill)'
+											: getColorByQuality(item.name)}
+										title={`${item.name}: ${count} (${Math.round((count / ratedMoves) * 100)}%)`}
+									></span>
+								{/if}
+							{/each}
+						</div>
+
+						{#if review.error}
+							<p role="alert">{review.error.message} <small>({review.error.code})</small></p>
+							<button class="review-action" onclick={onRetry}>Retry analysis</button>
+						{:else if review.phase === 'paused'}
+							<button class="review-action" onclick={onResume}> Resume review </button>
+						{:else if review.phase !== 'complete'}
+							<button class="review-action" onclick={onPause}> Pause review </button>
+						{/if}
+
+						{#if review.warning}<p>{review.warning}</p>{/if}
+					</div>
 
 					<div class="quality-head">
 						<span>Move quality</span><span>White</span><span>Black</span>
@@ -121,7 +144,14 @@
 							disabled={item.ply < 1}
 							onclick={() => onNavigate(item.ply)}
 						>
-							<span>{item.name}</span>
+							<span class="quality-label"
+								><i
+									aria-hidden="true"
+									style:background-color={item.name === 'Best'
+										? 'var(--quality-best-fill)'
+										: getColorByQuality(item.name)}
+								></i>{item.name}</span
+							>
 							<b>{item.white}</b>
 							<b>{item.black}</b>
 						</button>
@@ -231,7 +261,6 @@
 </section>
 
 <style>
-	.engine-status,
 	.engine-lines {
 		background: var(--paper);
 		border: 1px solid var(--line);
@@ -240,12 +269,19 @@
 		margin-bottom: 12px;
 		font-size: var(--text-sm);
 	}
-	.engine-status > div,
+	.review-status-heading,
 	.lines-heading {
 		display: flex;
 		justify-content: space-between;
 		gap: 10px;
 		align-items: center;
+	}
+	.review-status-heading {
+		flex-wrap: wrap;
+		gap: 6px 10px;
+	}
+	.engine-status .review-action {
+		margin-top: 12px;
 	}
 	.engine-status strong {
 		font-size: var(--text-sm);
@@ -255,12 +291,31 @@
 		color: var(--muted);
 		white-space: nowrap;
 	}
-	progress {
-		display: block;
+	.engine-status {
+		margin-bottom: 20px;
+	}
+	.quality-distribution {
+		display: flex;
 		width: 100%;
-		height: 5px;
-		margin: 10px 0;
-		accent-color: var(--accent-strong);
+		height: 12px;
+		margin-top: 12px;
+		border-radius: var(--radius-pill);
+		overflow: hidden;
+		background: var(--surface-subtle);
+	}
+	.quality-distribution .quality-segment {
+		flex-basis: 0;
+		min-width: 0;
+		transition: flex-grow 350ms ease;
+	}
+	.quality-segment.uncertain {
+		box-shadow: inset 2px 0 var(--paper);
+		background-image: repeating-linear-gradient(135deg, transparent 0 3px, #ffffff30 3px 5px);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.quality-distribution .quality-segment {
+			transition: none;
+		}
 	}
 	.engine-status p {
 		line-height: var(--leading-body);
@@ -276,6 +331,7 @@
 		font-size: var(--text-sm);
 	}
 	.engine-overview {
+		--quality-best-fill: #426b35;
 		padding: 16px 20px;
 	}
 	.review-caption {
@@ -305,6 +361,17 @@
 		border-radius: var(--radius-xs);
 		padding: 5px;
 	}
+	.quality-label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.quality-label i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
 	.quality-row b {
 		text-align: center;
 	}
@@ -316,17 +383,6 @@
 	}
 	.quality-row:hover:not(:disabled) {
 		background: var(--bg);
-	}
-	.played-quality {
-		border-top: 1px solid var(--line);
-		padding-top: 12px;
-		margin-top: 12px;
-		display: grid;
-		gap: 6px;
-	}
-	.played-quality span {
-		font-size: var(--text-caption);
-		color: var(--muted);
 	}
 	.engine-lines {
 		margin-top: 12px;

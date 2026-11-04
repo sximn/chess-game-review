@@ -96,10 +96,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(145deg, #ffe986, #ffd84d);
+		/* background: linear-gradient(145deg, #454545, #242424); */
+		background: var(--brand-mark-bg);
 		border-radius: 12px;
 		color: var(--text-on-primary);
-		border: 1px solid #e4bf43;
 		box-shadow:
 			inset 0 1px #fff8,
 			0 3px 6px #4f420a0c;

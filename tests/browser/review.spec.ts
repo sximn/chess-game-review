@@ -328,3 +328,98 @@ test('stepping into an unexplored move keeps review ready and commits the evalua
 	// Two immediate game scores (one per move), then the final selected-position score.
 	expect(stability.scoreChanges).toBeLessThanOrEqual(3);
 });
+
+test('Overview shows a full-width live quality distribution and keeps move actions under the board', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1306, height: 771 });
+	await page.emulateMedia({ reducedMotion: 'reduce' });
+	await page.addInitScript(() => {
+		localStorage.setItem(
+			'upapawn-games',
+			JSON.stringify([
+				{
+					id: 'quality-distribution',
+					pgn: '1. e4 e5 2. Ba6 Nxa6 3. Nf3 d6 4. d4 exd4 *',
+					addedAt: '2026-11-04'
+				}
+			])
+		);
+	});
+	await page.goto('/review?game=quality-distribution');
+	const bar = page.getByRole('img', { name: /^Move quality distribution/ });
+	await expect(bar).toBeVisible();
+	await page.evaluate(() => {
+		const overview = document.querySelector('.engine-overview')!;
+		const samples: number[] = [];
+		const sample = () => {
+			const count = Array.from(overview.querySelectorAll('.quality-row b')).reduce(
+				(sum, cell) => sum + Number(cell.textContent),
+				0
+			);
+			samples.push(count);
+		};
+		const observer = new MutationObserver(sample);
+		observer.observe(overview, { subtree: true, childList: true, characterData: true });
+		sample();
+		(window as any).qualitySamples = { samples, stop: () => observer.disconnect() };
+	});
+	await page.getByRole('button', { name: 'Pause review', exact: true }).click();
+	await expect(page.getByText('Review paused', { exact: true })).toBeVisible();
+	await page.getByRole('button', { name: 'Resume review', exact: true }).click();
+	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 60000 });
+	const distribution = await page.evaluate(() => {
+		const bar = document.querySelector('.quality-distribution')!;
+		const width = bar.getBoundingClientRect().width;
+		const rows = Array.from(document.querySelectorAll('.quality-row')).map((row) => ({
+			name: row.querySelector('.quality-label')!.textContent!.trim(),
+			count: Array.from(row.querySelectorAll('b')).reduce(
+				(sum, b) => sum + Number(b.textContent),
+				0
+			)
+		}));
+		const segments = Array.from(bar.children).map((segment) => ({
+			name: segment.getAttribute('title')!.split(':')[0],
+			fraction: segment.getBoundingClientRect().width / width
+		}));
+		(window as any).qualitySamples.stop();
+		return {
+			rows,
+			segments,
+			samples: (window as any).qualitySamples.samples,
+			width,
+			overviewWidth: document.querySelector('.quality-head')!.getBoundingClientRect().width
+		};
+	});
+	expect(distribution.rows.reduce((sum, row) => sum + row.count, 0)).toBe(8);
+	expect(distribution.samples.some((count: number) => count > 0 && count < 8)).toBe(true);
+	expect(distribution.width).toBeCloseTo(distribution.overviewWidth, 1);
+	expect(distribution.segments.map((segment) => segment.name)).toEqual(
+		distribution.rows.filter((row) => row.count > 0).map((row) => row.name)
+	);
+	for (const segment of distribution.segments) {
+		expect(segment.fraction).toBeCloseTo(
+			distribution.rows.find((row) => row.name === segment.name)!.count / 8,
+			2
+		);
+	}
+	await expect(page.locator('.review-details > .engine-status')).toHaveCount(0);
+	await expect(page.locator('progress')).toHaveCount(0);
+	await expect(page.getByText('Frozenight · local analysis', { exact: true })).toHaveCount(0);
+	await page.getByRole('button', { name: 'Select 2. Ba6', exact: true }).click();
+	await expect(page.locator('.move-rating')).toContainText('Ba6');
+	await expect(page.locator('.played-quality')).toHaveCount(0);
+	await expect(
+		page.getByRole('button', { name: 'Explore the alternative before this move' })
+	).toHaveCount(0);
+	await expect(page.getByRole('region', { name: 'Engine alternatives' })).toBeVisible();
+	await expect(
+		page.getByRole('button', { name: 'Explore alternative 1', exact: true })
+	).toBeVisible();
+	await page.screenshot({ path: 'artifacts/app-verification/quality-distribution-desktop.png' });
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.getByRole('button', { name: 'Analysis', exact: true }).click();
+	await expect(bar).toBeVisible();
+	expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+	await page.screenshot({ path: 'artifacts/app-verification/quality-distribution-mobile.png' });
+});

@@ -75,9 +75,9 @@ test('compact review cards share corners while board labels keep their spatial s
 	expect(await numberStyle(page.locator('.best-move-trigger'), 'border-top-left-radius')).toBe(
 		radius
 	);
-	expect(
-		await numberStyle(page.locator('.engine-status'), 'border-top-left-radius')
-	).toBeGreaterThan(radius);
+	expect(await numberStyle(page.locator('.review-tabs'), 'border-top-left-radius')).toBeGreaterThan(
+		radius
+	);
 
 	const coordinate = page.locator('.rank-label').first();
 	const coordinateSize = await numberStyle(coordinate, 'font-size');
