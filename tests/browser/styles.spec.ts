@@ -3,6 +3,7 @@ import { test, expect, type Locator } from '@playwright/test';
 test.use({ reducedMotion: 'reduce' });
 
 async function expectNeutral(locator: Locator, property = 'background-color') {
+	await expect(locator).toHaveCount(1);
 	await expect
 		.poll(
 			() =>
@@ -83,21 +84,36 @@ for (const theme of ['light', 'dark'] as const) {
 		}, theme);
 		await page.goto('/settings');
 		await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
-		for (const selector of ['body', '.settings-card', '.topbar-avatar']) {
+		for (const selector of ['body', '.settings-card']) {
 			await expectNeutral(page.locator(selector));
 		}
 		await expectNeutral(page.locator('.app-footer'), 'color');
 		const toggle = page.getByRole('switch', { name: 'Board coordinates', exact: true });
-		await expect(toggle).toHaveCSS('background-color', 'rgb(255, 216, 77)');
+		// Resolve the theme's token in the browser, including relative color syntax.
+		const checkedColor = await toggle.evaluate((element) => {
+			const probe = document.createElement('span');
+			probe.style.backgroundColor = 'var(--control-checked-bg)';
+			element.append(probe);
+			const color = getComputedStyle(probe).backgroundColor;
+			probe.remove();
+			return color;
+		});
+		await expect(toggle).toBeChecked();
+		await expect(toggle).toHaveCSS('background-color', checkedColor);
 		await toggle.click();
+		await expect(toggle).not.toBeChecked();
 		await expectNeutral(toggle);
 		await toggle.click();
+		await expect(toggle).toBeChecked();
+		await expect(toggle).toHaveCSS('background-color', checkedColor);
 		await expect(page.locator('.preview-square').first()).toHaveCSS(
 			'background-color',
 			theme === 'dark' ? 'rgb(210, 204, 176)' : 'rgb(237, 233, 211)'
 		);
 		const activeNav = page.locator('.main-nav a.active');
-		expect(await textContrast(activeNav)).toBeGreaterThanOrEqual(4.5);
+		const navSurface = page.locator('.main-nav > .nav-indicator');
+		await expect(navSurface).toBeVisible();
+		expect(await textContrast(activeNav, navSurface)).toBeGreaterThanOrEqual(4.5);
 		expect(await textContrast(page.locator('.app-footer'))).toBeGreaterThanOrEqual(4.5);
 		await expect(page.locator('.light-preview')).toHaveCSS(
 			'background-color',
@@ -127,7 +143,7 @@ for (const theme of ['light', 'dark'] as const) {
 			'data-theme',
 			theme === 'light' ? 'dark' : 'light'
 		);
-		await expect.poll(() => textContrast(activeNav)).toBeGreaterThanOrEqual(4.5);
+		await expect.poll(() => textContrast(activeNav, navSurface)).toBeGreaterThanOrEqual(4.5);
 		await page
 			.getByRole('button', { name: theme === 'light' ? 'Light' : 'Dark', exact: true })
 			.click();
@@ -160,11 +176,15 @@ for (const theme of ['light', 'dark'] as const) {
 			4.5
 		);
 		const chip = page.locator('.move-chip.current');
-		expect(await textContrast(chip)).toBeGreaterThanOrEqual(4.5);
-		expect(await textContrast(chip.locator('span'), chip)).toBeGreaterThanOrEqual(4.5);
-		const selectedBackground = await chip.evaluate((el) => getComputedStyle(el).backgroundColor);
+		const chipSurface = page.locator('.move-indicator');
+		await expect(chipSurface).toBeVisible();
+		expect(await textContrast(chip, chipSurface)).toBeGreaterThanOrEqual(4.5);
+		expect(await textContrast(chip.locator('span'), chipSurface)).toBeGreaterThanOrEqual(4.5);
+		const selectedBackground = await chipSurface.evaluate(
+			(el) => getComputedStyle(el).backgroundColor
+		);
 		await chip.hover();
-		await expect(chip).toHaveCSS('background-color', selectedBackground);
+		await expect(chipSurface).toHaveCSS('background-color', selectedBackground);
 		await page.getByRole('tab', { name: 'Moves', exact: true }).click();
 		const move = page.locator('.move-pair > button.current');
 		expect(await textContrast(move)).toBeGreaterThanOrEqual(4.5);

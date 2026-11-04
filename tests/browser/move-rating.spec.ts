@@ -48,7 +48,7 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	expect(await steps.getByRole('button').count()).toBeGreaterThan(2);
 	await expect(board).toHaveAttribute('aria-label', /White to move/);
 	await expect(board.getByRole('img', { name: 'White bishop on f1', exact: true })).toBeVisible();
-	await expect(current).toHaveText('2.Ba6');
+	await expect(current).toHaveAccessibleName('Select 2. Ba6');
 	const arrow = page.locator('.suggestion-arrow');
 	await expect(arrow).toBeVisible();
 	const originalPath = await arrow.locator('.suggestion-path').getAttribute('d');
@@ -67,7 +67,7 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(badge).toBeVisible();
 	await expect(steps.getByRole('button').nth(2)).toHaveAttribute('aria-current', 'step');
 	await expect(board).toHaveAttribute('aria-label', /White to move/);
-	await expect(current).toHaveText('2.Ba6');
+	await expect(current).toHaveAccessibleName('Select 2. Ba6');
 	await expect(rating).toContainText('2. Ba6');
 	expect(await page.locator('.move-chip').allTextContents()).toEqual(originalChips);
 	await expect(page.getByRole('button', { name: 'Return to game', exact: true })).toHaveCount(0);
@@ -77,14 +77,14 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(board.getByRole('img', { name: 'White bishop on f1', exact: true })).toBeVisible();
 	await page.getByRole('button', { name: 'Next move', exact: true }).click();
 	await expect(badge).toHaveCount(0);
-	await expect(current).toHaveText('2…Nxa6');
+	await expect(current).toHaveAccessibleName('Select 2... Nxa6');
 	await expect(board.getByRole('img', { name: 'Black knight on a6', exact: true })).toBeVisible();
 
 	await page.getByRole('button', { name: 'Previous move', exact: true }).click();
 	await bestMove.click();
 	await steps.getByRole('button').nth(1).click();
 	await page.keyboard.press('ArrowLeft');
-	await expect(current).toHaveText('1…e5');
+	await expect(current).toHaveAccessibleName('Select 1... e5');
 	await expect(badge).toHaveCount(0);
 	await page.getByRole('button', { name: 'Select 2. Ba6', exact: true }).click();
 	await bestMove.click();
@@ -96,7 +96,7 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await steps.getByRole('button').nth(1).click();
 	await page.getByRole('button', { name: 'Play replay', exact: true }).click();
 	await expect(badge).toHaveCount(0);
-	await expect(current).toHaveText('2…Nxa6');
+	await expect(current).toHaveAccessibleName('Select 2... Nxa6');
 
 	await page.getByRole('button', { name: 'Select 2. Ba6', exact: true }).click();
 	await page.setViewportSize({ width: 390, height: 844 });
@@ -109,11 +109,11 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await bestMove.click();
 	await steps.getByRole('button').nth(2).click();
 	await expect(badge).toBeVisible();
-	await expect(current).toHaveText('2.Ba6');
+	await expect(current).toHaveAccessibleName('Select 2. Ba6');
 	await expect(steps.getByRole('button').nth(2)).toBeInViewport();
 	await page.getByRole('button', { name: 'Next move', exact: true }).click();
 	await expect(badge).toHaveCount(0);
-	await expect(current).toHaveText('2…Nxa6');
+	await expect(current).toHaveAccessibleName('Select 2... Nxa6');
 	expect(errors).toEqual([]);
 });
 
@@ -144,7 +144,7 @@ test('game navigation exits variations at both ends of the game', async ({ page 
 	await expect(badge).toBeVisible();
 	await page.getByRole('button', { name: 'Next move', exact: true }).click();
 	await expect(badge).toHaveCount(0);
-	await expect(current).toHaveText('2.Ba6');
+	await expect(current).toHaveAccessibleName('Select 2. Ba6');
 	await expect(page.getByRole('button', { name: 'Next move', exact: true })).toBeDisabled();
 });
 
