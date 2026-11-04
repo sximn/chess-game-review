@@ -170,7 +170,9 @@ for (const theme of ['light', 'dark'] as const) {
 		await expect(page.locator('.chessboard')).toBeVisible();
 		await page.getByRole('button', { name: 'Select 1. e4', exact: true }).click();
 		const rating = page.locator('.rating-copy strong');
-		await expect(rating).toHaveText(/^(Best|Good|Inaccuracy|Mistake|Blunder|Uncertain)$/);
+		await expect(rating).toHaveText(
+			/^(Brilliant|Great|Best|Excellent|Good|Inaccuracy|Mistake|Miss|Blunder|Uncertain)$/
+		);
 		expect(await textContrast(rating)).toBeGreaterThanOrEqual(4.5);
 		expect(await textContrast(page.locator('.move-rating .rating-symbol'))).toBeGreaterThanOrEqual(
 			4.5
@@ -225,10 +227,14 @@ for (const theme of ['light', 'dark'] as const) {
 			(root as HTMLElement).dataset.theme = theme;
 		}, theme);
 		const qualities = {
+			brilliant: '#26a6a6',
+			great: '#5b8cba',
 			best: '#648c51',
+			excellent: '#81a16c',
 			good: '#648c51',
 			inaccuracy: '#b48a00',
 			mistake: '#d57824',
+			miss: '#d57824',
 			blunder: '#d74442',
 			uncertain: '#858c77'
 		};

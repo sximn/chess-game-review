@@ -8,7 +8,7 @@
 	import type { Timeline } from '#lib/chess.js';
 	import type { AnalysisPresentation } from './analysis.types';
 	import type { ReviewState } from '#lib/engine/review.js';
-	import { formatScore, visualValue } from '#lib/engine/classification.js';
+	import { formatScore, visualValue, MOVE_QUALITIES } from '#lib/engine/classification.js';
 	import { continuation } from '#lib/engine/presentation.js';
 
 	let {
@@ -44,7 +44,7 @@
 	);
 	let quality = $derived(review.qualities[ply]);
 	let summary = $derived(
-		['Best', 'Good', 'Inaccuracy', 'Mistake', 'Blunder', 'Uncertain'].map((name) => ({
+		MOVE_QUALITIES.map((name) => ({
 			name,
 			white: review.qualities.filter(
 				(q, i) => q?.name === name && timeline.moves[i - 1]?.color === 'w'
@@ -128,8 +128,9 @@
 					{/each}
 
 					{#if analysisDetail}<p class="review-caption analysis-detail">
-							Labels compare the best and played moves from the same position. Near-threshold and
-							large changes receive a deeper comparison.
+							Labels compare estimated expected points for the best and played moves. PGN player
+							ratings are used when available; otherwise 1200. Key moments receive a deeper
+							comparison.
 						</p>{/if}
 
 					{#if quality}
@@ -142,6 +143,12 @@
 										.map((depth) => depth ?? '—')
 										.join(' / ')}
 								</span>
+
+								{#if quality.lossExpectedPoints !== null}
+									<span
+										>{(quality.lossExpectedPoints * 100).toFixed(1)}% expected points lost · rating {quality.rating}</span
+									>
+								{/if}
 
 								{#if quality.lossCp !== null}
 									<span>{quality.lossCp} cp measured loss</span>

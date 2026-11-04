@@ -1,7 +1,7 @@
 import { parseGame, type Timeline } from '../chess.ts';
 import { createReviewEngine } from './provider.ts';
 import { ResultCache, resultKey } from './cache.ts';
-import { classify, type MoveQuality } from './classification.ts';
+import { classify, needsRefinement, type MoveQuality } from './classification.ts';
 import {
 	API_VERSION,
 	EngineError,
@@ -68,6 +68,9 @@ export class ReviewController {
 
 	private quick: (AnalysisResult | undefined)[] = [];
 	private refined = new Set<number>();
+	private comparisons: (
+		{ best: AnalysisResult; played: AnalysisResult; refined: boolean } | undefined
+	)[] = [];
 	private cache = new ResultCache();
 
 	private unsubscribe: () => void;
@@ -128,6 +131,7 @@ export class ReviewController {
 		this.engine.reset();
 		this.timeline = timeline;
 		this.quick = [];
+		this.comparisons = [];
 		this.refined.clear();
 		this.reviewComplete = false;
 		this.foregroundJob = undefined;
@@ -259,6 +263,40 @@ export class ReviewController {
 		return result;
 	}
 
+	private classifyMove(ply: number, best: AnalysisResult, played: AnalysisResult, refined = false) {
+		this.comparisons[ply] = { best, played, refined };
+		// Refining an opponent's move can create or remove a Miss on the reply.
+		for (const index of [ply, ply + 1]) {
+			const comparison = this.comparisons[index];
+			if (!comparison) continue;
+			const move = this.timeline!.moves[index - 1];
+			const previous = this.state.qualities[index - 1];
+			const previousScore = this.comparisons[index - 1]?.best.lines[0]?.score;
+			const previousPlayedScore = this.comparisons[index - 1]?.played.lines[0]?.score;
+			this.state.qualities[index] = classify(
+				comparison.best,
+				comparison.played,
+				move.color,
+				move.lan,
+				index - 1,
+				comparison.refined,
+				{
+					rating: this.timeline!.headers[move.color === 'w' ? 'WhiteElo' : 'BlackElo'],
+					fen: move.before,
+					...(previous && previousScore && previousPlayedScore
+						? {
+								previous: {
+									quality: previous,
+									bestScore: previousScore,
+									playedScore: previousPlayedScore
+								}
+							}
+						: {})
+				}
+			);
+		}
+	}
+
 	private async pump() {
 		this.busy = true;
 		const epoch = this.epoch;
@@ -315,7 +353,7 @@ export class ReviewController {
 						break;
 					}
 
-					this.state.qualities[ply] = classify(best, played, move.color, move.lan, ply - 1);
+					this.classifyMove(ply, best, played);
 					classified = true;
 					this.publish();
 					break;
@@ -335,7 +373,7 @@ export class ReviewController {
 
 				if (missing !== undefined) {
 					this.state.phase = 'reviewing';
-					const result = await this.search(missing, QUICK_LIMITS);
+					const result = await this.search(missing, QUICK_LIMITS, 2);
 					if (epoch !== this.epoch) {
 						break;
 					}
@@ -347,19 +385,13 @@ export class ReviewController {
 					continue;
 				}
 				const deepen = this.state.qualities.findIndex(
-					(q, i) =>
-						q &&
-						!this.refined.has(i) &&
-						(q.name === 'Uncertain' ||
-							(q.lossCp !== null &&
-								(q.lossCp >= 40 || [50, 100, 250].some((t) => Math.abs(q.lossCp! - t) <= 20))) ||
-							(q.lossCp === null && ['Mistake', 'Blunder'].includes(q.name)))
+					(q, i) => q && !this.refined.has(i) && needsRefinement(q)
 				);
 				if (deepen >= 1) {
 					this.state.phase = 'refining';
 					this.publish();
 					const move = this.timeline!.moves[deepen - 1];
-					const best = await this.search(deepen - 1, DEEP_LIMITS),
+					const best = await this.search(deepen - 1, DEEP_LIMITS, 2),
 						played =
 							best.lines[0]?.rootMove === move.lan
 								? best
@@ -367,18 +399,11 @@ export class ReviewController {
 										move.lan
 									]);
 					if (epoch !== this.epoch) break;
-					this.state.qualities[deepen] = classify(
-						best,
-						played,
-						move.color,
-						move.lan,
-						deepen - 1,
-						true
-					);
+					this.classifyMove(deepen, best, played, true);
 					this.refined.add(deepen);
 					this.state.positions[deepen - 1] = best;
 					this.publish();
-					if (['Mistake', 'Blunder'].includes(this.state.qualities[deepen]!.name)) {
+					if (['Mistake', 'Miss', 'Blunder'].includes(this.state.qualities[deepen]!.name)) {
 						const alternatives = await this.search(deepen - 1, DEEP_LIMITS, 3);
 						if (epoch !== this.epoch) break;
 						this.state.alternatives[deepen - 1] = alternatives;
