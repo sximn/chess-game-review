@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { qualityTextColor } from './quality-colors';
 	import { getColorByQuality } from '#lib/engine/classification.js';
 	import { Tabs } from 'bits-ui';
 	import Card from '#lib/components/ui/Card.svelte';
@@ -43,7 +42,6 @@
 			review.positions[ply] ??
 			(review.selectedPly === ply ? review.selectedLive : undefined)
 	);
-	let quality = $derived(review.qualities[ply]);
 	let summary = $derived(
 		MOVE_QUALITIES.map((name) => ({
 			name,
@@ -162,43 +160,6 @@
 							ratings are used when available; otherwise 1200. Key moments receive a deeper
 							comparison.
 						</p>{/if}
-
-					{#if quality}
-						<div class="played-quality">
-							<strong style:color={qualityTextColor(quality.name)}
-								>{quality.symbol} {quality.name}</strong
-							>
-							{#if analysisDetail}<span class="analysis-detail">
-									{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
-										.map((depth) => depth ?? '—')
-										.join(' / ')}
-								</span>
-
-								{#if quality.lossExpectedPoints !== null}
-									<span
-										>{(quality.lossExpectedPoints * 100).toFixed(1)}% expected points lost · rating {quality.rating}</span
-									>
-								{/if}
-
-								{#if quality.lossCp !== null}
-									<span>{quality.lossCp} cp measured loss</span>
-								{/if}
-
-								{#if quality.noise}
-									<span>These moves were too close to distinguish reliably.</span>
-								{/if}
-							{/if}
-						</div>
-
-						{#if quality.alternative.length && quality.name !== 'Best'}
-							<button
-								class="review-action"
-								onclick={() => onExplore(quality.rootPly, quality.alternative)}
-							>
-								Explore the alternative before this move
-							</button>
-						{/if}
-					{/if}
 				</div>
 			</Tabs.Content>
 			<Tabs.Content value="moves">
