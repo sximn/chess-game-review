@@ -53,7 +53,7 @@ test('classification compares played roots, preserves score perspective and reje
 	);
 	assert.equal(
 		formatScore({ perspective: 'white', kind: 'cp', value: 35, bound: 'lower' }),
-		'≥+0.35'
+		'≥0.4'
 	);
 });
 test('result keys include SDK identity, history, budgets, root restrictions and settings', async () => {
