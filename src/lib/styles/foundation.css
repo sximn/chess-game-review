@@ -1,46 +1,210 @@
 /* Design tokens, theme values, resets and accessibility. */
 :root {
-	font-family: 'DM Sans Variable', system-ui, sans-serif;
-	color: #2c302b;
-	background: #f5f3ed;
+	font-family: var(--font-body);
+	color: var(--ink);
+	background: var(--bg);
 	font-synthesis: none;
-	--bg: #f5f3ed;
-	--paper: #fffcf4;
+	/* Small shared scales. Component properties may select another step. */
+	--radius-xs: 4px;
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+	--radius-xl: 24px;
+	--radius-pill: 9999px;
+	--radius-round: 50%;
+	--font-body: 'DM Sans Variable', system-ui, sans-serif;
+	--font-display: 'DM Serif Display', Georgia, serif;
+	--font-mono: ui-monospace, monospace;
+	--text-caption: 0.625rem;
+	--text-sm: 0.75rem;
+	--text-md: 0.875rem;
+	--text-lg: 1rem;
+	--text-xl: 1.125rem;
+	--text-title: 1.5rem;
+	--text-heading: 1.875rem;
+	--text-page: 2.125rem;
+	--text-display: clamp(var(--text-heading), 3.3vw, 2.6875rem);
+	/* iOS must not zoom a field whose inherited root size is below 16px. */
+	--text-input-mobile: max(16px, var(--text-lg));
+	--weight-regular: 400;
+	--weight-medium: 500;
+	--weight-semibold: 600;
+	--weight-bold: 700;
+	--weight-heavy: 800;
+	--leading-display: 1.15;
+	--leading-tight: 1.2;
+	--leading-compact: 1.3;
+	--leading-body: 1.6;
+	--leading-relaxed: 1.8;
+	--tracking-heading: -0.045em;
+	--tracking-display: -0.035em;
+	--tracking-ui: -0.01em;
+	--tracking-label: 0.06em;
+
+	--bg: #f5f5f5;
+	--paper: #ffffff;
+	--paper-deep: #eeeeee;
 	--paper-deep: #f3eedf;
-	--field: #fffdf8;
-	--ink: #2c302b;
-	--muted: #6b675b;
-	--line: #e5e3d9;
+	--field: #ffffff;
+	--ink: #242424;
+	--muted: #626262;
+	--line: #dedede;
 	--yellow: #ffd84d;
 	--yellow-hi: #ffe582;
 	--yellow-lo: #dfb52a;
 	--violet: #7062ee;
-	--sage: #7e9a6c;
-	--surface-green: #edf1e5;
+	--accent: var(--yellow);
+	--accent-strong: #947500;
+	--surface-subtle: #f0f0f0;
 	--board-light: #ede9d3;
 	--board-dark: #8da57b;
-	--shadow: 0 2px 3px #42370a04, 0 7px 20px -12px #42370a18;
+
+	/* Neutral app surfaces; yellow is the primary accent, violet marks special states.
+	   Board squares and move-quality markers retain their chess palettes. */
+	--text-secondary: var(--muted);
+	--text-placeholder: var(--muted);
+	--icon-muted: var(--muted);
+	--text-action: #404040;
+	--text-accent: #5745bf;
+	--text-on-primary: #282828;
+	--focus-color: var(--violet);
+	--selection-bg: #ece8ff;
+	--selection-text: var(--text-accent);
+	--selection-border: #b2a3e9;
+	--active-bg: var(--paper-deep);
+	--active-text: #453600;
+	--active-border-primitive: #ccad3f;
+	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line)); 
+	--active-shadow: var(--shadow-tab);
+	--active-ring: 0 0 0 2px #ffd84d59;
+	--success-bg: var(--surface-subtle);
+	--success-text: var(--ink);
+	--error-bg: #fff0e7;
+	--error-text: #974530;
+	--error-border: #d6a396;
+	--notice-bg: #292929;
+	--notice-text: #fafafa;
+	--notice-border: #505050;
+	--notice-icon: var(--accent);
+	--avatar-bg: #ededed;
+	--avatar-text: #525252;
+	--avatar-border: #d4d4d4;
+	--control-bg: #dedede;
+	--control-border: #c2c2c2;
+	--control-checked-bg: var(--accent);
+	--control-checked-border: #dbcba1;
+	--control-thumb: linear-gradient(#fff, #f4f4f4);
+	--border-strong: #929292;
+	--scrollbar-thumb: #929292;
+	--overlay-bg: #00000059;
+	--chart-grid: #b0b0b0;
+	--chart-line-white: #626262;
+	--chart-line-black: #242424;
+	--chart-progress: linear-gradient(180deg, #ffd84d44, #ffd84d11);
+	--chart-progress-edge: #88701d;
+	--chart-cursor: #88701d;
+
+	/* Neutral side indicators stay distinct from theme surfaces and board squares. */
+	--chess-side-light: #fafafa;
+	--chess-side-dark: #333333;
+	--chess-side-border: #999999;
+	--evaluation-white-zone: #ffffff2e;
+	--evaluation-black-zone: #0000000d;
+	/* Text variants keep the original move-quality hues legible on UI surfaces.
+	   Marker colors and classification data retain the chess palette. */
+	--quality-best-text: #466532;
+	--quality-good-text: var(--quality-best-text);
+	--quality-inaccuracy-text: #796000;
+	--quality-mistake-text: #99500d;
+	--quality-blunder-text: #b62c2a;
+	--quality-uncertain-text: var(--muted);
+
+	/* Shared UI lighting; branding and board artwork own their fixed shadows. */
+	--highlight: inset 0 1px #ffffff80;
+	--shadow-control: inset 0 1px #ffffff85, 0 2px 3px #0000000a;
+	--shadow-primary:
+		inset 0 1px #ffffffa0, inset 0 -1px #0000000c, 0 2px 3px #0000001a, 0 4px 8px -4px #00000038;
+	--shadow-control-hover: 0 3px 9px #00000017, inset 0 1px #fff8;
+	--shadow-pressed: inset 0 1px 2px #0003;
+	--shadow-inset: inset 0 1px 3px #0001;
+	--shadow-thumb: 0 1px 3px #0003;
+	/* --shadow-tab: inset 0 1px #ffffff80, 0 1px 3px #0000000a; */
+	--shadow-tab: inset 1px 2px #ffffff80, inset -0.5px -1px #0000000a;
+	--shadow-card-hover: 0 8px 20px #00000010;
+	--shadow-popover: 0 8px 32px #00000026;
+	--shadow-dialog: 0 15px 70px #00000033;
+	--shadow-sheet: 0 -12px 70px #00000026;
+	--shadow-notice: 0 8px 24px #00000030;
+	--shadow: 0 2px 3px #00000004, 0 7px 20px -12px #00000018;
 	--ease: cubic-bezier(0.22, 0.8, 0.3, 1);
-	--sc: 70 55 10;
 	--ring: 0 0 0 3px #7062ee40;
 	color-scheme: light;
 }
 :root[data-theme='dark'] {
-	--bg: #151412;
-	--paper: #201e1a;
-	--paper-deep: #2a2722;
-	--field: #181714;
-	--ink: #f1ede1;
-	--muted: #a39e90;
-	--line: #38342c;
-	--surface-green: #262a21;
+	--bg: #121212;
+	--paper: #1c1c1c;
+	--paper-deep: #282828;
+	--field: #161616;
+	--ink: #f0f0f0;
+	--muted: #b0b0b0;
+	--line: #383838;
+	--surface-subtle: #242424;
+	--accent-strong: var(--yellow);
 	--violet: #8173f3;
-	--sage: #8fae7c;
 	--board-light: #d2ccb0;
 	--board-dark: #718862e7;
+	--text-action: #dedede;
+	--text-accent: #c2b8ff;
+	--selection-bg: #45405b;
+	--selection-border: #8e80c7;
+	/* --active-bg: #2c2c2c;
+	--active-text: var(--yellow-hi);
+	--active-border: #8c772a; */
+
+	--active-bg: var(--paper-deep);
+	--active-text: var(--yellow-hi);
+	--active-border-primitive: #8c772a;
+	--active-border: color-mix(in srgb, var(--active-border-primitive) 26%, var(--line)); 
+	--active-shadow: var(--shadow-tab);
+
+	--active-ring: 0 0 0 1px #ffd84d59;
+	--error-bg: #3b2520;
+	--error-text: #f2b7a5;
+	--error-border: #a66755;
+	--avatar-bg: #303030;
+	--avatar-text: #dedede;
+	--avatar-border: #4a4a4a;
+	--control-bg: #444444;
+	--control-border: #797979;
+	--control-checked-bg: hsl(from var(--accent) h s calc(0.65 * l));
+	--control-checked-border: #dfb52a;
+	--border-strong: #737373;
+	--scrollbar-thumb: #737373;
+	--overlay-bg: #000000a6;
+	--chart-grid: #666666;
+	--chart-line-white: #d4d4d4;
+	--chart-line-black: #8c8c8c;
+	--chart-progress-edge: var(--accent);
+	--chart-cursor: var(--yellow-hi);
+	--evaluation-white-zone: #ffffff0b;
+	--evaluation-black-zone: #00000036;
+	--quality-best-text: #b0ce99;
+	--quality-inaccuracy-text: #e1c35e;
+	--quality-mistake-text: #efb17a;
+	--quality-blunder-text: #f39c98;
+	--quality-uncertain-text: #c4c4c4;
+	--highlight: inset 0 1px #ffffff0d;
+	--shadow-control: inset 0 1px #ffffff0d, 0 2px 3px #0003;
+	--shadow-control-hover: 0 3px 9px #0005, inset 0 1px #ffffff14;
+	/* --shadow-tab: inset 0 1px #ffffff0d, 0 1px 3px #0003; */
+	--shadow-tab: inset 0.3px 0.7px #ffffff60, inset -0.5px -1px #0000000a;
+	--shadow-card-hover: 0 8px 20px #0005;
+	--shadow-popover: 0 8px 32px #0006;
+	--shadow-dialog: 0 15px 70px #0008;
+	--shadow-sheet: 0 -12px 70px #0006;
+	--shadow-notice: 0 8px 24px #0005;
 	--shadow: 0 6px 20px -10px #000a;
 	--ring: 0 0 0 3px #8173f35c;
-	color: var(--ink);
 	color-scheme: dark;
 }
 *,
@@ -84,7 +248,7 @@ p {
 h1,
 h2,
 h3 {
-	letter-spacing: -0.035em;
+	letter-spacing: var(--tracking-display);
 }
 button,
 a,
@@ -100,7 +264,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-	outline: 2px solid var(--violet);
+	outline: 2px solid var(--focus-color);
 	outline-offset: 4px;
 }
 svg {

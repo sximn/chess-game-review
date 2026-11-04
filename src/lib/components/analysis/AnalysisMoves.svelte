@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { HTMLAttributes } from 'svelte/elements';
 	import type { AnalysisPresentation } from './analysis.types';
+	import { qualityTextColor } from './quality-colors';
 
 	import type { Move } from 'chess.js';
 	import type { MoveQuality } from '#lib/engine/classification.js';
@@ -70,7 +71,7 @@
 							{#if quality}
 								<span
 									title={`${analysisDetail ? `${quality.preliminary ? 'Preliminary' : 'Refined'} ` : ''}${quality.name}`}
-									style={`color:${quality.color}`}>{quality.symbol}</span
+									style:color={qualityTextColor(quality.name)}>{quality.symbol}</span
 								>
 							{/if}
 						</button>
@@ -90,9 +91,9 @@
 	.move-list-heading {
 		display: flex;
 		justify-content: space-between;
-		font-size: 6.5px;
-		letter-spacing: 0.7px;
-		color: #a0a88f;
+		font-size: var(--text-caption);
+		letter-spacing: var(--tracking-label);
+		color: var(--text-secondary);
 		padding: 5px 1px 13px;
 		border-bottom: 1px solid var(--line);
 	}
@@ -102,7 +103,7 @@
 	.moves-list {
 		overflow-y: auto;
 		scrollbar-width: thin;
-		scrollbar-color: #b1b99f var(--paper);
+		scrollbar-color: var(--scrollbar-thumb) var(--paper);
 		max-height: none;
 	}
 	.move-pair {
@@ -118,7 +119,7 @@
 		align-items: center;
 	}
 	.move-column-head {
-		font-size: 7px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		padding: 14px 0 10px;
 	}
@@ -128,15 +129,15 @@
 		text-overflow: ellipsis;
 	}
 	.move-pair {
-		border-radius: 5px;
+		border-radius: var(--radius-xs);
 		padding: 2px 0;
 	}
 	.move-pair:nth-child(2n) {
 		background: var(--bg);
 	}
 	.move-pair > span {
-		font-size: 8px;
-		color: #adb49f;
+		font-size: var(--text-caption);
+		color: var(--text-secondary);
 		text-align: center;
 	}
 	.move-pair > button {
@@ -145,22 +146,22 @@
 		justify-content: space-between;
 		min-height: 31px;
 		padding: 0 9px;
-		border-radius: 5px;
+		border-radius: var(--radius-xs);
 		background: none;
 		text-align: left;
-		font-size: 11px;
-		font-weight: 600;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 	.move-pair > button > span {
-		font-size: 8px;
+		font-size: var(--text-caption);
 	}
 	.move-pair > button.current {
-		background: #ece8ff;
-		color: var(--violet);
-		box-shadow: inset 0 0 0 1px #d8d0fc;
+		background: var(--selection-bg);
+		color: var(--selection-text);
+		box-shadow: inset 0 0 0 1px var(--selection-border);
 	}
 	@media (hover: hover) {
-		.move-pair > button:hover {
+		.move-pair > button:hover:not(.current) {
 			background: var(--paper-deep);
 		}
 	}
@@ -168,34 +169,23 @@
 		.moves-content {
 			padding: 18px 20px 0;
 		}
-		.move-list-heading {
-			font-size: 8px;
-		}
-		.move-column-head {
-			font-size: 8px;
-		}
 		.move-pair > button {
-			font-size: 13px;
+			font-size: var(--text-md);
 			min-height: 36px;
 		}
 		.move-pair > button > span {
-			font-size: 10px;
+			font-size: var(--text-caption);
 		}
 		.move-pair > span {
-			font-size: 10px;
+			font-size: var(--text-caption);
 		}
-	}
-	:global(:root[data-theme='dark']) .move-pair > button.current {
-		background: #45405b;
-		box-shadow: inset 0 0 0 1px #7062ee66;
-		color: #c2b8ff;
 	}
 	@media (min-width: 1001px) {
 		.move-pair > button {
-			font-size: 13px;
+			font-size: var(--text-md);
 		}
 		.move-pair > span {
-			font-size: 10px;
+			font-size: var(--text-caption);
 		}
 	}
 	.moves-content[data-presentation='sheet'] .move-pair > button {

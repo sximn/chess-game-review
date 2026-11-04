@@ -44,13 +44,13 @@
 		display: block;
 		background: var(--card-background, var(--_card-background));
 		border: var(--card-border, 1px solid var(--line));
-		border-radius: var(--card-radius, 14px);
+		border-radius: var(--card-radius, var(--radius-lg));
 		padding: var(--card-padding, 0);
 		box-shadow: var(--card-shadow, var(--_card-shadow, none));
 		overflow: var(--card-overflow, var(--_card-overflow, visible));
 	}
 	.card[data-variant='soft'] {
-		--_card-background: var(--surface-green);
+		--_card-background: var(--surface-subtle);
 	}
 	.card.shadow {
 		--_card-shadow: var(--shadow);
@@ -66,7 +66,7 @@
 	@media (hover: hover) {
 		.card.interactive:hover {
 			transform: translateY(var(--card-hover-lift, -3px));
-			box-shadow: var(--card-hover-shadow, 0 8px 20px #424d2410);
+			box-shadow: var(--card-hover-shadow, var(--shadow-card-hover));
 		}
 	}
 </style>

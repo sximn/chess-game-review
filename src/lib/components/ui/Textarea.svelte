@@ -36,15 +36,16 @@
 		padding: var(--textarea-padding, 14px);
 		background: var(--field);
 		border: 1px solid var(--textarea-border-color, var(--line));
-		border-radius: var(--textarea-radius, 10px);
+		border-radius: var(--textarea-radius, var(--radius-md));
 		color: var(--ink);
-		font-size: var(--textarea-font-size, 12px);
-		line-height: 1.8;
+		font-size: var(--textarea-font-size, var(--text-sm));
+		line-height: var(--leading-relaxed);
 	}
 	.textarea.monospace {
-		font-family: ui-monospace, monospace;
+		font-family: var(--font-mono);
 	}
 	.textarea::placeholder {
-		color: #a6ad98;
+		color: var(--text-placeholder);
+		opacity: 1;
 	}
 </style>

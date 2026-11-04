@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { qualityTextColor } from './quality-colors';
 	import { Tabs } from 'bits-ui';
 	import Card from '#lib/components/ui/Card.svelte';
 	import AnalysisTabs from './AnalysisTabs.svelte';
@@ -133,7 +134,9 @@
 
 					{#if quality}
 						<div class="played-quality">
-							<strong style:color={quality.color}>{quality.symbol} {quality.name}</strong>
+							<strong style:color={qualityTextColor(quality.name)}
+								>{quality.symbol} {quality.name}</strong
+							>
 							{#if analysisDetail}<span class="analysis-detail">
 									{quality.preliminary ? 'Preliminary' : 'Refined'} · depths {quality.comparedDepths
 										.map((depth) => depth ?? '—')
@@ -225,10 +228,10 @@
 	.engine-lines {
 		background: var(--paper);
 		border: 1px solid var(--line);
-		border-radius: 13px;
+		border-radius: var(--radius-lg);
 		padding: 15px;
 		margin-bottom: 12px;
-		font-size: 12px;
+		font-size: var(--text-sm);
 	}
 	.engine-status > div,
 	.lines-heading {
@@ -238,10 +241,10 @@
 		align-items: center;
 	}
 	.engine-status strong {
-		font-size: 12px;
+		font-size: var(--text-sm);
 	}
 	.engine-status span {
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		white-space: nowrap;
 	}
@@ -250,27 +253,27 @@
 		width: 100%;
 		height: 5px;
 		margin: 10px 0;
-		accent-color: var(--sage);
+		accent-color: var(--accent-strong);
 	}
 	.engine-status p {
-		line-height: 1.6;
+		line-height: var(--leading-body);
 		margin: 10px 0;
 	}
 	.review-action {
-		background: var(--surface-green);
+		background: var(--surface-subtle);
 		border: 1px solid var(--line);
 		padding: 9px 12px;
 		min-height: 36px;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		text-align: left;
-		font-size: 11px;
+		font-size: var(--text-sm);
 	}
 	.engine-overview {
 		padding: 16px 20px;
 	}
 	.review-caption {
-		font-size: 10px;
-		line-height: 1.7;
+		font-size: var(--text-caption);
+		line-height: var(--leading-relaxed);
 		color: var(--muted);
 		margin: 8px 0 12px;
 	}
@@ -283,7 +286,7 @@
 		align-items: center;
 	}
 	.quality-head {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		margin: 16px 0 6px;
 	}
@@ -291,8 +294,8 @@
 		background: none;
 		text-align: left;
 		min-height: 36px;
-		font-size: 12px;
-		border-radius: 6px;
+		font-size: var(--text-sm);
+		border-radius: var(--radius-xs);
 		padding: 5px;
 	}
 	.quality-row b {
@@ -315,7 +318,7 @@
 		gap: 6px;
 	}
 	.played-quality span {
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.engine-lines {
@@ -323,7 +326,7 @@
 		margin-bottom: 0;
 	}
 	.lines-heading {
-		font-size: 12px;
+		font-size: var(--text-sm);
 	}
 	.engine-line {
 		display: flex;
@@ -332,12 +335,12 @@
 		width: 100%;
 		text-align: left;
 		min-height: 44px;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		padding: 10px;
 		background: var(--bg);
 		margin: 6px 0;
-		font-size: 11px;
-		line-height: 1.6;
+		font-size: var(--text-sm);
+		line-height: var(--leading-body);
 	}
 	.engine-line b {
 		white-space: nowrap;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AnalysisPresentation } from './analysis.types';
+	import { qualityTextColor } from './quality-colors';
 	import type { Move } from 'chess.js';
 	import type { MoveQuality } from '#lib/engine/classification.js';
 	import { moveLabel } from '#lib/chess.js';
@@ -82,7 +83,7 @@
 				<path
 					d={curve}
 					fill="none"
-					stroke="#6d8a58"
+					stroke="var(--chart-line-white)"
 					stroke-width="2.4"
 					vector-effect="non-scaling-stroke"
 					clip-path="url(#white-evaluation)"
@@ -90,7 +91,7 @@
 				<path
 					d={curve}
 					fill="none"
-					stroke="#454c40"
+					stroke="var(--chart-line-black)"
 					stroke-width="2.4"
 					vector-effect="non-scaling-stroke"
 					clip-path="url(#black-evaluation)"
@@ -130,7 +131,7 @@
 					aria-pressed={ply === moment.ply}
 					onclick={() => onNavigate(moment.ply)}
 					><i class:black-side={moment.color === 'b'}></i>{moment.label}<b
-						style:color={moment.quality?.color}>{moment.quality?.symbol}</b
+						style:color={qualityTextColor(moment.quality.name)}>{moment.quality.symbol}</b
 					></button
 				>{/each}
 		</div>{/if}
@@ -138,7 +139,7 @@
 
 <style>
 	.evaluation-card {
-		border-radius: 13px;
+		border-radius: var(--radius-lg);
 		background: var(--paper);
 		margin: 0;
 		padding: 16px 20px 14px;
@@ -157,50 +158,50 @@
 		gap: 8px;
 	}
 	.evaluation-title h3 {
-		font-size: 10px;
-		font-weight: 650;
-		letter-spacing: -0.2px;
+		font-size: var(--text-caption);
+		font-weight: var(--weight-semibold);
+		letter-spacing: var(--tracking-ui);
 	}
 	.evaluation-title > div > span {
-		color: #aab09b;
-		font-size: 8px;
+		color: var(--text-secondary);
+		font-size: var(--text-caption);
 		margin-left: 4px;
 	}
 	.chart-axis {
 		display: flex;
 		justify-content: space-between;
 		padding-top: 7px;
-		color: #b4b9a5;
-		font-size: 7px;
+		color: var(--text-secondary);
+		font-size: var(--text-caption);
 	}
 	.replay-progress {
 		height: 100%;
-		background: linear-gradient(180deg, #a9bb8c44, #a9bb8c11);
-		border-right: 2px solid #97ab7b;
+		background: var(--chart-progress);
+		border-right: 2px solid var(--chart-progress-edge);
 	}
 	@media (max-width: 760px) {
 		.evaluation-title h3 {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 		.evaluation-title > div > span {
-			font-size: 7px;
+			font-size: var(--text-caption);
 		}
 		.evaluation-title > div {
 			gap: 6px;
 		}
 		.chart-axis {
-			font-size: 8px;
+			font-size: var(--text-caption);
 		}
 	}
 	@media (min-width: 1001px) {
 		.evaluation-title h3 {
-			font-size: 12px;
+			font-size: var(--text-sm);
 		}
 		.evaluation-title > div > span {
-			font-size: 9px;
+			font-size: var(--text-caption);
 		}
 		.chart-axis {
-			font-size: 9px;
+			font-size: var(--text-caption);
 		}
 	}
 	.evaluation-sides {
@@ -212,32 +213,32 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-size: 10px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.evaluation-sides i {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
-		background: #fffbee;
-		border: 1px solid #abae9c;
+		border-radius: var(--radius-round);
+		background: var(--chess-side-light);
+		border: 1px solid var(--chess-side-border);
 		flex-shrink: 0;
 	}
 	.critical-moves i {
 		width: 8px;
 		height: 8px;
-		border-radius: 50%;
-		background: #fffbee;
-		border: 1px solid #abae9c;
+		border-radius: var(--radius-round);
+		background: var(--chess-side-light);
+		border: 1px solid var(--chess-side-border);
 		flex-shrink: 0;
 	}
 	.evaluation-sides .black-side {
-		background: #454c40;
-		border-color: #454c40;
+		background: var(--chess-side-dark);
+		border-color: var(--chess-side-dark);
 	}
 	.critical-moves .black-side {
-		background: #454c40;
-		border-color: #454c40;
+		background: var(--chess-side-dark);
+		border-color: var(--chess-side-dark);
 	}
 	.evaluation-plot {
 		height: 125px;
@@ -262,37 +263,37 @@
 	}
 	.white-zone {
 		top: 0;
-		background: #f7f3e82e;
+		background: var(--evaluation-white-zone);
 	}
 	.black-zone {
 		bottom: 0;
-		background: #454c4010;
+		background: var(--evaluation-black-zone);
 	}
 	.advantage-zone > span {
 		position: absolute;
 		left: 4px;
-		font-size: 8px;
-		color: #8c9680;
+		font-size: var(--text-caption);
+		color: var(--text-secondary);
 	}
 	.white-zone > span {
 		top: 3px;
 	}
 	.black-zone > span {
 		bottom: 3px;
-		color: #737b69;
+		color: var(--text-secondary);
 	}
 	.evaluation-zero {
 		position: absolute;
 		top: 50%;
 		width: 100%;
-		border-top: 1px dashed #aeb69c;
+		border-top: 1px dashed var(--chart-grid);
 		pointer-events: none;
 	}
 	.evaluation-zero > span {
 		position: absolute;
 		right: calc(100% + 6px);
 		top: -5px;
-		font-size: 8px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.evaluation-plot > input {
@@ -306,16 +307,16 @@
 		cursor: ew-resize;
 	}
 	.evaluation-plot:has(> input:focus-visible) {
-		outline: 2px solid var(--violet);
+		outline: 2px solid var(--focus-color);
 		outline-offset: 4px;
-		border-radius: 4px;
+		border-radius: var(--radius-xs);
 	}
 	.evaluation-cursor {
 		position: absolute;
 		top: 0;
 		bottom: 0;
 		width: 1px;
-		background: #c7ac43;
+		background: var(--chart-cursor);
 		pointer-events: none;
 		z-index: 1;
 		transition: left 0.15s;
@@ -327,8 +328,8 @@
 		width: 5px;
 		height: 5px;
 		background: var(--yellow);
-		border: 1px solid #bba33f;
-		border-radius: 50%;
+		border: 1px solid var(--chart-cursor);
+		border-radius: var(--radius-round);
 	}
 	.graph-moment {
 		position: absolute;
@@ -340,22 +341,22 @@
 		background: none;
 		transform: translate(-50%, -50%);
 		z-index: 3;
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 	}
 	.graph-moment > span {
 		display: block;
 		width: 10px;
 		height: 10px;
-		background: #fffbee;
+		background: var(--chess-side-light);
 		border: 2px solid var(--moment-color);
-		border-radius: 50%;
+		border-radius: var(--radius-round);
 		box-shadow: 0 1px 2px #0002;
 		transition:
 			transform 0.2s,
 			box-shadow 0.2s;
 	}
 	.graph-moment.black-moment > span {
-		background: #454c40;
+		background: var(--chess-side-dark);
 	}
 	.graph-moment.selected > span {
 		transform: scale(1.35);
@@ -372,7 +373,7 @@
 	}
 	.evaluation-timeline .chart-axis {
 		margin: 3px 12px 0;
-		font-size: 9px;
+		font-size: var(--text-caption);
 	}
 	.critical-moves {
 		display: flex;
@@ -384,7 +385,7 @@
 		border-top: 1px solid var(--line);
 	}
 	.critical-moves > span {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 		margin-right: 4px;
 		width: 100%;
@@ -393,25 +394,19 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		min-height: 30px;
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		padding: 0 8px;
 		background: var(--bg);
 		border: 1px solid var(--line);
 	}
 	.critical-moves > button.current {
-		border-color: #c5b8ec;
-		background: color-mix(in srgb, var(--violet) 9%, var(--paper));
+		border-color: var(--selection-border);
+		background: var(--selection-bg);
 	}
 	.critical-moves b {
-		font-size: 9px;
-	}
-	:global(:root[data-theme='dark']) .black-zone {
-		background: #10140d36;
-	}
-	:global(:root[data-theme='dark']) .white-zone {
-		background: #e9efda0b;
+		font-size: var(--text-caption);
 	}
 	.evaluation-card[data-presentation='sheet'] .evaluation-plot {
 		height: 170px;

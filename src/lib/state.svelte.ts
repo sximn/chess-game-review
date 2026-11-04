@@ -70,7 +70,10 @@ export function persistSettings() {
 	document.documentElement.dataset.theme = app.theme;
 	document
 		.querySelector('meta[name="theme-color"]')
-		?.setAttribute('content', app.theme === 'dark' ? '#1e211d' : '#f5f3ed');
+		?.setAttribute(
+			'content',
+			getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()
+		);
 	if (!app.hydrated) return;
 	try {
 		localStorage.setItem(

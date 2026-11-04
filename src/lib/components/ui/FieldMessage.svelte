@@ -24,24 +24,24 @@
 
 <style>
 	.field-message {
-		font-size: var(--field-message-font-size, 9px);
-		line-height: var(--field-message-line-height, 1.8);
+		font-size: var(--field-message-font-size, var(--text-caption));
+		line-height: var(--field-message-line-height, var(--leading-relaxed));
 		color: var(--muted);
 		margin: var(--field-message-margin, 9px 0 0);
 	}
 	.field-message[data-variant='error'] {
-		font-size: 11px;
-		line-height: 1.7;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
 		padding: 12px;
-		border: 1px solid #e3bbb0;
-		background: #fff0e7;
-		color: #a1543f;
-		border-radius: 9px;
+		border: 1px solid var(--error-border);
+		background: var(--error-bg);
+		color: var(--error-text);
+		border-radius: var(--radius-sm);
 		margin: 14px 0 0;
 	}
 	@media (max-width: 760px) {
 		.field-message[data-variant='hint'] {
-			font-size: var(--field-message-mobile-font-size, 10px);
+			font-size: var(--field-message-mobile-font-size, var(--text-caption));
 		}
 	}
 </style>

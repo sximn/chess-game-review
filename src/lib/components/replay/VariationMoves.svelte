@@ -67,12 +67,12 @@
 
 <style>
 	.variation-line {
-		border-left: 2px solid var(--sage);
+		border-left: 2px solid var(--accent-strong);
 		padding: 0 0 0 10px;
 		min-width: 0;
 	}
 	.variation-line.active {
-		border-color: var(--violet);
+		border-color: var(--selection-border);
 	}
 	.line-heading {
 		display: flex;
@@ -80,17 +80,17 @@
 		justify-content: space-between;
 		gap: 8px;
 		margin-bottom: 3px;
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
 	}
 	.line-heading > span:first-child {
 		display: flex;
 		align-items: center;
 		gap: 5px;
-		font-weight: 650;
+		font-weight: var(--weight-semibold);
 	}
 	.active .line-heading > span:first-child {
-		color: var(--violet);
+		color: var(--text-accent);
 	}
 	.variation-steps {
 		position: relative;
@@ -112,25 +112,28 @@
 		min-height: 36px;
 		padding: 0 9px;
 		border: 1px solid var(--line);
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		background: var(--paper);
 		color: var(--ink);
-		font-size: 12px;
-		font-weight: 600;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 	.variation-step > span {
-		font-size: 9px;
+		font-size: var(--text-caption);
 		color: var(--muted);
-		font-weight: 450;
+		font-weight: var(--weight-regular);
 	}
 	.variation-step[aria-current='step'] {
-		background: color-mix(in srgb, var(--violet) 12%, var(--paper));
-		border-color: var(--violet);
-		color: var(--violet);
+		background: var(--selection-bg);
+		border-color: var(--selection-border);
+		color: var(--selection-text);
+	}
+	.variation-step[aria-current='step'] > span {
+		color: inherit;
 	}
 	@media (hover: hover) {
-		.variation-step:hover {
-			background: var(--surface-green);
+		.variation-step:hover:not([aria-current='step']) {
+			background: var(--surface-subtle);
 		}
 	}
 </style>

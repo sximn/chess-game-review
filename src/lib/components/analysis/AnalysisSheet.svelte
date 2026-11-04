@@ -53,7 +53,7 @@
 	.analysis-overlay {
 		position: fixed;
 		inset: 0;
-		background: #252b2059;
+		background: var(--overlay-bg);
 		backdrop-filter: blur(6px);
 		z-index: 60;
 		animation: overlay-in 0.2s;
@@ -74,15 +74,15 @@
 		background: var(--bg);
 		color: var(--ink);
 		border: 1px solid var(--line);
-		border-radius: 24px 24px 0 0;
-		box-shadow: 0 -12px 70px #27321e26;
+		border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+		box-shadow: var(--shadow-sheet);
 		animation: sheet-in 0.3s var(--ease);
 	}
 	.sheet-handle {
 		display: block;
 		width: 36px;
 		height: 4px;
-		border-radius: 10px;
+		border-radius: var(--radius-pill);
 		background: var(--line);
 		margin: 0 auto 12px;
 		flex-shrink: 0;
@@ -103,7 +103,7 @@
 		overscroll-behavior: contain;
 		padding: 0 2px 2px;
 		scrollbar-width: thin;
-		scrollbar-color: #c2c9b4 transparent;
+		scrollbar-color: var(--scrollbar-thumb) transparent;
 	}
 	@media (max-height: 520px) and (min-width: 480px) {
 		.analysis-sheet {

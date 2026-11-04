@@ -4,6 +4,7 @@
 	import Card from '#lib/components/ui/Card.svelte';
 	import { moveLabel } from '#lib/chess.js';
 	import { getColorByQuality, getSymbolByQuality } from '#lib/engine/classification.js';
+	import { qualityTextColor } from '#lib/components/analysis/quality-colors.js';
 
 	let {
 		suggestion,
@@ -24,7 +25,7 @@
 
 <Card
 	class="best-move-card"
-	style={`--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')}`}
+	style={`--card-radius:var(--radius-md);--card-background:rgba(from var(--paper) r g b / 10%);--rating-color:${getColorByQuality('Best')};--rating-text:${qualityTextColor('Best')}`}
 >
 	<button
 		class="best-move-trigger"
@@ -55,24 +56,24 @@
 		min-width: 0;
 		height: 48px;
 		padding: 10px;
-		border-radius: 11px;
+		border-radius: inherit;
 		background: transparent;
 		text-align: left;
 	}
 	.best-move-trigger[aria-pressed='true'] {
-		background: var(--surface-green);
+		background: rgb(from var(--muted) r g b / 5%);
 	}
 	.rating-symbol {
 		flex-shrink: 0;
 		background: color-mix(in srgb, var(--rating-color) 20%, var(--paper));
-		color: var(--rating-color);
+		color: var(--rating-text);
 		display: grid;
 		place-items: center;
 		flex: 0 0 24px;
 		height: 24px;
-		border-radius: 8px;
-		font-size: 15px;
-		font-weight: 750;
+		border-radius: var(--radius-sm);
+		font-size: var(--text-lg);
+		font-weight: var(--weight-bold);
 	}
 	.best-move-copy {
 		display: flex;
@@ -83,14 +84,14 @@
 	}
 	.best-move-copy strong {
 		display: block;
-		font-size: 12px;
-		line-height: 1.2;
-		color: var(--rating-color);
+		font-size: var(--text-sm);
+		line-height: var(--leading-tight);
+		color: var(--rating-text);
 	}
 	.best-move-copy > span {
-		font-size: 12px;
+		font-size: var(--text-sm);
 		color: var(--muted);
-		line-height: 1.3;
+		line-height: var(--leading-compact);
 	}
 	.best-move-copy > strong,
 	.best-move-copy > span {
@@ -108,12 +109,6 @@
 		}
 		.best-move-trigger > :global(svg) {
 			display: none;
-		}
-		.best-move-copy strong {
-			font-size: 11px;
-		}
-		.best-move-copy > span {
-			font-size: 11px;
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) {

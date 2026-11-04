@@ -24,10 +24,10 @@
 		margin-bottom: 29px;
 	}
 	h1 {
-		font-weight: 650;
-		font-size: 34px;
-		line-height: 1.2;
-		letter-spacing: -1.5px;
+		font-weight: var(--weight-semibold);
+		font-size: var(--text-page);
+		line-height: var(--leading-tight);
+		letter-spacing: var(--tracking-heading);
 	}
 	@media (min-width: 1500px) {
 		.page-heading {
@@ -36,7 +36,7 @@
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
 		h1 {
-			font-size: 30px;
+			font-size: var(--text-heading);
 		}
 	}
 	@media (max-width: 760px) {
@@ -45,19 +45,19 @@
 			gap: 12px;
 		}
 		h1 {
-			font-size: 30px;
+			font-size: var(--text-heading);
 		}
 	}
 
 	.page-heading > :global(.heading-action) {
 		margin-top: 10px;
 		--button-min-height: 40px;
-		--button-font-size: 10px;
+		--button-font-size: var(--text-caption);
 		--button-padding: 0 15px;
 	}
 	@media (max-width: 1000px) and (min-width: 761px) {
 		.page-heading > :global(.heading-action) {
-			--button-font-size: 9px;
+			--button-font-size: var(--text-caption);
 			--button-padding: 0 10px;
 		}
 		.page-heading > :global(.heading-action) > :global(svg:last-child) {
@@ -71,7 +71,7 @@
 			--button-height: 44px;
 			--button-min-height: 44px;
 			--button-padding: 0;
-			--button-radius: 11px;
+			--button-radius: var(--radius-md);
 			margin-top: 0;
 			flex-shrink: 0;
 		}

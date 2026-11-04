@@ -45,7 +45,7 @@
 		padding: 22px 24px;
 		background: var(--paper);
 		border: 1px solid var(--line);
-		border-radius: 12px;
+		border-radius: var(--radius-lg);
 		transition:
 			background 0.18s,
 			border-color 0.18s;
@@ -55,22 +55,22 @@
 		min-width: 0;
 	}
 	h3 {
-		font-size: 15px;
-		font-weight: 650;
-		line-height: 1.5;
+		font-size: var(--text-lg);
+		font-weight: var(--weight-semibold);
+		line-height: var(--leading-body);
 		overflow-wrap: anywhere;
 	}
 	h3 span {
 		color: var(--muted);
-		font-weight: 400;
+		font-weight: var(--weight-regular);
 		margin: 0 4px;
-		font-size: 12px;
+		font-size: var(--text-sm);
 	}
 	p {
 		color: var(--muted);
-		font-size: 12px;
+		font-size: var(--text-sm);
 		margin-top: 5px;
-		line-height: 1.5;
+		line-height: var(--leading-body);
 		overflow-wrap: anywhere;
 	}
 	p span {
@@ -81,12 +81,12 @@
 		flex-shrink: 0;
 	}
 	.game-result strong {
-		font-size: 12px;
-		font-weight: 600;
+		font-size: var(--text-sm);
+		font-weight: var(--weight-semibold);
 	}
 	.game-result > span {
 		display: block;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		color: var(--muted);
 		margin-top: 6px;
 	}
@@ -95,8 +95,8 @@
 	}
 	@media (hover: hover) {
 		.library-game:hover {
-			background: var(--surface-green);
-			border-color: var(--sage);
+			background: var(--surface-subtle);
+			border-color: var(--accent-strong);
 		}
 	}
 	@media (max-width: 760px) {
@@ -105,13 +105,13 @@
 			gap: 12px;
 		}
 		h3 {
-			font-size: 14px;
+			font-size: var(--text-md);
 		}
 		p {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 		.game-result strong {
-			font-size: 11px;
+			font-size: var(--text-sm);
 		}
 		a > :global(svg) {
 			width: 14px;

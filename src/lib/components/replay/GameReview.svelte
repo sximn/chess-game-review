@@ -344,7 +344,7 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		scrollbar-width: thin;
-		scrollbar-color: #c2c9b4 transparent;
+		scrollbar-color: var(--scrollbar-thumb) transparent;
 		scrollbar-gutter: stable;
 		padding: 0 2px 2px;
 	}

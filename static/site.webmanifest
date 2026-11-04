@@ -30,7 +30,7 @@
 			"purpose": "monochrome"
 		}
 	],
-	"theme_color": "#f5f3ed",
-	"background_color": "#f5f3ed",
+	"theme_color": "#f5f5f5",
+	"background_color": "#f5f5f5",
 	"display": "standalone"
 }

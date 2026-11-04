@@ -27,9 +27,9 @@
 		top: 8px;
 		left: 260px;
 		background: var(--yellow);
-		color: #2c302b;
+		color: var(--text-on-primary);
 		padding: 12px 20px;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		z-index: 100;
 		transform: translateY(-150%);
 	}

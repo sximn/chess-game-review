@@ -53,7 +53,7 @@
 	<div class="main-area">
 		<header class="topbar">
 			<div class="breadcrumb">
-				<Feather size={16} /><span>Your chess corner</span><span class="breadcrumb-slash">/</span
+				<Feather size={16} /><span>Progress in chess</span><span class="breadcrumb-slash">/</span
 				><strong
 					>{page.url.pathname === '/settings'
 						? 'Preferences'
@@ -68,13 +68,6 @@
 				</span>
 				<strong>Up a Pawn</strong>
 			</a>
-			<div class="topbar-right">
-				<span class="local-status"><span></span> Saved on this device</span><a
-					class="topbar-avatar"
-					aria-label="Open preferences"
-					href="/settings"><Settings2 size={17} /></a
-				>
-			</div>
 		</header>
 		<main id="main-content">{@render children()}</main>
 		<footer class="app-footer">
@@ -96,6 +89,7 @@
 		display: flex;
 		min-height: 100dvh;
 	}
+	/* Brand artwork keeps its own corner and type proportions. */
 	.brand-mark {
 		width: 40px;
 		height: 43px;
@@ -104,20 +98,11 @@
 		justify-content: center;
 		background: linear-gradient(145deg, #ffe986, #ffd84d);
 		border-radius: 12px;
-		color: #32352a;
+		color: var(--text-on-primary);
 		border: 1px solid #e4bf43;
 		box-shadow:
 			inset 0 1px #fff8,
 			0 3px 6px #4f420a0c;
-	}
-	.topbar-avatar {
-		background: #f0e9da;
-		color: #7a765c;
-		display: grid;
-		place-items: center;
-		border: 1px solid #ded8c8;
-		font-size: 12px;
-		font-weight: 700;
 	}
 	.main-area {
 		padding-left: 226px;
@@ -136,42 +121,19 @@
 		display: flex;
 		align-items: center;
 		gap: 12px;
-		font-size: 10px;
-		color: #9a9b8d;
+		font-size: var(--text-caption);
+		color: var(--text-secondary);
 	}
 	.breadcrumb > :global(svg) {
-		color: #919b80;
+		color: var(--icon-muted);
 	}
 	.breadcrumb strong {
-		font-weight: 550;
-		color: #666d5c;
+		font-weight: var(--weight-medium);
+		color: var(--ink);
 	}
 	.breadcrumb-slash {
-		color: #c6c6b7;
+		color: var(--icon-muted);
 		margin: 0 2px;
-	}
-	.topbar-right {
-		display: flex;
-		align-items: center;
-		gap: 22px;
-	}
-	.local-status {
-		display: flex;
-		align-items: center;
-		gap: 7px;
-		font-size: 9px;
-		color: #999d8e;
-	}
-	.local-status > span {
-		height: 5px;
-		width: 5px;
-		background: #98ac80;
-		border-radius: 50%;
-	}
-	.topbar-avatar {
-		width: 30px;
-		height: 30px;
-		border-radius: 50%;
 	}
 	.mobile-brand {
 		display: none;
@@ -188,18 +150,13 @@
 		display: flex;
 		justify-content: space-between;
 		gap: 15px;
-		font-size: 7px;
-		color: #b2b6a3;
+		font-size: var(--text-caption);
+		color: var(--text-secondary);
 	}
 	.app-footer > span {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-	}
-	@media (hover: hover) {
-		.topbar-avatar:hover {
-			box-shadow: 0 0 0 3px #d9dfcc70;
-		}
 	}
 	@media (min-width: 1500px) {
 		main {
@@ -237,9 +194,6 @@
 			padding: 0 21px;
 			min-height: 66px;
 		}
-		.local-status {
-			display: none;
-		}
 	}
 	@media (max-width: 760px) {
 		.main-area {
@@ -251,8 +205,7 @@
 				13px max(20px, env(safe-area-inset-left, 0px));
 			background: var(--paper);
 		}
-		.breadcrumb,
-		.local-status {
+		.breadcrumb {
 			display: none;
 		}
 		.mobile-brand {
@@ -270,13 +223,6 @@
 			height: 34px;
 			border-radius: 9px;
 		}
-		.topbar-avatar {
-			width: 30px;
-			height: 30px;
-		}
-		.topbar-right {
-			gap: 0;
-		}
 		main {
 			padding: 24px max(20px, env(safe-area-inset-right, 0px)) 0
 				max(20px, env(safe-area-inset-left, 0px));
@@ -284,17 +230,12 @@
 		}
 		.app-footer {
 			padding: 23px 20px calc(103px + env(safe-area-inset-bottom, 0px));
-			font-size: 7px;
+			font-size: var(--text-caption);
 			justify-content: center;
 		}
 		.app-footer > span:last-child {
 			display: none;
 		}
-	}
-	:global(:root[data-theme='dark']) .topbar-avatar {
-		background: #3b4233;
-		border-color: #505943;
-		color: #c6c9ab;
 	}
 	@media (min-width: 1001px) {
 		main,
@@ -302,10 +243,7 @@
 			max-width: 1120px;
 		}
 		.breadcrumb {
-			font-size: 11px;
-		}
-		.local-status {
-			font-size: 10px;
+			font-size: var(--text-sm);
 		}
 	}
 	@media (min-width: 761px) {

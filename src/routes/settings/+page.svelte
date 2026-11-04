@@ -13,7 +13,7 @@
 <PageHeading title="Just your style" />
 
 <div class="settings-layout">
-	<Card as="section" class="settings-card" style="--card-radius:16px">
+	<Card as="section" class="settings-card">
 		<div class="settings-content">
 			<h2>Theme</h2>
 			<div class="theme-options">
@@ -107,12 +107,12 @@
 		display: block;
 		min-height: 36px;
 		padding: 8px 0;
-		font-size: 13px;
+		font-size: var(--text-md);
 		text-decoration: underline;
 	}
 	.analysis-notice {
-		font-size: 12px;
-		line-height: 1.7;
+		font-size: var(--text-sm);
+		line-height: var(--leading-relaxed);
 		color: var(--muted);
 	}
 
@@ -126,9 +126,9 @@
 		padding: 31px;
 	}
 	.settings-content h2 {
-		font-family: 'DM Serif Display', Georgia, serif;
-		font-size: 29px;
-		font-weight: 400;
+		font-family: var(--font-display);
+		font-size: var(--text-heading);
+		font-weight: var(--weight-regular);
 		margin: 11px 0 10px;
 	}
 	.theme-options {
@@ -141,31 +141,31 @@
 		min-width: 0;
 		background: none;
 		border: 1px solid var(--line);
-		border-radius: 12px;
+		border-radius: var(--radius-md);
 		padding: 5px;
 	}
 	.theme-options > button.selected {
-		border-color: #9cae7d;
-		box-shadow: 0 0 0 2px #a7b88926;
+		border-color: var(--active-border);
+		box-shadow: var(--active-ring);
 	}
 	.theme-preview {
 		height: 110px;
 		position: relative;
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		padding: 17px;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
 	.light-preview {
-		background: #f3efe2;
+		background: #f3f3f3;
 	}
 	.dark-preview {
-		background: #2a3025;
+		background: #242424;
 	}
 	.theme-preview > span {
 		height: 7px;
-		background: #dedfcb;
+		background: #d9d9d9;
 		border-radius: 3px;
 		width: 54%;
 		display: block;
@@ -173,37 +173,37 @@
 	.theme-preview > span:nth-child(2) {
 		width: 70%;
 		height: 25px;
-		background: #c1ceaa;
+		background: #c9c9c9;
 		margin-top: 3px;
 	}
 	.theme-preview > span:nth-child(3) {
 		width: 40%;
-		background: #e4cf80;
+		background: #e5cb70;
 	}
 	.dark-preview > span {
-		background: #414a35;
+		background: #454545;
 	}
 	.dark-preview > span:nth-child(2) {
-		background: #798b62;
+		background: #686868;
 	}
 	.dark-preview > span:nth-child(3) {
-		background: #ad9b58;
+		background: #a58e3b;
 	}
 	.theme-preview > :global(svg) {
 		position: absolute;
 		right: 15px;
 		bottom: 15px;
-		color: #a79c68;
+		color: #8a773d;
 	}
 	.theme-options > button > span {
-		font-size: 11px;
+		font-size: var(--text-sm);
 		padding: 12px 7px 8px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 	.theme-options > button > span > :global(svg) {
-		color: #8a9e6e;
+		color: var(--active-text);
 	}
 	.settings-divider {
 		height: 1px;
@@ -211,13 +211,13 @@
 		margin: 30px 0;
 	}
 	.settings-content h3 {
-		font-size: 13px;
-		font-weight: 600;
+		font-size: var(--text-md);
+		font-weight: var(--weight-semibold);
 		margin: 22px 0 6px;
 	}
 	.piece-set-description {
-		font-size: 12px;
-		line-height: 1.6;
+		font-size: var(--text-sm);
+		line-height: var(--leading-body);
 		color: var(--muted);
 	}
 	.piece-options {
@@ -226,7 +226,7 @@
 	.piece-preview {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
-		border-radius: 8px;
+		border-radius: var(--radius-sm);
 		overflow: hidden;
 	}
 	.preview-square {
@@ -252,7 +252,7 @@
 			padding: 23px;
 		}
 		.settings-content h2 {
-			font-size: 25px;
+			font-size: var(--text-title);
 		}
 		.theme-options {
 			gap: 9px;
@@ -269,9 +269,6 @@
 		.settings-content {
 			padding: 25px 22px;
 		}
-		.settings-content h2 {
-			font-size: 28px;
-		}
 		.theme-options {
 			gap: 12px;
 		}
@@ -279,7 +276,7 @@
 			height: 115px;
 		}
 		.theme-options > button > span {
-			font-size: 12px;
+			font-size: var(--text-sm);
 		}
 	}
 	.settings-content > :global(.setting-row) {

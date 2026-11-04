@@ -38,6 +38,67 @@ import type { TabItem } from '#lib/components/ui/tabs.types.js';
 
 Import components directly from their files. A central re-export file is unnecessary for this directory.
 
+## Colors and themes
+
+Define shared colors and light/dark differences in `src/lib/styles/foundation.css`.
+Components should consume semantic roles instead of adding their own theme selectors:
+
+- Use `--ink` for primary text, `--text-secondary` for supporting text,
+  `--text-placeholder` for placeholders, and `--icon-muted` for secondary icons.
+- Use `--text-action` for ordinary actions and `--text-accent` for special purple
+  text. `--accent` is the primary yellow; `--accent-strong` is its higher-contrast
+  variant for thin indicators and progress. Palette hues are not general text colors.
+- Use `--selection-bg/text/border` for purple selections and
+  `--active-bg/text/border` for primary active controls. Keep the state visible on hover.
+- Use `--surface-subtle` for neutral secondary surfaces and hover treatments.
+  App surfaces, secondary text, borders, and shadows are neutral grays in both
+  themes; yellow identifies primary actions and violet distinguishes special states.
+- Use the `--success-*`, `--error-*`, and `--notice-*` families for feedback.
+- Use `--overlay-bg` and the shared `--shadow-*` roles for floating UI.
+
+Public component properties such as `--button-color` can override these defaults,
+but their values should reference semantic tokens. Check text contrast against
+the actual surface in both themes, including selected and tinted backgrounds.
+
+Brand artwork, chess squares, and move-quality markers deliberately keep their
+own palette. Preserve those colors. Theme previews depict the current neutral
+light/dark palettes and remain fixed regardless of the selected theme. Neutral
+piece-side indicators use `--chess-side-*`; evaluation lines use `--chart-line-*`
+so each stays legible against its theme. For move-quality **text**, use
+`analysis/quality-colors.ts`; its semantic variants keep the hue readable without
+changing classification data or graph marker colors. Add a semantic role when a
+new shared state needs one, rather than reusing a similarly colored token with a
+different meaning.
+
+## Radiuses and typography
+
+Use the scales in `src/lib/styles/foundation.css` through component properties
+and scoped styles. Select a step by purpose, rather than adding a nearby value:
+
+- Corners: `--radius-xs` (4px) for compact rows/badges, `--radius-sm` (8px) for
+  small controls and nested elements, `--radius-md` (12px) for ordinary controls
+  and compact review cards, `--radius-lg` (16px) for cards/panels, and
+  `--radius-xl` (24px) for dialogs/sheets. Use `--radius-pill` for capsules and
+  handles, and `--radius-round` for circles. Sheets keep square bottom corners.
+- Families: `--font-body` for the interface, `--font-display` for editorial/serif
+  headings, and `--font-mono` for editable chess notation.
+- Sizes: `--text-caption` (10px at the default root), `--text-sm/md/lg/xl`
+  (12/14/16/18px), `--text-title/heading/page` (24/30/34px), and the fluid
+  `--text-display` for welcome/empty-state headings. Sizes use rem so browser
+  font preferences carry through. Mobile inputs use `--text-input-mobile` to
+  keep a 16px minimum and prevent iOS focus zoom.
+- Weights: `--weight-regular/medium/semibold/bold/heavy` (400/500/600/700/800).
+  Use `--leading-*` for line height and `--tracking-*` for repeated text spacing.
+
+Keep intentional optical exceptions local and explain them: the wordmark has
+its own responsive proportions; board coordinates, evaluation labels, markers,
+and its frame retain their spatial sizing; theme preview artwork keeps its tiny
+corners; the narrow landscape navigation rail keeps 8px labels. Zero radius and
+zero text size for an icon-only control are behaviors, not additional scale steps.
+Nested clickable review cards inherit their parent's radius so their selected
+background fits the container. Preserve public `--button-*`, `--input-*`,
+`--textarea-*`, and `--card-*` overrides, choosing scale tokens as their values.
+
 ## Removing components
 
 Before deleting a component, search the repository for imports, template usage, and dynamic loading. Check whether its children still have other callers. After moving or removing files, run `bun run check`, `bun run build`, and the relevant existing tests.

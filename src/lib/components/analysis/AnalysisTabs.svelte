@@ -16,7 +16,5 @@
 	aria-label="Review panels"
 	class="review-tab-list"
 	size={presentation === 'sheet' ? 'comfortable' : 'default'}
-	style={presentation === 'sidebar'
-		? '--tabs-min-width:0;--tabs-trigger-padding:0 5px'
-		: '--tabs-active-color:#667d51'}
+	style={presentation === 'sidebar' ? '--tabs-min-width:0;--tabs-trigger-padding:0 5px' : undefined}
 />

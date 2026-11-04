@@ -69,17 +69,17 @@
 		padding: 5px;
 		background: var(--paper);
 		border: 1px solid var(--line);
-		border-radius: 11px;
-		box-shadow: 0 8px 32px #2b331626;
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-popover);
 	}
 	.dropdown-menu [role='menuitem'] {
 		display: flex;
 		align-items: center;
 		gap: 9px;
 		padding: 12px;
-		font-size: 11px;
+		font-size: var(--text-sm);
 		color: var(--muted);
-		border-radius: 7px;
+		border-radius: var(--radius-sm);
 		cursor: pointer;
 		outline: 0;
 	}

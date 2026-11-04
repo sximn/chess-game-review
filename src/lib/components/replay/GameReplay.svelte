@@ -228,26 +228,35 @@
 		align-items: center;
 		gap: 6px;
 		padding: 4px 8px;
-		border: 1px solid color-mix(in srgb, var(--violet) 45%, var(--paper));
-		border-radius: 20px;
+		border: 1px solid var(--selection-border);
+		border-radius: var(--radius-pill);
 		background: var(--paper);
-		color: var(--violet);
+		color: var(--text-accent);
 
-		font-size: 10px;
-		font-weight: 650;
+		font-size: var(--text-caption);
+		font-weight: var(--weight-semibold);
 		white-space: nowrap;
 		pointer-events: none;
 	}
 	.variation-badge span {
 		color: var(--muted);
-		font-size: 9px;
+		font-size: var(--text-caption);
 	}
 	.exploring .board-stage :global(.chessboard) {
-		filter: brightness(0.78) saturate(0.65);
+		filter: brightness(0.92) saturate(0.92);
 		box-shadow:
 			0 0 0 3px var(--violet),
 			0 0 0 7px color-mix(in srgb, var(--violet) 12%, transparent);
 	}
+
+	:global(:root[data-theme='dark']) .exploring .board-stage :global(.chessboard) {
+		filter: brightness(0.85) saturate(0.90);
+	}
+	/* @media (prefers-color-scheme: dark) {
+		.exploring .board-stage :global(.chessboard) {
+			filter: brightness(0.95) saturate(0.88);
+		}
+	} */
 	@media (prefers-reduced-motion: reduce) {
 		.board-stage :global(.chessboard) {
 			transition: none;
