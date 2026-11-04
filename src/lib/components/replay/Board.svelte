@@ -880,37 +880,41 @@
 			role="img"
 			aria-label={`Best move: ${suggestedMove.san}, ${suggestedMove.from} to ${suggestedMove.to}`}
 		>
-			<defs
-				><marker
+			<defs>
+				<marker
 					id={`${boardId}-arrowhead`}
 					viewBox="0 0 10 10"
-					refX="8"
+					refX="6"
 					refY="5"
-					markerWidth="0.65"
-					markerHeight="0.65"
+					markerWidth="0.44"
+					markerHeight="0.44"
 					markerUnits="userSpaceOnUse"
-					orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="currentColor" /></marker
-				></defs
-			>
-			<path
-				d={suggestionPath}
-				fill="none"
-				stroke="var(--paper)"
-				stroke-width="0.24"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				opacity="0.65"
-			/>
-			<path
-				class="suggestion-path"
-				d={suggestionPath}
-				fill="none"
-				stroke="currentColor"
-				stroke-width="0.16"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				marker-end={`url(#${boardId}-arrowhead)`}
-			/>
+					orient="auto"
+				>
+					<path d="M 0 0 L 10 5 L 0 10 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round" />
+				</marker>
+
+				<filter
+					id={`${boardId}-arrow-shadow`}
+					filterUnits="userSpaceOnUse"
+					x="0" y="0" width="8" height="8"
+				>
+					<feDropShadow dx="0" dy="0.02" stdDeviation="0.035" flood-color="#000" flood-opacity="0.35" />
+				</filter>
+			</defs>
+
+			<g opacity="0.82" filter={`url(#${boardId}-arrow-shadow)`}>
+				<path
+					class="suggestion-path"
+					d={suggestionPath}
+					fill="none"
+					stroke="currentColor"
+					stroke-width="0.15"
+					stroke-linecap="butt"
+					stroke-linejoin="round"
+					marker-end={`url(#${boardId}-arrowhead)`}
+				/>
+			</g>
 		</svg>
 	{/if}
 
@@ -956,8 +960,8 @@
 		height: 100%;
 		z-index: 6;
 		pointer-events: none;
-		color: var(--violet);
-		opacity: 0.9;
+		color: var(--arrow, #2f9e6f);
+		overflow: visible;
 	}
 	.board-with-eval {
 		display: flex;
