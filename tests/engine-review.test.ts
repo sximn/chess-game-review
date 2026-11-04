@@ -182,57 +182,67 @@ test(
 	}
 );
 
-test(
-	'PGN ratings reach scoring and refining an opponent error refreshes the reply Miss',
-	{ timeout: 5000 },
-	async () => {
-		const { engine, requests } = createEngine();
-		const analyze = engine.analyzePosition.bind(engine);
-		engine.analyzePosition = async (request) => {
-			const result = await analyze(request);
-			const ply = request.position.movesUci.length;
-			const deep = request.limits.maxNodes === 150_000;
-			const roots = request.rootMoves ?? (ply === 0 ? ['g1f3', 'g1h3'] : ['b8c6', 'b8a6']);
-			if (ply > 1) return result;
-			return {
-				...result,
-				lines: roots.slice(0, request.multiPv).map((rootMove, index) => ({
-					rank: index + 1,
-					rootMove,
-					pv: [rootMove],
-					score: {
-						perspective: 'white' as const,
-						kind: 'cp' as const,
-						bound: 'exact' as const,
-						value:
-							ply === 0 ? (request.rootMoves && !deep ? -600 : 0) : request.rootMoves ? 0 : -600
-					}
-				}))
+for (const quickLoss of [600, 300])
+	test(
+		`PGN ratings and opponent refinement keep Miss evidence consistent (${quickLoss} cp)`,
+		{ timeout: 5000 },
+		async () => {
+			const { engine, requests } = createEngine();
+			const analyze = engine.analyzePosition.bind(engine);
+			engine.analyzePosition = async (request) => {
+				const result = await analyze(request);
+				const ply = request.position.movesUci.length;
+				const deep = request.limits.maxNodes === 150_000;
+				const roots = request.rootMoves ?? (ply === 0 ? ['g1f3', 'g1h3'] : ['b8c6', 'b8a6']);
+				if (ply > 1) return result;
+				return {
+					...result,
+					lines: roots.slice(0, request.multiPv).map((rootMove, index) => ({
+						rank: index + 1,
+						rootMove,
+						pv: [rootMove],
+						score: {
+							perspective: 'white' as const,
+							kind: 'cp' as const,
+							bound: 'exact' as const,
+							value:
+								ply === 0
+									? request.rootMoves && !deep
+										? -quickLoss
+										: 0
+									: request.rootMoves
+										? 0
+										: -600
+						}
+					}))
+				};
 			};
-		};
-		const snapshots: ReviewState[] = [];
-		let finish!: (state: ReviewState) => void;
-		const complete = new Promise<ReviewState>((resolve) => {
-			finish = resolve;
-		});
-		const controller = new ReviewController((state) => {
-			snapshots.push(state);
-			if (state.phase === 'complete') finish(state);
-		}, engine);
-		try {
-			controller.reviewGame('[WhiteElo "1000"]\n[BlackElo "2000"]\n\n1. e4 e5 *');
-			const state = await complete;
-			assert.ok(snapshots.some((s) => s.qualities[2]?.name === 'Miss'));
-			assert.equal(state.qualities[1]?.name, 'Best');
-			assert.equal(state.qualities[2]?.name, 'Blunder');
-			assert.equal(state.qualities[1]?.rating, 1000);
-			assert.equal(state.qualities[2]?.rating, 2000);
-			assert.ok(
-				requests.some((r) => r.multiPv === 2 && !r.rootMoves),
-				'review compares two unrestricted choices'
-			);
-		} finally {
-			controller.dispose();
+			const snapshots: ReviewState[] = [];
+			let finish!: (state: ReviewState) => void;
+			const complete = new Promise<ReviewState>((resolve) => {
+				finish = resolve;
+			});
+			const controller = new ReviewController((state) => {
+				snapshots.push(state);
+				if (state.phase === 'complete') finish(state);
+			}, engine);
+			try {
+				controller.reviewGame('[WhiteElo "1000"]\n[BlackElo "2000"]\n\n1. e4 e5 *');
+				const state = await complete;
+				assert.equal(
+					snapshots.some((s) => s.qualities[2]?.name === 'Miss'),
+					quickLoss === 600
+				);
+				assert.equal(state.qualities[1]?.name, 'Best');
+				assert.equal(state.qualities[2]?.name, 'Blunder');
+				assert.equal(state.qualities[1]?.rating, 1000);
+				assert.equal(state.qualities[2]?.rating, 2000);
+				assert.ok(
+					requests.some((r) => r.multiPv === 2 && !r.rootMoves),
+					'review compares two unrestricted choices'
+				);
+			} finally {
+				controller.dispose();
+			}
 		}
-	}
-);
+	);

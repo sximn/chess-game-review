@@ -37,17 +37,17 @@ export type MoveQuality = {
 export type ClassificationContext = {
 	rating?: number | string;
 	fen?: string;
-	previous?: { quality: MoveQuality; bestScore: Score };
+	previous?: { quality: MoveQuality; bestScore: Score; playedScore: Score };
 };
 
 export function reviewRating(value?: number | string): number {
 	const rating =
-		typeof value === 'string' && /^\d{3,4}$/.test(value.trim())
+		typeof value === 'string' && /^\d+$/.test(value.trim())
 			? Number(value)
 			: typeof value === 'number'
 				? value
 				: NaN;
-	return Number.isFinite(rating) && rating > 0
+	return Number.isSafeInteger(rating) && rating > 0
 		? Math.min(3000, Math.max(400, rating))
 		: DEFAULT_REVIEW_RATING;
 }
@@ -55,6 +55,13 @@ export function reviewRating(value?: number | string): number {
 // Local estimate, not Chess.com's unpublished fitted model. Higher ratings make
 // the same advantage more decisive. Scores stay in White's perspective in the SDK.
 export function expectedPoints(score: Score, mover: 'w' | 'b', rating = DEFAULT_REVIEW_RATING) {
+	if (
+		score.perspective !== 'white' ||
+		score.bound !== 'exact' ||
+		!Number.isSafeInteger(score.value) ||
+		(score.kind === 'mate' && score.unit !== 'plies')
+	)
+		return null;
 	const value = score.value * (mover === 'w' ? 1 : -1);
 	if (score.kind === 'mate') return value === 0 ? null : value > 0 ? 1 : 0;
 	const scale = 400 - (reviewRating(rating) - 400) / 13;
@@ -64,6 +71,7 @@ export function expectedPoints(score: Score, mover: 'w' | 'b', rating = DEFAULT_
 // Lower bounds are inclusive; zero loss is Best only for an actual score tie.
 // A search that rates the played move above the best is noise, not a proven tie.
 export function qualityFromLoss(loss: number): MoveQuality['name'] {
+	if (!Number.isFinite(loss) || loss < 0 || loss > 1) return 'Uncertain';
 	return loss >= 0.2
 		? 'Blunder'
 		: loss >= 0.1
@@ -107,24 +115,54 @@ function material(game: Chess, mover: 'w' | 'b') {
 		);
 }
 
-// Conservative sacrifice evidence: the played non-pawn is captured immediately
-// in a legal PV, and a material investment survives the next few moves. Ordinary
-// exchanges, pawn sacrifices, truncated recaptures and forced moves do not qualify.
-function isPieceSacrifice(fen: string, pv: string[], mover: 'w' | 'b', rating: number) {
+// Compare raw engine scores so mate distance and improvements at probability
+// saturation still reveal search disagreement. Positive means a is better.
+function compareScores(a: Score, b: Score, mover: 'w' | 'b') {
+	const sign = mover === 'w' ? 1 : -1;
+	const category = (score: Score) => (score.kind === 'cp' ? 0 : Math.sign(score.value * sign));
+	const difference = category(a) - category(b);
+	if (difference !== 0) return difference;
+	return a.kind === 'cp' ? (a.value - b.value) * sign : (b.value - a.value) * sign;
+}
+
+function hasLegalAlternatives(fen: string, mover: 'w' | 'b', roots: string[]) {
+	try {
+		const game = new Chess(fen);
+		const legal = new Set(game.moves({ verbose: true }).map((move) => move.lan));
+		return game.turn() === mover && legal.size > 1 && roots.every((root) => legal.has(root));
+	} catch {
+		return false;
+	}
+}
+
+// The initial exchange must cost material, and that investment must persist
+// through the inspected continuation. Later unrelated losses cannot turn an
+// ordinary exchange into a sacrifice. Short unfinished lines remain inconclusive.
+function isPieceSacrifice(
+	fen: string,
+	pv: string[],
+	mover: 'w' | 'b',
+	rating: number,
+	playedMove: string
+) {
+	if (pv[0] !== playedMove) return false;
 	try {
 		const game = new Chess(fen);
 		const before = material(game, mover);
+		const minimumInvestment = rating < 1200 ? 1 : 2;
 		let offered = false;
 		for (let i = 0; i < Math.min(6, pv.length); i++) {
 			const uci = pv[i];
 			const move = game.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] });
 			if (i === 0 && (move.color !== mover || move.piece === 'p' || move.piece === 'k'))
 				return false;
-			if (i === 1)
+			if (i === 1) {
 				offered = !!move.captured && move.captured !== 'p' && move.to === pv[0].slice(2, 4);
+				if (!offered) return false;
+			}
+			if (i >= 1 && before - material(game, mover) < minimumInvestment) return false;
 		}
-		if (pv.length < 6 && !game.isGameOver()) return false;
-		return offered && before - material(game, mover) >= (rating < 1200 ? 1 : 2);
+		return offered && (pv.length >= 6 || game.isGameOver());
 	} catch {
 		return false;
 	}
@@ -158,22 +196,22 @@ export function classify(
 		actual?.score.bound === 'exact' &&
 		best.depth !== null &&
 		played.depth !== null &&
+		Number.isSafeInteger(best.depth) &&
+		best.depth > 0 &&
+		Number.isSafeInteger(played.depth) &&
+		played.depth > 0 &&
 		Math.abs(best.depth - played.depth) <= 2
 	);
 
 	if (first && actual && comparable) {
 		before = expectedPoints(first.score, mover, rating);
 		after = expectedPoints(actual.score, mover, rating);
-		if (before !== null && after !== null) {
-			const isBest = first.rootMove === playedMove;
-			const tied =
-				first.score.kind === actual.score.kind && first.score.value === actual.score.value;
-			noise =
-				!isBest &&
-				(first.score.kind === 'cp' && actual.score.kind === 'cp'
-					? (first.score.value - actual.score.value) * sign < 0
-					: after > before);
-			if (isBest) after = before;
+		const isBest = first.rootMove === playedMove;
+		const tied = first.score.kind === actual.score.kind && first.score.value === actual.score.value;
+		// Separate searches disagreeing about the same move measure search drift,
+		// not the cost of choosing one move over another.
+		if (before !== null && after !== null && (!isBest || tied)) {
+			noise = compareScores(actual.score, first.score, mover) > 0;
 			loss = Math.max(0, before - after);
 			if (first.score.kind === 'cp' && actual.score.kind === 'cp') {
 				lossCp = isBest ? 0 : Math.max(0, (first.score.value - actual.score.value) * sign);
@@ -190,36 +228,41 @@ export function classify(
 				previous.quality.rootPly === rootPly - 1 &&
 				previous.quality.lossExpectedPoints !== null &&
 				previous.quality.lossExpectedPoints >= 0.1 &&
+				!previous.quality.noise &&
 				before >= winning &&
 				after <= 0.55
 			) {
 				const prior = expectedPoints(previous.bestScore, mover, rating);
-				if (prior !== null && prior < winning) name = 'Miss';
+				const opportunity = expectedPoints(previous.playedScore, mover, rating);
+				if (prior !== null && opportunity !== null && prior < winning && opportunity >= winning)
+					name = 'Miss';
 			}
 
 			const second = best.lines[1];
+			// For a nearly best played move, the unplayed top move is the
+			// counterfactual. The second line may be the sacrifice itself.
+			const alternative = isBest ? (second?.rank === 2 ? second : undefined) : first;
 			if (
 				!noise &&
 				loss < 0.02 &&
 				context.fen &&
-				second?.rank === 2 &&
-				second.rootMove !== first.rootMove &&
-				second.score.bound === 'exact'
+				alternative &&
+				alternative.rootMove !== playedMove &&
+				compareScores(alternative.score, first.score, mover) <= 0 &&
+				hasLegalAlternatives(context.fen, mover, [first.rootMove, playedMove, alternative.rootMove])
 			) {
-				const other = expectedPoints(second.score, mover, rating);
-				const legalMoves = new Chess(context.fen).moves().length;
-				if (other !== null && legalMoves > 1) {
+				const other = expectedPoints(alternative.score, mover, rating);
+				if (other !== null) {
 					if (
 						isBest &&
 						after >= 0.45 &&
 						((other < 0.45 && after - other >= 0.1) || (after >= winning && other <= 0.55))
-					) {
+					)
 						name = 'Great';
-					}
 					if (
 						after >= 0.45 &&
 						other < 0.9 + (rating - 400) / 52000 &&
-						isPieceSacrifice(context.fen, actual.pv, mover, rating)
+						isPieceSacrifice(context.fen, actual.pv, mover, rating, playedMove)
 					)
 						name = 'Brilliant';
 				}
@@ -235,7 +278,12 @@ export function classify(
 		expectedPointsAfter: after,
 		lossExpectedPoints: loss,
 		rating,
-		preliminary: !refined || !comparable || loss === null,
+		preliminary:
+			!refined ||
+			!comparable ||
+			loss === null ||
+			noise ||
+			(name === 'Miss' && context.previous?.quality.preliminary === true),
 		noise,
 		alternative: first?.pv ?? [],
 		rootPly,

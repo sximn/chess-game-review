@@ -102,7 +102,7 @@ test('PGN ratings have a stable fallback and bounded range', () => {
 	for (const invalid of [undefined, '?', '-', '', '0', '1200?', NaN, Infinity, -5])
 		assert.equal(reviewRating(invalid), 1200);
 	assert.equal(reviewRating(' 1800 '), 1800);
-	assert.equal(reviewRating('99'), 1200);
+	assert.equal(reviewRating('99'), 400);
 	assert.equal(reviewRating('100'), 400);
 	assert.equal(reviewRating(3500), 3000);
 });
@@ -150,6 +150,10 @@ test('incomplete, bounded, different-root or mismatched-depth results remain unc
 		{ ...played, completedIteration: false },
 		{ ...played, depth: null },
 		{ ...played, depth: 13 },
+		{ ...played, depth: 0 },
+		{ ...played, depth: -1 },
+		{ ...played, depth: NaN },
+		{ ...played, depth: 10.5 },
 		{ ...played, positionId: 'other-root' },
 		result(cp(-400), 'g1f3'),
 		{ ...played, lines: [{ ...played.lines[0], score: { ...cp(-400), bound: 'upper' as const } }] }
@@ -178,6 +182,7 @@ test('Great requires an only-good-move comparison, not merely the top engine mov
 test('Brilliant recognizes the Opera queen sacrifice with a legal mate continuation', () => {
 	const timeline = parseGame(OPERA_PGN);
 	const best = result(mate(3), 'b3b8', cp(0));
+	best.lines[1] = { rank: 2, rootMove: 'b3e6', pv: ['b3e6'], score: cp(0) };
 	best.lines[0].pv = timeline.moves.slice(30).map((m) => m.lan);
 	const score = (candidate: AnalysisResult, played = candidate) =>
 		classify(candidate, played, 'w', 'b3b8', 30, true, { fen: timeline.fens[30] });
@@ -203,6 +208,7 @@ test('Brilliant recognizes the Opera queen sacrifice with a legal mate continuat
 	// A normal bishop exchange invests no material, even with a favorable score.
 	const game = parseGame('1. d4 d5 2. Bf4 Bf5 3. e3 e6 4. Bd3 Bxd3 5. Qxd3 Nf6 6. Nf3 Bd6 *');
 	const exchange = result(cp(200), game.moves[6].lan, cp(0));
+	exchange.lines[1] = { rank: 2, rootMove: 'g1f3', pv: ['g1f3'], score: cp(0) };
 	exchange.lines[0].pv = game.moves.slice(6).map((m) => m.lan);
 	assert.notEqual(
 		classify(exchange, exchange, 'w', exchange.lines[0].rootMove, 6, false, { fen: game.fens[6] })
@@ -215,7 +221,8 @@ test('Miss requires a new winning opportunity created by the preceding opponent 
 	const previousBest = result(cp(0), 'e7e5');
 	const previous = {
 		quality: classify(previousBest, result(cp(600), 'd7d5'), 'b', 'd7d5', 0),
-		bestScore: cp(0)
+		bestScore: cp(0),
+		playedScore: cp(600)
 	};
 	const best = result(cp(600));
 	const played = result(cp(0), 'd2d4');
@@ -247,5 +254,149 @@ test('every classification has a symbol and marker color', () => {
 	for (const name of MOVE_QUALITIES) {
 		assert.ok(getSymbolByQuality(name));
 		assert.match(getColorByQuality(name), /^#[0-9a-f]{6}$/);
+	}
+});
+
+test('numeric PGN ratings are clamped consistently with numeric input', () => {
+	for (const value of [1, 99, 1200, 3500, 10000]) {
+		assert.equal(reviewRating(String(value)), reviewRating(value));
+	}
+	assert.equal(reviewRating(1200.5), 1200);
+});
+
+test('invalid scores and probability losses cannot produce confident classifications', () => {
+	for (const value of [NaN, Infinity, -Infinity]) {
+		assert.equal(expectedPoints(cp(value), 'w'), null);
+		const quality = classify(result(cp(0)), result(cp(value), 'd2d4'), 'w', 'd2d4', 0, true);
+		assert.equal(quality.name, 'Uncertain');
+		assert.equal(quality.lossExpectedPoints, null);
+	}
+	assert.equal(expectedPoints({ ...cp(100), bound: 'lower' }, 'w'), null);
+	for (const loss of [NaN, Infinity, -0.1, 1.01]) assert.equal(qualityFromLoss(loss), 'Uncertain');
+});
+
+test('mate improvements are search noise even when expected points are unchanged', () => {
+	for (const [best, played, mover] of [
+		[mate(5), mate(3), 'w'],
+		[mate(-5), mate(-3), 'b'],
+		[mate(-3), mate(-5), 'w'],
+		[mate(3), mate(5), 'b'],
+		[cp(100000), mate(3), 'w'],
+		[cp(-100000), mate(-3), 'b']
+	] as const) {
+		const quality = classify(result(best), result(played, 'd2d4'), mover, 'd2d4', 0, true);
+		assert.equal(quality.noise, true);
+		assert.equal(quality.preliminary, true, 'unresolved noise must not be presented as reliable');
+		assert.equal(quality.name, 'Excellent');
+	}
+});
+
+test('disagreeing searches of the same move do not manufacture zero loss', () => {
+	for (const value of [-400, 400]) {
+		const quality = classify(result(cp(0)), result(cp(value)), 'w', 'e2e4', 0, true);
+		assert.equal(quality.name, 'Uncertain');
+		assert.equal(quality.lossExpectedPoints, null);
+		assert.equal(quality.preliminary, true);
+	}
+});
+
+test('Brilliant compares a nearly best sacrifice with the best remaining alternative', () => {
+	const timeline = parseGame(OPERA_PGN);
+	const best = result(cp(820), 'b3e6', cp(800));
+	best.lines[1] = {
+		rank: 2,
+		rootMove: 'b3b8',
+		score: cp(800),
+		pv: timeline.moves.slice(30).map((m) => m.lan)
+	};
+	const played = result(cp(800), 'b3b8');
+	played.lines[0].pv = best.lines[1].pv;
+	const quality = classify(best, played, 'w', 'b3b8', 30, true, { fen: timeline.fens[30] });
+	assert.equal(
+		quality.name,
+		'Excellent',
+		'the unplayed top move is already overwhelmingly winning'
+	);
+});
+
+test('an even exchange followed by an unrelated loss is not a piece sacrifice', () => {
+	const best = result(cp(0), 'a1a7', cp(0));
+	best.lines[0].pv = ['a1a7', 'a8a7', 'f3h4', 'c5c4', 'g1h2', 'c4b3'];
+	best.lines[1] = { rank: 2, rootMove: 'f3h4', pv: ['f3h4'], score: cp(0) };
+	const quality = classify(best, best, 'w', 'a1a7', 0, true, {
+		fen: 'k7/r7/8/2p5/8/1B3N2/8/R5K1 w - - 0 1'
+	});
+	assert.equal(quality.name, 'Best');
+});
+
+test('invalid or mismatched board context cannot crash review or award special labels', () => {
+	const best = result(cp(0), 'e2e4', cp(-300));
+	for (const fen of ['bad FEN', start.replace(' w ', ' b ')]) {
+		assert.equal(classify(best, best, 'w', 'e2e4', 0, false, { fen }).name, 'Best');
+	}
+	best.lines[1].rootMove = 'a1a8';
+	assert.equal(classify(best, best, 'w', 'e2e4', 0, false, { fen: start }).name, 'Best');
+});
+
+test('a Miss requires the preceding comparison to show a newly winning opportunity', () => {
+	const previous = {
+		quality: classify(result(cp(0), 'e7e5'), result(cp(300), 'd7d5'), 'b', 'd7d5', 0),
+		bestScore: cp(0),
+		playedScore: cp(300)
+	};
+	const quality = classify(result(cp(600)), result(cp(0), 'd2d4'), 'w', 'd2d4', 1, true, {
+		previous
+	});
+	assert.equal(
+		quality.name,
+		'Blunder',
+		'a later search finding a win is not evidence that the prior move created one'
+	);
+});
+
+test('valid nearly best sacrifices still qualify for both colors', () => {
+	const timeline = parseGame(OPERA_PGN);
+	const pv = timeline.moves.slice(30).map((m) => m.lan);
+	const mirrorMove = (move: string) =>
+		move[0] + (9 - Number(move[1])) + move[2] + (9 - Number(move[3])) + move.slice(4);
+	const mirrorFen = (fen: string) => {
+		const parts = fen.split(' ');
+		return (
+			parts[0]
+				.split('/')
+				.reverse()
+				.join('/')
+				.replace(/[a-z]/gi, (piece) =>
+					piece === piece.toUpperCase() ? piece.toLowerCase() : piece.toUpperCase()
+				) + ' b - - 0 16'
+		);
+	};
+	for (const mover of ['w', 'b'] as const) {
+		const transform = mover === 'w' ? (move: string) => move : mirrorMove;
+		const sign = mover === 'w' ? 1 : -1;
+		const best = result(cp(30 * sign), transform('b3e6'));
+		const played = result(cp(20 * sign), transform('b3b8'));
+		played.lines[0].pv = pv.map(transform);
+		const quality = classify(best, played, mover, transform('b3b8'), 30, true, {
+			fen: mover === 'w' ? timeline.fens[30] : mirrorFen(timeline.fens[30])
+		});
+		assert.equal(quality.name, 'Brilliant');
+		assert.ok(quality.lossExpectedPoints! > 0);
+		assert.equal(quality.preliminary, false);
+	}
+});
+
+test('a Miss retains preliminary status until its opponent-error evidence is refined', () => {
+	const previous = {
+		quality: classify(result(cp(0), 'e7e5'), result(cp(600), 'd7d5'), 'b', 'd7d5', 0),
+		bestScore: cp(0),
+		playedScore: cp(600)
+	};
+	for (const preliminary of [true, false]) {
+		const quality = classify(result(cp(600)), result(cp(0), 'd2d4'), 'w', 'd2d4', 1, true, {
+			previous: { ...previous, quality: { ...previous.quality, preliminary } }
+		});
+		assert.equal(quality.name, 'Miss');
+		assert.equal(quality.preliminary, preliminary);
 	}
 });

@@ -1,7 +1,7 @@
 import type { AnalyzeRequest, AnalysisResult, Identity } from 'chess-engine-kit';
 import { cacheIdentity } from './cached-result.ts';
 
-export const CLASSIFICATION_VERSION = 'expected-points-v3';
+export const CLASSIFICATION_VERSION = 'expected-points-v4';
 
 export async function resultKey(request: AnalyzeRequest, identity: Identity) {
 	const text = JSON.stringify({

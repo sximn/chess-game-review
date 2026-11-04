@@ -272,6 +272,7 @@ export class ReviewController {
 			const move = this.timeline!.moves[index - 1];
 			const previous = this.state.qualities[index - 1];
 			const previousScore = this.comparisons[index - 1]?.best.lines[0]?.score;
+			const previousPlayedScore = this.comparisons[index - 1]?.played.lines[0]?.score;
 			this.state.qualities[index] = classify(
 				comparison.best,
 				comparison.played,
@@ -282,8 +283,14 @@ export class ReviewController {
 				{
 					rating: this.timeline!.headers[move.color === 'w' ? 'WhiteElo' : 'BlackElo'],
 					fen: move.before,
-					...(previous && previousScore
-						? { previous: { quality: previous, bestScore: previousScore } }
+					...(previous && previousScore && previousPlayedScore
+						? {
+								previous: {
+									quality: previous,
+									bestScore: previousScore,
+									playedScore: previousPlayedScore
+								}
+							}
 						: {})
 				}
 			);
