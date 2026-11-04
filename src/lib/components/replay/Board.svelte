@@ -50,6 +50,11 @@
 		p: 'pawn'
 	};
 
+	const EVAL_RAIL_STYLES = {
+		TOP: "top: 8px;color:white;",
+		BOTTOM: "bottom:8px;color:black;",
+	};
+
 	const DRAG_THRESHOLD_MOUSE = 0; //3 px
 	const DRAG_THRESHOLD_TOUCH = 0; //8 px - fingers jitter more than mice
 	/** On touch, the dragged piece floats this many squares above the fingertip so it stays visible. */
@@ -186,6 +191,7 @@
 	import type { TransitionConfig } from 'svelte/transition';
 	import { app } from '#lib/state.svelte.js';
 	import { pieceSrc } from '#lib/pieces.js';
+	import type { ClassificationMarkerProps } from '#lib/engine/classification.js';
 
 	let {
 		fen,
@@ -193,7 +199,7 @@
 		lastMove,
 		suggestedMove,
 		evaluation = null,
-		marker = '',
+		markerProps,
 		evaluationLabel = '—',
 		movable = 'none',
 		animationMs = 200,
@@ -204,7 +210,7 @@
 		lastMove?: Move;
 		suggestedMove?: Move;
 		evaluation?: number | null;
-		marker?: string;
+		markerProps: ClassificationMarkerProps | null;
 		evaluationLabel?: string;
 		/** Which side the user may move. 'none' (default) makes the board read-only. */
 		movable?: MovableColor;
@@ -727,6 +733,23 @@
 		kbSquare = squareAt(Math.min(7, Math.max(0, col)), Math.min(7, Math.max(0, row)));
 	}
 
+	/**
+	 * Adjust height for readability.
+	 * Preserve tiny hieght on massive advantage but zero height on mate in X.
+	 */
+	function adjustEvalHeight(evaluation: number | null) {
+		if (evaluation === null) {
+			return 50;
+		}
+
+		// for mate in X, the eval is infinity or negative infinity
+		if (!Number.isFinite(evaluation)) {
+			return evaluation < 0 ? 0 : 100;
+		}
+
+		return 50 + 48 * Math.tanh(evaluation / 3);
+	}
+
 	// Keyboard users: move focus into the promotion picker when it opens
 	$effect(() => {
 		if (promotion && usingKeyboard) {
@@ -752,9 +775,13 @@
 		>
 			<div
 				class="eval-white"
-				style:height={`${evaluation === null ? 50 : 50 + 46 * Math.tanh(evaluation / 3)}%`}
+				style:height={`${adjustEvalHeight(evaluation)}%`}
 			></div>
-			<span>{evaluation === null ? '-' : evaluationLabel}</span>
+			<span
+				style={evaluation && evaluation > 0 ? EVAL_RAIL_STYLES.BOTTOM : EVAL_RAIL_STYLES.TOP}
+			>
+				{evaluation === null ? '-' : evaluationLabel}
+			</span>
 		</div>
 	{/if}
 
@@ -843,8 +870,13 @@
 						/>
 					{/if}
 
-					{#if marker && s.square === lastMove?.to}
-						<span class="board-marker">{marker}</span>
+					{#if markerProps && s.square === lastMove?.to}
+						<span
+							class="board-marker"
+							style={`background:${markerProps.background}`}
+						>
+							{markerProps.marker}
+						</span>
 					{/if}
 				</div>
 			{/each}
@@ -880,37 +912,41 @@
 			role="img"
 			aria-label={`Best move: ${suggestedMove.san}, ${suggestedMove.from} to ${suggestedMove.to}`}
 		>
-			<defs
-				><marker
+			<defs>
+				<marker
 					id={`${boardId}-arrowhead`}
 					viewBox="0 0 10 10"
-					refX="8"
+					refX="6"
 					refY="5"
-					markerWidth="0.65"
-					markerHeight="0.65"
+					markerWidth="0.44"
+					markerHeight="0.44"
 					markerUnits="userSpaceOnUse"
-					orient="auto"><path d="M 0 0 L 10 5 L 0 10 Z" fill="currentColor" /></marker
-				></defs
-			>
-			<path
-				d={suggestionPath}
-				fill="none"
-				stroke="var(--paper)"
-				stroke-width="0.24"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				opacity="0.65"
-			/>
-			<path
-				class="suggestion-path"
-				d={suggestionPath}
-				fill="none"
-				stroke="currentColor"
-				stroke-width="0.16"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				marker-end={`url(#${boardId}-arrowhead)`}
-			/>
+					orient="auto"
+				>
+					<path d="M 0 0 L 10 5 L 0 10 Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round" />
+				</marker>
+
+				<filter
+					id={`${boardId}-arrow-shadow`}
+					filterUnits="userSpaceOnUse"
+					x="0" y="0" width="8" height="8"
+				>
+					<feDropShadow dx="0" dy="0.02" stdDeviation="0.035" flood-color="#000" flood-opacity="0.35" />
+				</filter>
+			</defs>
+
+			<g opacity="0.82" filter={`url(#${boardId}-arrow-shadow)`}>
+				<path
+					class="suggestion-path"
+					d={suggestionPath}
+					fill="none"
+					stroke="currentColor"
+					stroke-width="0.15"
+					stroke-linecap="butt"
+					stroke-linejoin="round"
+					marker-end={`url(#${boardId}-arrowhead)`}
+				/>
+			</g>
 		</svg>
 	{/if}
 
@@ -956,27 +992,25 @@
 		height: 100%;
 		z-index: 6;
 		pointer-events: none;
-		color: var(--violet);
-		opacity: 0.9;
+		color: var(--arrow, #2f9e6f);
+		overflow: visible;
 	}
 	.board-with-eval {
 		display: flex;
 		align-items: stretch;
-		gap: 4px;
 		width: 100%;
 		position: relative;
 	}
 	.evaluation-rail {
-		width: 12px;
+		width: 14px;
 		flex-shrink: 0;
-		border-radius: 4px;
-		background: #414b38;
+		background: #2e2e2e;
 		position: relative;
 		overflow: hidden;
 		border: 1px solid #626c502a;
 	}
 	.eval-white {
-		background: var(--board-light);
+		background: #f6f4eb;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
@@ -984,14 +1018,12 @@
 	}
 	.evaluation-rail > span {
 		position: absolute;
-		bottom: 8px;
 		left: 0;
 		right: 0;
 		text-align: center;
 		color: #4b5540;
 		font-size: 6px;
 		font-weight: 800;
-		writing-mode: vertical-rl;
 		display: block;
 		margin: auto;
 	}
@@ -1000,6 +1032,18 @@
 	}
 	.evaluation-rail.flipped > span {
 		transform: rotate(180deg);
+	}
+
+	@media (min-width: 760px) {
+		.board-with-eval {
+			gap: 4px;
+		}
+		.evaluation-rail {
+			width: 20px;
+		}
+		.evaluation-rail > span {
+			font-size: 10px;
+		}
 	}
 
 	/* board */
@@ -1134,7 +1178,6 @@
 		top: 0;
 		z-index: 3;
 		border-radius: 50%;
-		background: var(--violet);
 		border: 1.5px solid #f9fae9;
 		color: #fff;
 		display: grid;
@@ -1147,7 +1190,7 @@
 		box-shadow: 0 2px 4px #0002;
 		pointer-events: none;
 		/* pops in once the piece has (almost) arrived */
-		animation: marker-in 160ms ease-out calc(var(--move-ms, 0ms) * 0.8) both;
+		animation: marker-in 90ms ease-out calc(var(--move-ms, 0ms) * 0.8) both;
 	}
 	@keyframes marker-in {
 		from {

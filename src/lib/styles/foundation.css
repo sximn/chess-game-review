@@ -103,11 +103,13 @@
 	--chart-progress: linear-gradient(180deg, #ffd84d44, #ffd84d11);
 	--chart-progress-edge: #88701d;
 	--chart-cursor: #88701d;
+	--brand-mark-bg: linear-gradient(145deg, #454545, #242424);
 
 	/* Neutral side indicators stay distinct from theme surfaces and board squares. */
 	--chess-side-light: #fafafa;
 	--chess-side-dark: #333333;
 	--chess-side-border: #999999;
+	--arrow: var(--violet);
 	--evaluation-white-zone: #ffffff2e;
 	--evaluation-black-zone: #0000000d;
 	/* Text variants keep the original move-quality hues legible on UI surfaces.

@@ -96,10 +96,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(145deg, #ffe986, #ffd84d);
+		/* background: linear-gradient(145deg, #454545, #242424); */
+		background: var(--brand-mark-bg);
 		border-radius: 12px;
 		color: var(--text-on-primary);
-		border: 1px solid #e4bf43;
 		box-shadow:
 			inset 0 1px #fff8,
 			0 3px 6px #4f420a0c;
@@ -171,10 +171,6 @@
 		.main-area {
 			padding-left: 202px;
 		}
-		/* main {
-			padding-left: 28px;
-			padding-right: 28px;
-		} */
 		.topbar {
 			padding: 0 28px;
 		}
@@ -280,7 +276,6 @@
 		min-height: 0;
 		width: 100%;
 		max-width: 1320px;
-		/* padding: 16px 24px 12px; */
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
@@ -290,8 +285,8 @@
 			height: calc(100dvh - 66px - env(safe-area-inset-bottom, 0px));
 		}
 		.review-route main {
-			padding: calc(8px + env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px))
-				4px max(4px, env(safe-area-inset-left, 0px));
+			padding: calc(8px + env(safe-area-inset-top, 0px)) max(0px, env(safe-area-inset-right, 0px))
+				4px max(0px, env(safe-area-inset-left, 0px));
 		}
 	}
 	@media (max-height: 520px) and (min-width: 480px) {

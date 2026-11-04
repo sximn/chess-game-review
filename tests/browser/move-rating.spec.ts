@@ -324,9 +324,7 @@ test('the best-move card is absent at the start and when the played move is alre
 test('technical analysis labels appear only with analysis=detail', async ({ page }) => {
 	await openRatedMove(page);
 	await expect(page.locator('.move-rating')).not.toContainText(/Preliminary|Refined/);
-	await expect(page.locator('.played-quality')).not.toContainText(
-		/Preliminary|Refined|depths|measured loss/
-	);
+	await expect(page.locator('.played-quality')).toHaveCount(0);
 	await expect(page.locator('.engine-lines')).not.toContainText(/depth|nodes|Budget reached/);
 	await page.getByRole('tab', { name: 'Moves', exact: true }).click();
 	await expect(page.locator('.moves-list [title]').first()).not.toHaveAttribute(
@@ -337,15 +335,13 @@ test('technical analysis labels appear only with analysis=detail', async ({ page
 	await expect(page.getByText('Review ready', { exact: true })).toBeVisible({ timeout: 60000 });
 	await page.getByRole('button', { name: 'Select 2. Ba6', exact: true }).click();
 	await expect(page.locator('.move-rating')).toContainText(/Preliminary|Refined/);
-	await expect(page.locator('.played-quality')).toContainText(/depths/);
-	await expect(page.locator('.played-quality')).toContainText(/cp measured loss/);
-	await expect(page.locator('.played-quality')).toContainText(/expected points lost · rating 1200/);
 	await expect(page.locator('.quality-row')).toHaveCount(10);
 	for (const name of ['Brilliant', 'Great', 'Excellent', 'Miss']) {
 		await expect(
 			page.locator('.quality-row').filter({ has: page.getByText(name, { exact: true }) })
 		).toHaveCount(1);
 	}
+	await expect(page.locator('.played-quality')).toHaveCount(0);
 	await expect(page.locator('.engine-lines')).toContainText(/depth/);
 	await page.getByRole('tab', { name: 'Moves', exact: true }).click();
 	await expect(page.locator('.moves-list [title]').first()).toHaveAttribute(

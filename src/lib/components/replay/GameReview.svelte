@@ -13,7 +13,7 @@
 	} from '#lib/state.svelte.js';
 	import { parseGame, type SavedGame } from '#lib/chess.js';
 	import { ReviewController, emptyReview, type ReviewState } from '#lib/engine/review.js';
-	import { visualValue, formatScore } from '#lib/engine/classification.js';
+	import { visualValue, formatScore, getColorByQuality } from '#lib/engine/classification.js';
 	import { branchTimeline, type Exploration } from '#lib/engine/presentation.js';
 	import { Capacitor } from '@capacitor/core';
 	import { App } from '@capacitor/app';
@@ -247,9 +247,9 @@
 				beforeResult?.terminalScore ?? beforeResult?.lines[0]?.score,
 				beforeResult?.winner
 			)}
-			marker={!branch && classification && ['Great', 'Brilliant'].includes(classification.name)
-				? classification.symbol
-				: ''}
+			markerProps={!branch && classification /*&& ['Great', 'Brilliant'].includes(classification.name)*/
+				? { marker: classification.symbol, background: getColorByQuality(classification.name)}
+				: null}
 			onNavigate={go}
 			onPlay={togglePlayback}
 			onFlip={() => (flipped = !flipped)}

@@ -121,8 +121,8 @@ for (const theme of ['light', 'dark'] as const) {
 		);
 		await expect(page.locator('.dark-preview')).toHaveCSS('background-color', 'rgb(36, 36, 36)');
 		await expect(page.locator('.brand-mark').first()).toHaveCSS(
-			'background-color',
-			'rgb(21, 20, 18)'
+			'background-image',
+			'linear-gradient(145deg, rgb(69, 69, 69), rgb(36, 36, 36))'
 		);
 		await expect(page.locator('.brand-mark svg path').first()).toHaveAttribute('fill', '#fcc940');
 		await page.screenshot({

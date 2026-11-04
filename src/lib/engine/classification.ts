@@ -34,6 +34,11 @@ export type MoveQuality = {
 	comparedDepths: [number | null, number | null];
 };
 
+export type ClassificationMarkerProps = {
+	marker: string;
+	background: string;
+}
+
 export type ClassificationContext = {
 	rating?: number | string;
 	fen?: string;
@@ -305,7 +310,10 @@ export function formatScore(score: Score | undefined, winner?: 'white' | 'black'
 			: `${prefix}${score.value < 0 ? '−' : ''}M${Math.ceil(Math.abs(score.value) / 2)}`;
 	}
 
-	return `${prefix}${score.value > 0 ? '+' : ''}${(score.value / 100).toFixed(2)}`;
+	const roundedScore = Math.round(score.value / 10) / 10;
+	const positiveRoundedScore = roundedScore < 0 ? roundedScore * -1 : roundedScore;
+	// return `${prefix}${score.value > 0 ? '+' : ''}${(score.value / 100).toFixed(2)}`;
+	return `${prefix}${positiveRoundedScore}`;
 }
 
 export function visualValue(result: AnalysisResult | undefined): number | null {
