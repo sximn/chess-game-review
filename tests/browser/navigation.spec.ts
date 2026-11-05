@@ -24,8 +24,14 @@ test('mobile timeline stays aligned after importing a game and exploring an alte
 	await expect(page.locator('.variation-badge')).toBeVisible();
 	await expect(current).toHaveText('Start');
 	await expect(current).toBeInViewport();
-	await page.locator('.variation-step').nth(2).click();
+	const variationStart = page.getByRole('button', {
+		name: 'Alternative starting position',
+		exact: true
+	});
+	await variationStart.click();
+	await expect(variationStart).toHaveAttribute('aria-current', 'step');
 	await expect(current).toHaveText('Start');
+	await expect(current).toBeInViewport();
 	await page.getByRole('button', { name: 'Next move', exact: true }).click();
 	await expect(page.locator('.variation-badge')).toHaveCount(0);
 	await expect(current).toContainText('d4');
