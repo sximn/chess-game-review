@@ -74,6 +74,9 @@
 	);
 	let boardTimeline = $derived(branch?.timeline ?? timeline);
 	let boardPly = $derived(branch?.ply ?? ply);
+
+	const explorationViewing = $derived(!!branch || previewing);	
+
 	$effect.pre(() => {
 		timeline;
 		ply;
@@ -83,13 +86,17 @@
 	$effect.pre(() => {
 		if (!suggestion) showingPreview = false;
 	});
+
 	function toggleReveal() {
 		if (!suggestion) return;
 		if (!showingPreview) {
 			onReveal();
 			showingPreview = true;
-		} else showingPreview = false;
+		} else {
+			showingPreview = false;
+		}
 	}
+
 	function exploreStep(step: number) {
 		if (!line) return;
 		showingPreview = false;
@@ -109,7 +116,7 @@
 
 <section class="board-panel" class:no-evaluation={!app.showEvaluation} aria-label="Game replay">
 	<div class="position-area">
-		<div class="position-frame" class:exploring={!!branch || previewing}>
+		<div class="position-frame" class:exploring={explorationViewing}>
 			<PlayerRow
 				position="opponent"
 				name={flipped ? white : black}
@@ -137,7 +144,7 @@
 					evaluation={branch ? null : previewing ? beforeEvaluation : evaluation}
 					evaluationLabel={branch ? '—' : previewing ? beforeEvaluationLabel : evaluationLabel}
 					markerProps={previewing || branch ? null : markerProps}
-					suggestedMove={previewing ? suggestion : undefined}
+					suggestedMove={previewing || (!explorationViewing && !["Best", "Brilliant", "Great"].includes(quality?.name ?? "")) ? suggestion : undefined}
 				/>
 			</div>
 
