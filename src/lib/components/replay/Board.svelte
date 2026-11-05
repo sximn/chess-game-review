@@ -254,19 +254,65 @@
 	const rowOf = (sq: Square) => (flipped ? rankOf(sq) : 7 - rankOf(sq));
 	const squareAt = (col: number, row: number) =>
 		toSquare(flipped ? 7 - col : col, flipped ? row : 7 - row);
-	let suggestionPath = $derived.by(() => {
-		if (!suggestedMove) return '';
+
+	// const suggestionPath = $derived.by(() => {
+	// 	if (!suggestedMove) {
+	// 		return '';
+	// 	}
+
+	// 	const x1 = colOf(suggestedMove.from) + 0.5;
+	// 	const y1 = rowOf(suggestedMove.from) + 0.5;
+	// 	const x2 = colOf(suggestedMove.to) + 0.5;
+	// 	const y2 = rowOf(suggestedMove.to) + 0.5;
+
+	// 	const elbow =
+	// 		suggestedMove.piece === 'n'
+	// 			? Math.abs(x2 - x1) === 2
+	// 				? ` L ${x2} ${y1}`
+	// 				: ` L ${x1} ${y2}`
+	// 			: '';
+	// 	return `M ${x1} ${y1}${elbow} L ${x2} ${y2}`;
+	// });
+	const suggestionPath = $derived.by(() => {
+		if (!suggestedMove) {
+			return '';
+		}
+
 		const x1 = colOf(suggestedMove.from) + 0.5;
 		const y1 = rowOf(suggestedMove.from) + 0.5;
 		const x2 = colOf(suggestedMove.to) + 0.5;
 		const y2 = rowOf(suggestedMove.to) + 0.5;
-		const elbow =
-			suggestedMove.piece === 'n'
-				? Math.abs(x2 - x1) === 2
-					? ` L ${x2} ${y1}`
-					: ` L ${x1} ${y2}`
-				: '';
-		return `M ${x1} ${y1}${elbow} L ${x2} ${y2}`;
+
+		const dx = x2 - x1;
+		const dy = y2 - y1;
+
+		if (dx === 0 && dy === 0) {
+			return '';
+		}
+
+		const isKnight = suggestedMove.piece === 'n';
+		const horizontalFirst = Math.abs(dx) === 2;
+		const elbowX = horizontalFirst ? x2 : x1;
+		const elbowY = horizontalFirst ? y1 : y2;
+
+		const firstDx = isKnight ? elbowX - x1 : dx;
+		const firstDy = isKnight ? elbowY - y1 : dy;
+		const lastDx = isKnight ? x2 - elbowX : dx;
+		const lastDy = isKnight ? y2 - elbowY : dy;
+
+		const tailOffset = 0.17;
+		const endInset = 0.20;
+
+		const tailScale = tailOffset / Math.hypot(firstDx, firstDy);
+		const endScale = (0.5 - endInset) / Math.max(Math.abs(lastDx), Math.abs(lastDy));
+
+		const startX = x1 + firstDx * tailScale;
+		const startY = y1 + firstDy * tailScale;
+		const endX = x2 - lastDx * endScale;
+		const endY = y2 - lastDy * endScale;
+
+		const elbow = isKnight ? ` L ${elbowX} ${elbowY}` : '';
+		return `M ${startX} ${startY}${elbow} L ${endX} ${endY}`;
 	});
 
 	// ==========> piece identity / animation sync
@@ -906,6 +952,7 @@
 	{#if suggestedMove}
 		<svg
 			class="suggestion-arrow"
+			class:black={suggestedMove.color === "b"}
 			data-from={suggestedMove.from}
 			data-to={suggestedMove.to}
 			viewBox="0 0 8 8"
@@ -992,8 +1039,11 @@
 		height: 100%;
 		z-index: 6;
 		pointer-events: none;
-		color: var(--arrow, #2f9e6f);
+		color: var(--suggestion-arrow-white, #2f9e6f);
 		overflow: visible;
+	}
+	.suggestion-arrow.black {
+		color: var(--suggestion-arrow-black, #9e722f);
 	}
 	.board-with-eval {
 		display: flex;

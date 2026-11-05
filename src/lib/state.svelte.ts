@@ -1,6 +1,8 @@
 import { parseGame, type SavedGame } from './chess';
 import type { PieceSet } from './pieces';
 
+export type Theme = "light" | "dark";
+
 export const app = $state({
 	games: [] as SavedGame[],
 	currentId: '',
@@ -10,7 +12,7 @@ export const app = $state({
 	analysisOpen: false,
 	coordinates: true,
 	showEvaluation: true,
-	theme: 'light',
+	theme: 'dark' as Theme,
 	pieceSet: 'classic' as PieceSet,
 	notice: '',
 	hydrated: false

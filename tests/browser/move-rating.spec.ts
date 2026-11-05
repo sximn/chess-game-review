@@ -25,6 +25,7 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	page.on('pageerror', (error) => errors.push(error.message));
 	await openRatedMove(page);
 	const board = page.locator('.chessboard');
+	const arrow = board.locator('.suggestion-arrow');
 	const rating = page.locator('.move-rating');
 	const bestCard = page.locator('.best-move-card');
 	const bestMove = page.locator('.best-move-trigger');
@@ -40,7 +41,7 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(steps).not.toBeVisible();
 	await expect(page.locator('.variation-slot')).toHaveCSS('height', '0px');
 	await expect(page.getByRole('button', { name: 'Explore line', exact: true })).toHaveCount(0);
-	await expect(page.locator('.suggestion-arrow')).toHaveCount(0);
+	await expect(arrow).toBeVisible();
 	await bestMove.click();
 	await expect(bestMove).toHaveAttribute('aria-pressed', 'true');
 	await expect(bestMove).toHaveAttribute('aria-expanded', 'true');
@@ -49,22 +50,22 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(board).toHaveAttribute('aria-label', /White to move/);
 	await expect(board.getByRole('img', { name: 'White bishop on f1', exact: true })).toBeVisible();
 	await expect(current).toHaveAccessibleName('Select 2. Ba6');
-	const arrow = page.locator('.suggestion-arrow');
 	await expect(arrow).toBeVisible();
 	const originalPath = await arrow.locator('.suggestion-path').getAttribute('d');
 	await page.getByRole('button', { name: 'Flip board', exact: true }).click();
 	await expect(arrow.locator('.suggestion-path')).not.toHaveAttribute('d', originalPath!);
 	await page.keyboard.press('Escape');
-	await expect(arrow).toHaveCount(0);
 	await expect(board).toHaveAttribute('aria-label', /Black to move/);
 	await expect(bestMove).toHaveAttribute('aria-pressed', 'false');
 	await expect(steps).not.toBeVisible();
 	await expect(page.locator('.variation-slot')).toHaveCSS('height', '0px');
+	await expect(arrow).toBeVisible();
 	await bestMove.click();
 
 	// Variation navigation keeps the revealed list open without changing the game cursor.
 	await steps.getByRole('button').nth(2).click();
 	await expect(badge).toBeVisible();
+	await expect(arrow).toHaveCount(0);
 	await expect(steps.getByRole('button').nth(2)).toHaveAttribute('aria-current', 'step');
 	await expect(board).toHaveAttribute('aria-label', /White to move/);
 	await expect(current).toHaveAccessibleName('Select 2. Ba6');
@@ -79,8 +80,10 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(badge).toHaveCount(0);
 	await expect(current).toHaveAccessibleName('Select 2... Nxa6');
 	await expect(board.getByRole('img', { name: 'Black knight on a6', exact: true })).toBeVisible();
+	await expect(arrow).toHaveCount(0);
 
 	await page.getByRole('button', { name: 'Previous move', exact: true }).click();
+	await expect(arrow).toBeVisible();
 	await bestMove.click();
 	await steps.getByRole('button').nth(1).click();
 	await page.keyboard.press('ArrowLeft');
@@ -104,8 +107,11 @@ test('best-line steps reveal on demand and stay independent of game navigation',
 	await expect(arrow).toBeVisible();
 	await page.getByRole('button', { name: 'Analysis', exact: true }).click();
 	await expect(page.getByRole('dialog')).toBeVisible();
-	await expect(arrow).toHaveCount(0);
+	await expect(bestMove).toHaveAttribute('aria-expanded', 'false');
+	await expect(board).toHaveAttribute('aria-label', /Black to move/);
 	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog')).toBeHidden();
+	await expect(arrow).toBeVisible();
 	await bestMove.click();
 	await steps.getByRole('button').nth(2).click();
 	await expect(badge).toBeVisible();

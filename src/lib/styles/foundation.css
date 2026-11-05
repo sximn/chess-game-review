@@ -109,7 +109,8 @@
 	--chess-side-light: #fafafa;
 	--chess-side-dark: #333333;
 	--chess-side-border: #999999;
-	--arrow: var(--violet);
+	--suggestion-arrow-white: #2f9e6f;
+	--suggestion-arrow-black: #3aa277;
 	--evaluation-white-zone: #ffffff2e;
 	--evaluation-black-zone: #0000000d;
 	/* Text variants keep the original move-quality hues legible on UI surfaces.
