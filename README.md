@@ -12,7 +12,8 @@ Import a PGN, review move classifications and legal alternatives, and track eval
 
 [Watch the 20-second overview](marketing/product-overview/up-a-pawn-overview.mp4) · [Mobile review](marketing/product-overview/mobile-best-move.png) · [PGN import](marketing/product-overview/import-pgn.png) · [Try the sample game](marketing/product-overview/opera-game.pgn)
 
-<!-- TODO: **[Live demo →](https://your-url)** -->
+
+**Check it out live at [upapawn.simonukus.com](https://upapawn.simonukus.com)**
 
 ## Features
 
