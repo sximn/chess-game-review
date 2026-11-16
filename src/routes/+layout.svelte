@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { dev } from '$app/env';
 	import { afterNavigate } from '$app/navigation';
 	import { Capacitor } from '@capacitor/core';
 	import '@fontsource-variable/dm-sans';
@@ -13,13 +14,13 @@
 
 	afterNavigate(({ from, to }) => {
 		const route = to?.route.id;
-		if (route && route !== from?.route.id && !Capacitor.isNativePlatform()) {
-			trackPageview(to.url.origin, route);
+		if (route && route !== from?.route.id) {
+			trackPageview(new URL(route, to.url).href, route, Capacitor.getPlatform());
 		}
 	});
 
 	onMount(() => {
-		if (!import.meta.env.DEV && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator)
+		if (!dev && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator)
 			void navigator.serviceWorker.register('/service-worker.js').catch(() => {
 				/* Engine still works; offline installation can be retried on reload. */
 			});

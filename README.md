@@ -97,7 +97,7 @@ Cloudflare's first deployment may require configuring your account's `workers.de
 subdomain in the dashboard. Change `worker.name` in `cloudflare.config.ts` if you want
 a different Worker name, and update `PRODUCTION_URL` to match.
 
-### Enable web analytics
+### Enable analytics
 
 Create a [PostHog project](https://posthog.com/docs/getting-started/install) and copy its
 public **Project API key** (`phc_`) and ingestion host. SvelteKit declares these in
@@ -115,9 +115,14 @@ values, then run `bun run build` and `bun run preview`. After deploying, open th
 and check PostHog's **Activity** for `$pageview` events. Rebuild after changing either
 value. An empty value disables analytics.
 
-Analytics runs in production web builds and records visits to app routes using
-in-memory visitor and session IDs that reset on reload. It honors Do Not Track.
-URL query strings, fragments, referrers, and game contents stay out of the events.
+For Android or iOS, set the same values in `.env.local` or in the build environment
+before running `bun run cap:build:sync`. Rebuild and reinstall the native app after
+changing either value. The shared JavaScript SDK runs in Capacitor's WebView.
+
+Production builds record pageviews for app routes and include `app_platform` (`web`,
+`android`, or `ios`). Visitor and session IDs stay in memory and reset when the page
+or WebView reloads. The SDK honors Do Not Track where available. URL query strings,
+fragments, referrers, and game contents stay out of the events.
 
 ### Analysis and storage
 

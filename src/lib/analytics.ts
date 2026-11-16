@@ -6,7 +6,7 @@ const projectToken = POSTHOG_PROJECT_TOKEN;
 const apiHost = POSTHOG_HOST;
 let client: Promise<PostHog | undefined> | undefined;
 
-export function trackPageview(origin: string, route: string) {
+export function trackPageview(url: string, route: string, platform: string) {
 	if (dev || !projectToken || !apiHost) return;
 
 	client ??= import('posthog-js/dist/module.slim.no-external')
@@ -37,6 +37,7 @@ export function trackPageview(origin: string, route: string) {
 							$session_id: properties.$session_id,
 							$current_url: properties.$current_url,
 							$pathname: properties.$pathname,
+							app_platform: properties.app_platform,
 							$process_person_profile: false,
 							$geoip_disable: true
 						}
@@ -49,7 +50,7 @@ export function trackPageview(origin: string, route: string) {
 
 	void client
 		.then((posthog) =>
-			posthog?.capture('$pageview', { $current_url: origin + route, $pathname: route })
+			posthog?.capture('$pageview', { $current_url: url, $pathname: route, app_platform: platform })
 		)
 		.catch(() => {
 			/* Analytics is optional, including when the app is offline. */
