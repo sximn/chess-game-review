@@ -1,13 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { afterNavigate } from '$app/navigation';
 	import { Capacitor } from '@capacitor/core';
 	import '@fontsource-variable/dm-sans';
 	import '@fontsource/dm-serif-display';
 	import '#lib/styles.css';
+	import { trackPageview } from '#lib/analytics.js';
 	import { initializeBreakpoints } from '#lib/breakpoints.js';
 	import AppShell from '#lib/components/app/AppShell.svelte';
 
 	let { children } = $props();
+
+	afterNavigate(({ from, to }) => {
+		const route = to?.route.id;
+		if (route && route !== from?.route.id && !Capacitor.isNativePlatform()) {
+			trackPageview(to.url.origin, route);
+		}
+	});
 
 	onMount(() => {
 		if (!import.meta.env.DEV && !Capacitor.isNativePlatform() && 'serviceWorker' in navigator)
