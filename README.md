@@ -100,14 +100,15 @@ a different Worker name, and update `PRODUCTION_URL` to match.
 ### Enable web analytics
 
 Create a [PostHog project](https://posthog.com/docs/getting-started/install) and copy its
-public **Project API key** (`phc_`) and ingestion host. Vite includes these values in
-the browser bundle. Keep personal API keys (`phx_`) private.
+public **Project API key** (`phc_`) and ingestion host. SvelteKit declares these in
+`src/env.ts` and includes them in the browser bundle at build time. Keep personal API
+keys (`phx_`) private.
 
 Add these as repository variables in GitHub under **Settings → Secrets and variables →
 Actions → Variables**. The workflow reads them when it builds on a push to `main`.
 
-- `VITE_POSTHOG_PROJECT_TOKEN` holds the public project token.
-- `VITE_POSTHOG_HOST` is `https://eu.i.posthog.com` for EU Cloud or `https://us.i.posthog.com` for US Cloud.
+- `POSTHOG_PROJECT_TOKEN` holds the public project token.
+- `POSTHOG_HOST` is `https://eu.i.posthog.com` for EU Cloud or `https://us.i.posthog.com` for US Cloud.
 
 For a local production preview, copy `.env.example` to `.env.local`, fill in both
 values, then run `bun run build` and `bun run preview`. After deploying, open the app

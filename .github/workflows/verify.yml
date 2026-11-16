@@ -23,8 +23,8 @@ jobs:
       - run: bun run check && bun run test
       - run: bun run build
         env:
-          VITE_POSTHOG_PROJECT_TOKEN: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.VITE_POSTHOG_PROJECT_TOKEN || '' }}
-          VITE_POSTHOG_HOST: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.VITE_POSTHOG_HOST || '' }}
+          POSTHOG_PROJECT_TOKEN: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.POSTHOG_PROJECT_TOKEN || '' }}
+          POSTHOG_HOST: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.POSTHOG_HOST || '' }}
       - run: bun run cf:package && bun run cf:check
 
       - uses: actions/upload-artifact@v4

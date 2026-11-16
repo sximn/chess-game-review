@@ -1,11 +1,13 @@
+import { dev } from '$app/env';
+import { POSTHOG_HOST, POSTHOG_PROJECT_TOKEN } from '$app/env/public';
 import type { PostHog } from 'posthog-js/dist/module.slim.no-external';
 
-const projectToken = import.meta.env.VITE_POSTHOG_PROJECT_TOKEN?.trim();
-const apiHost = import.meta.env.VITE_POSTHOG_HOST?.trim();
+const projectToken = POSTHOG_PROJECT_TOKEN;
+const apiHost = POSTHOG_HOST;
 let client: Promise<PostHog | undefined> | undefined;
 
 export function trackPageview(origin: string, route: string) {
-	if (import.meta.env.DEV || !projectToken || !apiHost) return;
+	if (dev || !projectToken || !apiHost) return;
 
 	client ??= import('posthog-js/dist/module.slim.no-external')
 		.then(({ default: posthog }) => {
