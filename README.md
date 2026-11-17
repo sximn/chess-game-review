@@ -6,11 +6,14 @@ Import a PGN, review move classifications and legal alternatives, and track eval
 
 > **Status: early / pre-release.** Review budgets and the expected-points model are preliminary, and native behavior has not been validated on physical devices. See [Known limitations](#known-limitations).
 
-<!-- TODO: screenshot or GIF of the review screen:
-![Review screen](docs/screenshot-review.png)
--->
+## Product demo
 
-<!-- TODO: **[Live demo →](https://your-url)** -->
+[![Up a Pawn reviewing the Opera Game, with the evaluation graph, a mistake at 11…Nbd7, and the engine’s suggested 11…Kd8](marketing/product-overview/desktop-review.png)](marketing/product-overview/up-a-pawn-overview.mp4)
+
+[Watch the 20-second overview](marketing/product-overview/up-a-pawn-overview.mp4) · [Mobile review](marketing/product-overview/mobile-best-move.png) · [PGN import](marketing/product-overview/import-pgn.png) · [Try the sample game](marketing/product-overview/opera-game.pgn)
+
+
+**Check it out live at [upapawn.simonukus.com](https://upapawn.simonukus.com)**
 
 ## Features
 
