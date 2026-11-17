@@ -1,4 +1,4 @@
-name: Verify app
+name: Verify & Deploy app
 
 on:
   pull_request:
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: cloudflare-build
-          path: .cloudflare/output/v0/
+          path: .cloudflare/output/v1/
           include-hidden-files: true
           if-no-files-found: error
 
@@ -150,7 +150,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: cloudflare-build
-          path: .cloudflare/output/v0/
+          path: .cloudflare/output/v1/
 
       - run: bun run cf:deploy
         env:
