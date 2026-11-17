@@ -5,7 +5,7 @@
 	import { Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
-	import posthog from 'posthog-js';
+	import { trackEvent } from '#lib/analytics.js';
 	import { app, addGame } from '#lib/state.svelte.js';
 	import DialogFrame from '#lib/components/ui/DialogFrame.svelte';
 	import Button from '#lib/components/ui/Button.svelte';
@@ -18,7 +18,7 @@
 	let pgn = $state('');
 	let error = $state('');
 	let filename = $state('');
-	let importTab = $state('paste');
+	let importMethod: 'file_upload' | 'pgn_paste' = 'pgn_paste';
 	let fileInput: HTMLInputElement;
 	async function readFile(file?: File) {
 		if (!file) return;
@@ -28,29 +28,29 @@
 		}
 		pgn = await file.text();
 		filename = file.name;
+		importMethod = 'file_upload';
 		error = '';
 	}
 	function submit() {
-		const importMethod = importTab === 'file' ? 'file_upload' : 'pgn_paste';
 		try {
 			addGame(pgn);
-			posthog.capture('game_imported', { import_method: importMethod });
-			posthog.logger.info('game import completed', { import_method: importMethod });
-			app.importOpen = false;
-			pgn = '';
-			filename = '';
-			error = '';
-			void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
 		} catch (e) {
-			posthog.logger.warn('game import failed', { import_method: importMethod });
 			error = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
+			return;
 		}
+		app.importOpen = false;
+		pgn = '';
+		filename = '';
+		error = '';
+		void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
+		trackEvent('game_imported', { import_method: importMethod });
+		importMethod = 'pgn_paste';
 	}
 </script>
 
 <DialogFrame bind:open={app.importOpen} kind="import" title="Import Game" closeLabel="Close import">
 	{#snippet symbol()}<FileUp size={24} />{/snippet}
-	<Tabs.Root bind:value={importTab}>
+	<Tabs.Root value="paste">
 		{#snippet child({ props })}
 			<div {...props} class="import-form">
 				<TabList
@@ -65,7 +65,10 @@
 							<Textarea
 								monospace
 								bind:value={pgn}
-								oninput={() => (error = '')}
+								oninput={() => {
+									importMethod = 'pgn_paste';
+									error = '';
+								}}
 								aria-invalid={error ? true : undefined}
 								aria-describedby={error ? 'import-error' : undefined}
 								placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}

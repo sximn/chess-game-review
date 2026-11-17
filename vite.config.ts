@@ -7,10 +7,7 @@ export default defineConfig({
 	plugins: [
 		sveltekit({
 			preprocess: vitePreprocess(),
-			adapter: adapter({ fallback: 'index.html' }),
-			paths: {
-				relative: false
-			}
+			adapter: adapter({ fallback: 'index.html' })
 		})
 	],
 	server: {
