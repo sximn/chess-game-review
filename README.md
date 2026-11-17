@@ -100,6 +100,27 @@ Cloudflare's first deployment may require configuring your account's `workers.de
 subdomain in the dashboard. Change `worker.name` in `cloudflare.config.ts` if you want
 a different Worker name, and update `PRODUCTION_URL` to match.
 
+### Enable PostHog analytics
+
+Use the existing PostHog project's public **Project API key** (`phc_`) and ingestion
+origin. Add them as repository variables under **Settings → Secrets and variables →
+Actions → Variables**.
+
+- `PUBLIC_POSTHOG_PROJECT_TOKEN` holds the public Project API key.
+- `PUBLIC_POSTHOG_HOST` holds the ingestion origin, such as `https://eu.i.posthog.com` for EU Cloud.
+
+The workflow embeds these values when it builds on a push to `main`. For a local
+production preview or native release, set them in `.env.local` or the build environment
+before running `bun run build` or `bun run cap:build:sync`. Analytics is active in
+production builds with both values configured.
+
+In PostHog Activity, check for `$pageview` on launch and on route changes. Import a test
+PGN, flip the board, explore a variation, open the analysis sheet on a narrow screen,
+and request a PGN export to verify the dashboard's custom events. Each event includes
+`app_platform` (`web`, `android`, or `ios`). The payload uses route paths without query
+strings or fragments. Game contents and local game IDs stay on the device. Anonymous
+visitor and session IDs reset on page or WebView reload.
+
 ### Analysis and storage
 
 Analysis prioritizes the selected position, then reviews the full game and refines uncertain positions. Reviews support pause, resume, and retry.

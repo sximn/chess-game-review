@@ -5,6 +5,7 @@
 	import { Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import { trackEvent } from '#lib/analytics.js';
 	import { app, addGame } from '#lib/state.svelte.js';
 	import DialogFrame from '#lib/components/ui/DialogFrame.svelte';
 	import Button from '#lib/components/ui/Button.svelte';
@@ -17,6 +18,7 @@
 	let pgn = $state('');
 	let error = $state('');
 	let filename = $state('');
+	let importMethod: 'file_upload' | 'pgn_paste' = 'pgn_paste';
 	let fileInput: HTMLInputElement;
 	async function readFile(file?: File) {
 		if (!file) return;
@@ -26,19 +28,23 @@
 		}
 		pgn = await file.text();
 		filename = file.name;
+		importMethod = 'file_upload';
 		error = '';
 	}
 	function submit() {
 		try {
 			addGame(pgn);
-			app.importOpen = false;
-			pgn = '';
-			filename = '';
-			error = '';
-			void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
+			return;
 		}
+		app.importOpen = false;
+		pgn = '';
+		filename = '';
+		error = '';
+		void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
+		trackEvent('game_imported', { import_method: importMethod });
+		importMethod = 'pgn_paste';
 	}
 </script>
 
@@ -59,7 +65,10 @@
 							<Textarea
 								monospace
 								bind:value={pgn}
-								oninput={() => (error = '')}
+								oninput={() => {
+									importMethod = 'pgn_paste';
+									error = '';
+								}}
 								aria-invalid={error ? true : undefined}
 								aria-describedby={error ? 'import-error' : undefined}
 								placeholder={'[White "Your name"]\n[Black "Opponent"]\n\n1. e4 e5 2. Nf3 Nc6 ...'}

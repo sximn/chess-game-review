@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { page } from '$app/state';
+	import { trackEvent } from '#lib/analytics.js';
 	import GameReplay from '#lib/components/replay/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/analysis/AnalysisPanel.svelte';
 	import AnalysisSheet from '#lib/components/analysis/AnalysisSheet.svelte';
@@ -157,6 +158,10 @@
 		const line = branchTimeline(timeline, rootPly, pv);
 		if (!line.moves.length) return;
 		branch = { timeline: line, rootPly, ply: Math.max(0, Math.min(step, line.moves.length)) };
+		trackEvent('analysis_variation_explored', {
+			root_position_index: rootPly,
+			variation_move_count: line.moves.length
+		});
 
 		if (compact) app.analysisOpen = false;
 	}
@@ -164,6 +169,10 @@
 	function openAnalysis() {
 		playing = false;
 		app.analysisOpen = true;
+		trackEvent('analysis_panel_opened', {
+			position_index: ply,
+			total_move_count: timeline.moves.length
+		});
 	}
 
 	function onKey(event: KeyboardEvent) {
@@ -216,7 +225,9 @@
 			setTimeout(() => URL.revokeObjectURL(url), 1000);
 		} catch {
 			notify('The PGN could not be exported. Please try again.');
+			return;
 		}
+		trackEvent('game_exported', { move_count: timeline.moves.length });
 	}
 </script>
 
@@ -252,7 +263,10 @@
 				: null}
 			onNavigate={go}
 			onPlay={togglePlayback}
-			onFlip={() => (flipped = !flipped)}
+			onFlip={() => {
+				flipped = !flipped;
+				trackEvent('board_flipped', { orientation: flipped ? 'black' : 'white' });
+			}}
 			onAnalysis={openAnalysis}
 			onExport={download}
 			onExplore={explore}
