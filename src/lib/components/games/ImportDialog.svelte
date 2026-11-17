@@ -5,6 +5,7 @@
 	import { Tabs } from 'bits-ui';
 	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
 	import { goto } from '$app/navigation';
+	import posthog from 'posthog-js';
 	import { app, addGame } from '#lib/state.svelte.js';
 	import DialogFrame from '#lib/components/ui/DialogFrame.svelte';
 	import Button from '#lib/components/ui/Button.svelte';
@@ -17,6 +18,7 @@
 	let pgn = $state('');
 	let error = $state('');
 	let filename = $state('');
+	let importTab = $state('paste');
 	let fileInput: HTMLInputElement;
 	async function readFile(file?: File) {
 		if (!file) return;
@@ -29,14 +31,18 @@
 		error = '';
 	}
 	function submit() {
+		const importMethod = importTab === 'file' ? 'file_upload' : 'pgn_paste';
 		try {
 			addGame(pgn);
+			posthog.capture('game_imported', { import_method: importMethod });
+			posthog.logger.info('game import completed', { import_method: importMethod });
 			app.importOpen = false;
 			pgn = '';
 			filename = '';
 			error = '';
 			void goto(`/review?game=${encodeURIComponent(app.currentId)}`);
 		} catch (e) {
+			posthog.logger.warn('game import failed', { import_method: importMethod });
 			error = e instanceof Error ? e.message : 'Something went wrong. Please try again.';
 		}
 	}
@@ -44,7 +50,7 @@
 
 <DialogFrame bind:open={app.importOpen} kind="import" title="Import Game" closeLabel="Close import">
 	{#snippet symbol()}<FileUp size={24} />{/snippet}
-	<Tabs.Root value="paste">
+	<Tabs.Root bind:value={importTab}>
 		{#snippet child({ props })}
 			<div {...props} class="import-form">
 				<TabList

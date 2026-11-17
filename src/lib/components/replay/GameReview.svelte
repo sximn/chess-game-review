@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { page } from '$app/state';
+	import posthog from 'posthog-js';
 	import GameReplay from '#lib/components/replay/GameReplay.svelte';
 	import AnalysisPanel from '#lib/components/analysis/AnalysisPanel.svelte';
 	import AnalysisSheet from '#lib/components/analysis/AnalysisSheet.svelte';
@@ -157,6 +158,10 @@
 		const line = branchTimeline(timeline, rootPly, pv);
 		if (!line.moves.length) return;
 		branch = { timeline: line, rootPly, ply: Math.max(0, Math.min(step, line.moves.length)) };
+		posthog.capture('analysis_variation_explored', {
+			root_position_index: rootPly,
+			variation_move_count: line.moves.length
+		});
 
 		if (compact) app.analysisOpen = false;
 	}
@@ -164,6 +169,10 @@
 	function openAnalysis() {
 		playing = false;
 		app.analysisOpen = true;
+		posthog.capture('analysis_panel_opened', {
+			position_index: ply,
+			total_move_count: timeline.moves.length
+		});
 	}
 
 	function onKey(event: KeyboardEvent) {
@@ -213,6 +222,8 @@
 			a.href = url;
 			a.download = `${white}-vs-${black}.pgn`;
 			a.click();
+			posthog.capture('game_exported', { move_count: timeline.moves.length });
+			posthog.logger.info('game export completed', { move_count: timeline.moves.length });
 			setTimeout(() => URL.revokeObjectURL(url), 1000);
 		} catch {
 			notify('The PGN could not be exported. Please try again.');
@@ -252,7 +263,10 @@
 				: null}
 			onNavigate={go}
 			onPlay={togglePlayback}
-			onFlip={() => (flipped = !flipped)}
+			onFlip={() => {
+				flipped = !flipped;
+				posthog.capture('board_flipped', { orientation: flipped ? 'black' : 'white' });
+			}}
 			onAnalysis={openAnalysis}
 			onExport={download}
 			onExplore={explore}
