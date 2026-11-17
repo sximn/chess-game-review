@@ -20,7 +20,11 @@ jobs:
           bun-version: 1.4.3
 
       - run: bun install --frozen-lockfile
-      - run: bun run check && bun run test && bun run build
+      - run: bun run check && bun run test
+      - run: bun run build
+        env:
+          PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PUBLIC_POSTHOG_PROJECT_TOKEN || '' }}
+          PUBLIC_POSTHOG_HOST: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PUBLIC_POSTHOG_HOST || '' }}
       - run: bun run cf:package && bun run cf:check
 
       - uses: actions/upload-artifact@v4
