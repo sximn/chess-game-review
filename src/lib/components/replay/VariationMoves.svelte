@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { GitBranch } from 'lucide-svelte';
+	import { GitBranch } from '@lucide/svelte';
 	import type { Move } from 'chess.js';
 	import { moveLabel } from '#lib/chess.js';
 

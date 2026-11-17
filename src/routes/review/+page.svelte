@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { Plus } from 'lucide-svelte';
+	import { Plus } from '@lucide/svelte';
 	import { app, currentReviewGame } from '#lib/state.svelte.js';
 	import GameReview from '#lib/components/replay/GameReview.svelte';
 	import Button from '#lib/components/ui/Button.svelte';

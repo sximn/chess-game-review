@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ChevronRight } from 'lucide-svelte';
+	import { ChevronRight } from '@lucide/svelte';
 	import type { SavedGame, Timeline } from '#lib/chess.js';
 	import { rememberReviewPosition } from '#lib/state.svelte.js';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { BookOpen, CircleQuestionMark, LayoutGrid, Settings2 } from 'lucide-svelte';
+	import { BookOpen, CircleQuestionMark, LayoutGrid, Settings2 } from '@lucide/svelte';
 	import AppLogo from './AppLogo.svelte';
 	import { app } from '#lib/state.svelte.js';
 
