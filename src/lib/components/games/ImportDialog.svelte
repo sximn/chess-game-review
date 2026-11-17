@@ -3,7 +3,7 @@
 	import Textarea from '#lib/components/ui/Textarea.svelte';
 	import FieldMessage from '#lib/components/ui/FieldMessage.svelte';
 	import { Tabs } from 'bits-ui';
-	import { ArrowUpRight, FileUp, FileText, Check, FolderOpen } from 'lucide-svelte';
+	import { ArrowUpRight, FileUp, FileText, FolderOpen } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
 	import { trackEvent } from '#lib/analytics.js';
 	import { app, addGame } from '#lib/state.svelte.js';

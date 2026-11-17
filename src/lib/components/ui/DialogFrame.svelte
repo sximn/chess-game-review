@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Button from './Button.svelte';
 	import { Dialog } from 'bits-ui';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	let {
 		open = $bindable(false),

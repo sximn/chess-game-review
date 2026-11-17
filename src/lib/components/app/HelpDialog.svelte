@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CircleQuestionMark } from 'lucide-svelte';
+	import { CircleQuestionMark } from '@lucide/svelte';
 	import { app } from '#lib/state.svelte.js';
 	import DialogFrame from '#lib/components/ui/DialogFrame.svelte';
 </script>

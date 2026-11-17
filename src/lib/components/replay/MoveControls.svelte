@@ -11,7 +11,7 @@
 		Play,
 		SkipBack,
 		SkipForward
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 	import { moveLabel } from '#lib/chess.js';
 	import GameActions from './GameActions.svelte';
 	import MoveRating from './MoveRating.svelte';

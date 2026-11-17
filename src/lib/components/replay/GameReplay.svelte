@@ -6,7 +6,7 @@
 	import MoveControls from './MoveControls.svelte';
 	import type { ClassificationMarkerProps, MoveQuality } from '#lib/engine/classification.js';
 	import type { ReviewState } from '#lib/engine/review.js';
-	import { GitBranch } from 'lucide-svelte';
+	import { GitBranch } from '@lucide/svelte';
 	import { continuation, type Exploration } from '#lib/engine/presentation.js';
 
 	let {

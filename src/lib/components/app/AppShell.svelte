@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
-	import { Feather, Settings2 } from 'lucide-svelte';
+	import { Feather } from '@lucide/svelte';
 	import type { Snippet } from 'svelte';
 	import AppLogo from './AppLogo.svelte';
 	import AppNavigation from './AppNavigation.svelte';

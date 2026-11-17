@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArrowUpRight } from 'lucide-svelte';
+	import { ArrowUpRight } from '@lucide/svelte';
 	import type { Move } from 'chess.js';
 	import Card from '#lib/components/ui/Card.svelte';
 	import { moveLabel } from '#lib/chess.js';

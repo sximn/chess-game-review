@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Plus, Search } from 'lucide-svelte';
+	import { Plus, Search } from '@lucide/svelte';
 	import { app } from '#lib/state.svelte.js';
 	import { parseGame } from '#lib/chess.js';
 	import Button from '#lib/components/ui/Button.svelte';
