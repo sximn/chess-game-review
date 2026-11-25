@@ -33,7 +33,7 @@
 		"bits-ui": "2.22.0",
 		"chess-engine-kit": "0.1.0",
 		"chess.js": "1.4.0",
-		"posthog-js": "1.454.2"
+		"posthog-js": "1.454.5"
 	},
 	"devDependencies": {
 		"@capacitor/cli": "8.6.2",
