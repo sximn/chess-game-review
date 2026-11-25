@@ -41,7 +41,7 @@
 		"@sveltejs/adapter-static": "4.0.1",
 		"@sveltejs/kit": "3.4.0",
 		"@sveltejs/vite-plugin-svelte": "7.3.2",
-		"cf": "1.0.0-rc.2",
+		"cf": "1.0.0-rc.6",
 		"prettier": "3.10.1",
 		"prettier-plugin-svelte": "4.2.0",
 		"svelte": "5.59.1",
