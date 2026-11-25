@@ -39,7 +39,7 @@
 		"@capacitor/cli": "8.6.2",
 		"@playwright/test": "1.65.1",
 		"@sveltejs/adapter-static": "4.0.1",
-		"@sveltejs/kit": "3.4.0",
+		"@sveltejs/kit": "3.4.1",
 		"@sveltejs/vite-plugin-svelte": "7.3.2",
 		"cf": "1.0.0-rc.2",
 		"prettier": "3.10.1",
